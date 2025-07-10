@@ -10,11 +10,14 @@
     "next/typescript",
     "plugin:prettier/recommended"
   ],
-  // "(package)/recommended tells ESLint to use the packages (typescript, prettier, ect)'s formatting and to ignore ESLint's formatting rules
+  // "(package)/recommended tells ESLint to ignore eslint's formatting rules and to use the packages (typescript, prettier, ect)'s formatting instead
   "parserOptions": {
     "project": "./tsconfig.json"
   },
   "rules": {
-    "tailwindcss/classnames-order": "off"
+    "tailwindcss/classnames-order": "off",
+    "tailwindcss/no-custom-classname": "off"
+    //eslint will still handle invalid classes and duplicates. But the prettier tailwind plugin will handle class sorting, otherwise prettier and eslint can clash about classname order (example: if prettier already fixed the classname order but eslint complains unti you reload your window)
+    //turned off no custom classnames so we can use our custom css classes as well
   }
 }
