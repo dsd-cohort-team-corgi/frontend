@@ -1,3 +1,16 @@
 {
-  "extends": ["next/core-web-vitals", "next/typescript"]
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint"],
+  // "plugins": ["prettier"]
+  "extends": [
+    "airbnb",
+    "airbnb-typescript",
+    // "prettier",
+    "next/core-web-vitals",
+    "plugin:@typescript-eslint/recommended",
+    "next/typescript"
+  ],
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  }
 }
