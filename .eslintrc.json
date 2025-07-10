@@ -10,6 +10,8 @@
     "next/typescript",
     "plugin:prettier/recommended"
   ],
+  // important for prettier to be last in the extends list, so it can override any conflicting rules
+  // "plugin:prettier/recommended" automatically extends "prettier" and it adds the rule "prettier/prettier": "error", so prettier's formatting errors will show as ESlint errors
   // "(package)/recommended tells ESLint to ignore eslint's formatting rules and to use the packages (typescript, prettier, ect)'s formatting instead
   "parserOptions": {
     "project": "./tsconfig.json"
