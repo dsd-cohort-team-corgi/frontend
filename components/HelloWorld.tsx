@@ -1,9 +1,7 @@
-import React from 'react'
+import React from "react";
 
 function HelloWorld() {
-  return (
-    <h1 className='text-[3em]'>Hello World</h1>
-  )
+  return <h1 className="text-[3em]">Hello Corgi</h1>;
 }
 
-export default HelloWorld
+export default HelloWorld;
