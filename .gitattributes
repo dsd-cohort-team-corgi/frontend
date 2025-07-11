@@ -1,0 +1,10 @@
+* text=auto eol=lf
+# Will make it so line endings are LF not CRLF
+
+# avoids this error when doing `git add .` :
+# warning: LF will be replaced by CRLF in .eslintrc.json.
+# The file will have its original line endings in your working directory
+
+# Essentially prettier defaults to LF for line endings, but for windows the default is CRLF. But Unix systems can't handle CRLF so its best practice so use LF instead since Windows and Unix systems can handle it
+# https://www.freecodecamp.org/news/how-to-set-up-eslint-prettier-stylelint-and-lint-staged-in-nextjs/#heading-a-note-on-line-endings-in-prettier
+# https://nausaf.hashnode.dev/lf-vs-crlf-configure-git-and-vs-code-to-use-unix-line-endings

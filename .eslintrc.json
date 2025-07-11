@@ -1,3 +1,25 @@
 {
-  "extends": ["next/core-web-vitals", "next/typescript"]
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint", "prettier", "tailwindcss"],
+  "extends": [
+    "airbnb",
+    "airbnb-typescript",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:tailwindcss/recommended",
+    "next/core-web-vitals",
+    "next/typescript",
+    "plugin:prettier/recommended"
+  ],
+  // important for prettier to be last in the extends list, so it can override any conflicting rules
+  // "plugin:prettier/recommended" automatically extends "prettier" and it adds the rule "prettier/prettier": "error", so prettier's formatting errors will show as ESlint errors
+  // "(package)/recommended tells ESLint to ignore eslint's formatting rules and to use the packages (typescript, prettier, ect)'s formatting instead
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  },
+  "rules": {
+    "tailwindcss/classnames-order": "off",
+    "tailwindcss/no-custom-classname": "off"
+    //eslint will still handle invalid classes and duplicates. But the prettier tailwind plugin will handle class sorting, otherwise prettier and eslint can clash about classname order (example: if prettier already fixed the classname order but eslint complains unti you reload your window)
+    //turned off no custom classnames so we can use our custom css classes as well
+  }
 }

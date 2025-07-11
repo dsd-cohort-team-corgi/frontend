@@ -1,0 +1,20 @@
+# Don't format these folders
+node_modules
+.next
+build
+dist
+coverage
+#coverage is created by test tools like jest
+
+# Don't format these files
+package-lock.json
+yarn.lock
+.env
+.env.local
+.prettierignore
+.eslintignore
+
+# Don't format images and icons
+public/**/*.svg
+public/**/*.png
+public/**/*.jpg
