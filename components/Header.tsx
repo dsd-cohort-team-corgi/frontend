@@ -30,23 +30,35 @@ export default function App() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
 
   const mobileNavMenuItems = [
-    "Profile",
-    "Dashboard",
-    "Activity",
-    "Help & Feedback",
-    "Log Out",
+    { label: "Profile", href: "/profile" },
+    { label: "Dashboard", href: "/dashboard" },
+    { label: "activity", href: "/activity" },
+    { label: "logout", href: "/logout" },
   ];
 
   return (
-    <Navbar onMenuOpenChange={setIsMenuOpen}>
-      <NavbarContent>
+    <Navbar
+      onMenuOpenChange={setIsMenuOpen}
+      classNames={{
+        wrapper: "w-full max-w-none px-4", // gets rid of the default max-w-[1024px] set on the header by heroui
+      }}
+    >
+      <NavbarContent justify="start">
+        {/* Toggle for mobile menu */}
         <NavbarMenuToggle
           aria-label={isMenuOpen ? "Close menu" : "Open menu"}
           className="sm:hidden"
         />
+
+        {/* #### Logo Section ###### */}
+
         <NavbarBrand>
-          <AcmeLogo />
-          <p className="font-bold text-inherit">ACME</p>
+          <img
+            src="/logo.png"
+            alt="A corgi which is used as a logo"
+            width={40}
+          />
+          <p className="font-bold text-inherit">Maid You Look</p>
         </NavbarBrand>
       </NavbarContent>
 
@@ -88,23 +100,27 @@ export default function App() {
           </Button>
         </NavbarItem>
       </NavbarContent>
-      {/* ################  MOBILE #################*/}
+
+      {/* ################  Mobile Nav Bar Menu ################# */}
+
       <NavbarMenu>
         {mobileNavMenuItems.map((item, index) => (
-          <NavbarMenuItem key={`${item}-${index}`}>
+          /* eslint-disable-next-line react/no-array-index-key */
+          <NavbarMenuItem key={`${item.label}-${index}`}>
             <Link
               className="w-full"
               color={
+                // eslint-disable-next-line no-nested-ternary
                 index === 2
                   ? "primary"
                   : index === mobileNavMenuItems.length - 1
                     ? "danger"
                     : "foreground"
               }
-              href="https://www.heroui.com/docs/components/navbar#with-dropdown-menu"
+              href={item.href}
               size="lg"
             >
-              {item}
+              {item.label}
             </Link>
           </NavbarMenuItem>
         ))}
