@@ -11,16 +11,67 @@ import {
   NavbarMenuItem,
   Link,
   Button,
+  DropdownItem,
+  DropdownTrigger,
+  Dropdown,
+  DropdownMenu,
 } from "@heroui/react";
 
 export default function App() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+  const UserIsSignedIn = false;
 
-  const mobileNavMenuItems = [
+  const handleLogOut = () => {
+    // logout Logic
+  };
+
+  const staticMenuItems = [
+    {
+      label: "House Cleaning",
+      href: "/housecleaning",
+      description: "Regular, deep and move-in/out cleaning",
+    },
+    {
+      label: "Lawn & Garden",
+      href: "/lawnandgarden",
+      description: "Mowing, landscaping, yard maintenance",
+    },
+    {
+      label: "HandyMan & Repairs",
+      href: "/handymanandrepairs",
+      description: "Plumbing, electrical, installations, general fixes",
+    },
+    {
+      label: "Exterior Cleaning",
+      href: "/exteriorcleaning",
+      description: "Driveways, siding, decks, patios",
+    },
+    {
+      label: "Specialized Cleaning",
+      href: "/specializedcleaning",
+      description: "Carpet, upholstery, post-construction",
+    },
+    {
+      label: "Assembly & Installation",
+      href: "/assemblyandinstallation",
+      description: "Furniture assembly, TV mounting, applicances",
+    },
+  ];
+
+  const loggedInMenuItems = [
     { label: "Profile", href: "/profile" },
     { label: "Dashboard", href: "/dashboard" },
-    { label: "activity", href: "/activity" },
-    { label: "logout", href: "/logout" },
+    { label: "login", onclick: handleLogOut },
+  ];
+
+  const guestMenuItems = [
+    { label: "login", onclick: "/login" },
+    { label: "sign Up", href: "/sign up" },
+  ];
+
+  const mobileNavMenuItems = [
+    ...(UserIsSignedIn ? loggedInMenuItems : guestMenuItems),
+    ...staticMenuItems,
   ];
 
   return (
@@ -50,39 +101,45 @@ export default function App() {
       </NavbarContent>
 
       <NavbarContent className="hidden gap-4 sm:flex" justify="center">
-        <NavbarItem>
-          <Link
-            color="foreground"
-            href="https://www.heroui.com/docs/components/navbar#with-dropdown-menu"
+        <Dropdown>
+          <NavbarItem isActive>
+            <DropdownTrigger>
+              <Button
+                disableRipple
+                className="bg-transparent p-0 data-[hover=true]:bg-transparent"
+                radius="sm"
+                variant="light"
+              >
+                Services
+              </Button>
+            </DropdownTrigger>
+          </NavbarItem>
+
+          <DropdownMenu
+            aria-label="Services"
+            itemClasses={{
+              base: "gap-4",
+            }}
           >
-            Features
-          </Link>
-        </NavbarItem>
-        <NavbarItem isActive>
-          <Link
-            aria-current="page"
-            href="https://www.heroui.com/docs/components/navbar#with-dropdown-menu"
-          >
-            Customers
-          </Link>
-        </NavbarItem>
-        <NavbarItem>
-          <Link
-            color="foreground"
-            href="https://www.heroui.com/docs/components/navbar#with-dropdown-menu"
-          >
-            Integrations
-          </Link>
-        </NavbarItem>
+            {staticMenuItems.map((service) => (
+              <DropdownItem
+                key={service.label}
+                description={service.description}
+                href={service.href}
+              >
+                {service.label}
+              </DropdownItem>
+            ))}
+          </DropdownMenu>
+        </Dropdown>
       </NavbarContent>
       <NavbarContent justify="end">
+        {/* Buttons For guest users */}
         <NavbarItem className="hidden lg:flex">
-          <Link href="https://www.heroui.com/docs/components/navbar#with-dropdown-menu">
-            Login
-          </Link>
+          <Link href="/login">Log In</Link>
         </NavbarItem>
         <NavbarItem>
-          <Button as={Link} color="primary" href="#" variant="flat">
+          <Button as={Link} color="primary" href="/signup" variant="flat">
             Sign Up
           </Button>
         </NavbarItem>
@@ -97,12 +154,10 @@ export default function App() {
             <Link
               className="w-full"
               color={
-                // eslint-disable-next-line no-nested-ternary
-                index === 2
-                  ? "primary"
-                  : index === mobileNavMenuItems.length - 1
-                    ? "danger"
-                    : "foreground"
+                // the last item will be be red
+                index === mobileNavMenuItems.length - 1
+                  ? "danger"
+                  : "foreground"
               }
               href={item.href}
               size="lg"
