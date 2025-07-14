@@ -5,28 +5,30 @@
 // see all available props here: https://www.heroui.com/docs/components/button ex disabled, sizes, radius, loading, icons
 
 // Need a JSX component to look like a button?
-// the as prop allows for this ex: as={link} as={div}
+// the as prop allows for this
+// ex: as={link} as={div}
 // The JSX component looks like a button despite rendering as whatever component you desire (<a>,<Link>, ect)
 // if you don't use the "as" prop, it will default to rendering as a button
 
 import React from "react";
 import { Button as HeroUiButton, type ButtonProps } from "@heroui/react";
 
-type GeneralButtonProps = ButtonProps & {
+type StyledAsButtonProps = ButtonProps & {
   label: string;
 };
+// grabs all the props of a HeroUiButton (ButtonProps) and adds a custom prop called "label" and types it
 
 export default function StyledAsButton({
   label,
   className, // although className & color are HeroUi Button props, we're destructuring them here so we can override the default values
   color,
   ...rest // href, src, ect
-}: GeneralButtonProps) {
+}: StyledAsButtonProps) {
   return (
     <HeroUiButton
       className={`text-white ${className ?? ""}`}
       color="primary"
-      // the "primary" color is set in the tailwindcss config file,its currently set to blue
+      // the "primary" color is set in the tailwindcss config file, its currently set to blue
 
       // {...rest} <== We're intentionally spreading all the possible remaining props here to support polymorphic "as" components
       // Its smart enough to know what additional props the different JSX elements will allow & their types, so it'd just waste time to write down every possible prop

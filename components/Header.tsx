@@ -34,7 +34,7 @@ import listOfServices from "@/data/services";
 
 export default function App() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
-  const userIsSignedIn = false;
+  const userIsSignedIn = true;
 
   const handleLogOut = () => {
     console.log("logged out :)");
