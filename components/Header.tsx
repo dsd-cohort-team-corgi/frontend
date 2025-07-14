@@ -47,7 +47,7 @@ export default function App() {
   ];
 
   const guestMenuItems = [
-    { label: "Sign Up", href: "/sign up" },
+    { label: "Sign Up", href: "/signup" },
     { label: "Login", href: "/login" },
   ];
 
