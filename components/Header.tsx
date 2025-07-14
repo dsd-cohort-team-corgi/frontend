@@ -24,7 +24,7 @@ import listOfServices from "@/data/services";
 
 export default function App() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
-  const UserIsSignedIn = true;
+  const userIsSignedIn = true;
 
   const handleLogOut = () => {
     console.log("logged out :)");
@@ -50,7 +50,7 @@ export default function App() {
   ];
 
   const mobileNavMenuItems = [
-    ...(UserIsSignedIn ? loggedInMenuItems : guestMenuItems),
+    ...(userIsSignedIn ? loggedInMenuItems : guestMenuItems),
     ...listOfServices,
   ];
 
@@ -119,7 +119,7 @@ export default function App() {
 
       {/* #### Right Section ###### */}
       <NavbarContent justify="end">
-        {!UserIsSignedIn && (
+        {!userIsSignedIn && (
           <>
             <NavbarItem className="hidden md:flex">
               {/* only shows up on medium and larger screens, when there is more room */}
@@ -145,7 +145,7 @@ export default function App() {
           </>
         )}
 
-        {UserIsSignedIn && (
+        {userIsSignedIn && (
           <>
             <NavbarItem className="hidden md:flex">
               <Link
