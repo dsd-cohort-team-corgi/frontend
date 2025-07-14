@@ -13,6 +13,8 @@ const config: Config = {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        primary: "#2563eb",
+        // #2563eb = blue, used for buttons
       },
     },
   },

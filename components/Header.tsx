@@ -25,7 +25,7 @@ import GeneralButton from "./GeneralButton";
 
 export default function App() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
-  const userIsSignedIn = true;
+  const userIsSignedIn = false;
 
   const handleLogOut = () => {
     console.log("logged out :)");

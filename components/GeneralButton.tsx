@@ -63,12 +63,12 @@ type HeroUiButtonType<Component extends ElementType = "button"> = {
 export default function GeneralButton({
   href,
   as,
-  variant = "flat",
+  variant = "solid",
   label,
   size,
   // size = the button size
   radius,
-  color,
+  color = "primary",
   isDisabled,
   isLoading,
   onPress,
@@ -88,7 +88,7 @@ export default function GeneralButton({
       isDisabled={isDisabled}
       isLoading={isLoading}
       onPress={onPress}
-      className={className}
+      className={`text-white ${className}`}
     >
       {label}
     </HeroUiButton>
