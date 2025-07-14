@@ -3,7 +3,9 @@
 import React from "react";
 import { Card, CardHeader, CardBody, Image } from "@heroui/react";
 
-export default function CardWithImage() {
+type Service = { [key: string]: string };
+
+export default function CardWithImage({ service }: { service: Service }) {
   return (
     <Card className="shadow-none">
       <CardHeader className="relative">
@@ -17,14 +19,16 @@ export default function CardWithImage() {
           style={{ objectFit: "cover" }}
           loading="lazy"
         />
-        <span className="absolute left-10 top-10 z-40 inline-block items-center rounded-2xl bg-gray-900 px-4 py-1 text-center text-sm font-semibold uppercase text-white">
+        <span className="bg-font-primary absolute left-6 top-6 z-40 inline-block items-center rounded-2xl px-4 py-1 text-center text-sm font-semibold uppercase text-white">
           {" "}
-          From $40{" "}
+          {`From $${service.price}`}
         </span>
       </CardHeader>
       <CardBody className="overflow-visible py-2">
-        <h3 className="pb-4 text-3xl font-bold">Home and Garden</h3>
-        <p className="text-gray-500">text text text</p>
+        <h3 className="text-font-primary pb-4 text-3xl font-bold">
+          Home and Garden
+        </h3>
+        <p className="text-font-secondary">text text text</p>
       </CardBody>
     </Card>
   );
