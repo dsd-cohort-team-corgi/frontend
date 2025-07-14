@@ -1,5 +1,12 @@
 "use client";
 
+import Link from "next/link";
+// Link is a wrapper component that allows for client side navigation, which improves next.js performance
+// Why? Since it will not reload the page & it prefetches the page in the background
+// When to use? To be used when moving internally, do not use for external links
+// it doesn't render anything by default, instead it wraps the content
+// ex <Link href="/about"> <a> Click here to go to the about page </a> </Link>
+
 import React from "react";
 import {
   Navbar,
@@ -9,8 +16,9 @@ import {
   NavbarMenuToggle,
   NavbarMenu,
   NavbarMenuItem,
-  Link,
-  Button,
+  Link as HeroUiLink,
+  // HeroUi's Link under the hood is an <a> tag with styling and accessiblity built in
+  // we tell HeroUiLink to render as a Next/Link "as={Link}" in order to get the performance boost of Next/Link while keeping the styling & accessiblity benefits of a HeroUi's Link Component
   DropdownItem,
   DropdownTrigger,
   Dropdown,
@@ -20,18 +28,18 @@ import {
 // NavBarMenuToggle == toggles mobile nav bar
 // NavBarMenu == mobile nav bar
 
+import StyledAsButton from "./StyledAsButton";
+
 import listOfServices from "@/data/services";
 
 export default function App() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
-  const UserIsSignedIn = true;
+  const userIsSignedIn = true;
 
   const handleLogOut = () => {
     console.log("logged out :)");
     // logout Logic
   };
-
-  const staticMenuItems = listOfServices;
 
   type LoggedInMenuType =
     | { label: string; href: string; onClick?: never }
@@ -47,13 +55,13 @@ export default function App() {
   ];
 
   const guestMenuItems = [
-    { label: "Sign Up", href: "/sign up" },
+    { label: "Sign Up", href: "/signup" },
     { label: "Login", href: "/login" },
   ];
 
   const mobileNavMenuItems = [
-    ...(UserIsSignedIn ? loggedInMenuItems : guestMenuItems),
-    ...staticMenuItems,
+    ...(userIsSignedIn ? loggedInMenuItems : guestMenuItems),
+    ...listOfServices,
   ];
 
   return (
@@ -106,7 +114,7 @@ export default function App() {
               base: "gap-4",
             }}
           >
-            {staticMenuItems.map((service) => (
+            {listOfServices.map((service) => (
               <DropdownItem
                 key={service.label}
                 description={service.description}
@@ -121,65 +129,61 @@ export default function App() {
 
       {/* #### Right Section ###### */}
       <NavbarContent justify="end">
-        {!UserIsSignedIn && (
+        {!userIsSignedIn && (
           <>
             <NavbarItem className="hidden md:flex">
               {/* only shows up on medium and larger screens, when there is more room */}
-              <Link
+              <HeroUiLink
+                as={Link}
                 className="w-full"
                 color="foreground"
                 href={guestMenuItems[0].href}
                 size="md"
               >
                 {guestMenuItems[0].label}
-              </Link>
+              </HeroUiLink>
             </NavbarItem>
             <NavbarItem>
-              <Button
+              <StyledAsButton
                 as={Link}
-                color="primary"
                 href={guestMenuItems[1].href}
-                variant="flat"
-              >
-                {guestMenuItems[1].label}
-              </Button>
+                label={guestMenuItems[1].label}
+              />
             </NavbarItem>
           </>
         )}
 
-        {UserIsSignedIn && (
+        {userIsSignedIn && (
           <>
             <NavbarItem className="hidden md:flex">
-              <Link
+              <HeroUiLink
+                as={Link}
                 className="w-full"
                 color="foreground"
                 href={loggedInMenuItems[0].href}
                 size="md"
               >
                 {loggedInMenuItems[0].label}
-              </Link>
+              </HeroUiLink>
             </NavbarItem>
 
             <NavbarItem className="hidden md:flex">
-              <Link
+              <HeroUiLink
+                as={Link}
                 className="w-full"
                 color="foreground"
                 href={loggedInMenuItems[1].href}
                 size="md"
               >
                 {loggedInMenuItems[1].label}
-              </Link>
+              </HeroUiLink>
             </NavbarItem>
 
             <NavbarItem>
-              <Button
-                color="primary"
+              <StyledAsButton
                 onPress={loggedInMenuItems[2].onClick}
-                // onPress is HeroUi's version of onClick
-                variant="flat"
-              >
-                {loggedInMenuItems[2].label}
-              </Button>
+                label={loggedInMenuItems[2].label}
+              />
             </NavbarItem>
           </>
         )}
@@ -192,14 +196,15 @@ export default function App() {
           /* eslint-disable-next-line react/no-array-index-key */
           <NavbarMenuItem key={`${item.label}-${index}`}>
             {item.href ? (
-              <Link
+              <HeroUiLink
+                as={Link}
                 className="w-full"
                 color="foreground"
                 href={item.href}
                 size="md"
               >
                 {item.label}
-              </Link>
+              </HeroUiLink>
             ) : (
               "onClick" in item && (
                 // this typeguard check is needed because the item.href check returning false does not narrow the type down to being the second union member (item.onClick)

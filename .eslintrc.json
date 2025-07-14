@@ -17,6 +17,9 @@
     "project": "./tsconfig.json"
   },
   "rules": {
+    "react/require-default-props": "off",
+    // turned off since we're using typeScript not PropTypes in this application. If we keep it on, it will lead to redudant code
+    //https://medium.com/smallcase-engineering/proptypes-vs-types-in-typescript-45433990a8f9
     "tailwindcss/classnames-order": "off",
     "tailwindcss/no-custom-classname": "off"
     //eslint will still handle invalid classes and duplicates. But the prettier tailwind plugin will handle class sorting, otherwise prettier and eslint can clash about classname order (example: if prettier already fixed the classname order but eslint complains unti you reload your window)
