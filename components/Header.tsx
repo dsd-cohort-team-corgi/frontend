@@ -21,6 +21,7 @@ import {
 // NavBarMenu == mobile nav bar
 
 import listOfServices from "@/data/services";
+import GeneralButton from "./GeneralButton";
 
 export default function App() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
@@ -133,14 +134,11 @@ export default function App() {
               </Link>
             </NavbarItem>
             <NavbarItem>
-              <Button
+              <GeneralButton
                 as={Link}
-                color="primary"
                 href={guestMenuItems[1].href}
-                variant="flat"
-              >
-                {guestMenuItems[1].label}
-              </Button>
+                label={guestMenuItems[1].label}
+              />
             </NavbarItem>
           </>
         )}
