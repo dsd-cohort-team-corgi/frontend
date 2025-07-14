@@ -17,8 +17,8 @@ import {
   NavbarMenu,
   NavbarMenuItem,
   Link as HeroUiLink,
-  // HeroUi's Link under the hood is an <a> tag with styling and  accessiblity built in
-  // we tell it to render as a Next/Link "as={Link}" in order to get the performance boost of Next/Link while keeping the styling & accessiblity benefits of a HeroUi Link
+  // HeroUi's Link under the hood is an <a> tag with styling and accessiblity built in
+  // we tell HeroUiLink to render as a Next/Link "as={Link}" in order to get the performance boost of Next/Link while keeping the styling & accessiblity benefits of a HeroUi's Link Component
   DropdownItem,
   DropdownTrigger,
   Dropdown,
