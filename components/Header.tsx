@@ -31,8 +31,6 @@ export default function App() {
     // logout Logic
   };
 
-  const staticMenuItems = listOfServices;
-
   type LoggedInMenuType =
     | { label: string; href: string; onClick?: never }
     | { label: string; onClick: () => void; href?: never };
@@ -53,7 +51,7 @@ export default function App() {
 
   const mobileNavMenuItems = [
     ...(UserIsSignedIn ? loggedInMenuItems : guestMenuItems),
-    ...staticMenuItems,
+    ...listOfServices,
   ];
 
   return (
@@ -106,7 +104,7 @@ export default function App() {
               base: "gap-4",
             }}
           >
-            {staticMenuItems.map((service) => (
+            {listOfServices.map((service) => (
               <DropdownItem
                 key={service.label}
                 description={service.description}
