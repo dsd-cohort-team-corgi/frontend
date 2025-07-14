@@ -1,6 +1,6 @@
 import Image from "next/image";
-import HomePageHeroImage from "../public/HomePageHeroImage.png";
 import Link from "next/link";
+import HomePageHeroImage from "../public/HomePageHeroImage.png";
 import StyledAsButton from "@/components/StyledAsButton";
 
 export default function Home() {
@@ -14,7 +14,7 @@ export default function Home() {
           src={HomePageHeroImage}
         />
         {/* Text Container */}
-        <div className="absolute left-[10%] top-[5%] w-[50%] md:top-[10%]">
+        <div className="absolute left-[10%] top-[5%] w-1/2 md:top-[10%]">
           <div className="text-3xl font-black md:text-7xl">
             <p>Book. Relax.</p>
             <p>Done.</p>
