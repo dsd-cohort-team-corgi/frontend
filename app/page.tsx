@@ -37,10 +37,10 @@ export default function Home() {
       </div>
 
       <section className="mx-auto mt-20 max-w-[1200px] px-5 text-center sm:text-left">
-        <h1 className="text-primary-font-color text-4xl font-bold">
+        <h3 className="text-4xl font-bold text-primary-font-color">
           What service do you need?
-        </h1>
-        <p className="text-secondary-font-color mb-8 mt-4 text-lg tracking-wider">
+        </h3>
+        <p className="mb-8 mt-4 text-lg tracking-wider text-secondary-font-color">
           Choose from our most popular home services
         </p>
         <section className="grid-row-1 sm:grid-row-2 grid grid-cols-1 gap-7 sm:grid-cols-2 md:grid-cols-3">

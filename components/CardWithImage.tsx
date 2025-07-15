@@ -41,16 +41,16 @@ export default function CardWithImage({
           group-hover:opacity-50 when the outer "group" is hovered over, changes from 0 to 50% opacity
             */}
 
-          <span className="bg-primary-font-color absolute left-6 top-4 z-40 inline-block items-center rounded-3xl px-5 py-2 text-center text-medium font-semibold uppercase text-white md:px-3 md:py-1 md:text-sm lg:px-5 lg:py-2 lg:text-medium">
+          <span className="absolute left-6 top-4 z-40 inline-block items-center rounded-3xl bg-primary-font-color px-5 py-2 text-center text-medium font-semibold uppercase text-white md:px-3 md:py-1 md:text-sm lg:px-5 lg:py-2 lg:text-medium">
             {" "}
             {`From $${service.price}`}
           </span>
         </CardHeader>
         <CardBody className="overflow-visible py-2">
-          <h3 className="text-primary-font-color pb-4 text-xl font-bold">
+          <h3 className="pb-4 text-xl font-bold text-primary-font-color">
             {service.label}
           </h3>
-          <p className="text-secondary-font-color text-base">
+          <p className="text-base text-secondary-font-color">
             {service.description}
           </p>
         </CardBody>
