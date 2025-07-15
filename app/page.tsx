@@ -1,6 +1,6 @@
-import Card from "@/components/Card";
 import Image from "next/image";
 import Link from "next/link";
+import Card from "@/components/CardWithImage";
 import HomePageHeroImage from "../public/HomePageHeroImage.png";
 import StyledAsButton from "@/components/StyledAsButton";
 import listOfServices from "@/data/services";
@@ -35,6 +35,26 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      <section className="mx-auto mt-20 max-w-[1200px] px-5 text-center sm:text-left">
+        <h1 className="text-primary-font-color text-4xl font-bold">
+          What service do you need?
+        </h1>
+        <p className="text-secondary-font-color mb-8 mt-4 text-lg tracking-wider">
+          Choose from our most popular home services
+        </p>
+        <section className="grid-row-1 sm:grid-row-2 grid grid-cols-1 gap-7 sm:grid-cols-2 md:grid-cols-3">
+          {listOfServices.map((service) => (
+            <Card
+              key={service.label}
+              service={service}
+              className="group relative shadow-none"
+              // group relative allows for the blue hover effect, it will trigger the group div inside this component to activate
+              // heroui has a shadow by default, turned off with shadow-none
+            />
+          ))}
+        </section>
+      </section>
     </div>
   );
 }

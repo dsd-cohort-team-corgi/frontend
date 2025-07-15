@@ -15,8 +15,8 @@ const config: Config = {
         foreground: "var(--foreground)",
         primary: "#2563eb",
         // #2563eb = blue, used for buttons
-        "font-primary": "#0f172b",
-        "font-secondary": "#62748e",
+        "primary-font-color": "#0f172b",
+        "secondary-font-color": "#62748e",
         // "" is necessary with - because otherwise JS/TS interprets it as subtract sign and gets confused
       },
     },
