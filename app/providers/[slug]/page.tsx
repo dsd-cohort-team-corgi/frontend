@@ -1,12 +1,9 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
-import leftArrow from "../../../public/leftArrow.svg";
 import searchIcon from "../../../public/searchIcon.svg";
 import star from "../../../public/star.svg";
 import {
-  BreadcrumbItem,
-  Breadcrumbs,
   Input,
   Card,
   CardHeader,
@@ -27,7 +24,9 @@ export default function Page({ params }: { params: { slug: string } }) {
     return hrefWithNoSlash === params.slug;
   });
 
+  //Declares a set to easily allow non repeating values
   const chipServicesSet = new Set();
+  //gathers all services from the companies and pushes them into the set
   const addServicesToChipServicesSet = () => {
     lawnCareCompanies.forEach(({ services }) => {
       services.forEach((service) => {
@@ -36,6 +35,7 @@ export default function Page({ params }: { params: { slug: string } }) {
     });
   };
   addServicesToChipServicesSet();
+  //Creates a new array from the values in the set to map over in JSX
   const chipServicesArray = Array.from(chipServicesSet) as string[];
 
   return (
@@ -59,7 +59,7 @@ export default function Page({ params }: { params: { slug: string } }) {
           endContent={
             <Image src={searchIcon} alt="Search Icon" height={25} width={25} />
           }
-          className="my-4 max-w-5xl mx-auto rounded-xl border-1 border-secondary-font-color"
+          className="mx-auto my-4 max-w-5xl rounded-xl border-1 border-secondary-font-color"
         />
         <p className="mb-4">{lawnCareCompanies.length} Providers Available</p>
         {lawnCareCompanies.map(
@@ -69,19 +69,24 @@ export default function Page({ params }: { params: { slug: string } }) {
               key={id}
               className="mx-auto mb-4 max-w-5xl border-1 border-secondary-font-color"
             >
-              <CardHeader className="text-xl">{companyName}</CardHeader>
-              <CardBody className="flex flex-row items-center gap-1">
-                <Image src={star} alt="star icon" width={22} height={22} />
-                <span className="font-black">{rating}</span>
-                <span className="text-secondary-font-color">
-                  ({numberOfReviews} reviews)
-                </span>
-              </CardBody>
-              <CardFooter className="flex gap-1 overflow-x-scroll">
-                {services.map((service, idx) => (
-                  <Chip key={idx}>{service}</Chip>
-                ))}
-              </CardFooter>
+              {/* Temp links back to same page until we decide routing for unique providers*/}
+              <Link href={`/providers/${params.slug}`}>
+                <CardHeader className="text-xl lg:text-3xl">{companyName}</CardHeader>
+                <CardBody className="flex flex-row items-center gap-1">
+                  <Image src={star} alt="star icon" width={22} height={22} />
+                  <span className="lg:text-xl font-black">{rating}</span>
+                  <span className="lg:text-xl text-secondary-font-color">
+                    ({numberOfReviews} reviews)
+                  </span>
+                </CardBody>
+                <CardFooter className="flex gap-1 overflow-x-scroll">
+                  {services.map((service, idx) => (
+                    <Chip key={idx} className="lg:text-lg">
+                      {service}
+                    </Chip>
+                  ))}
+                </CardFooter>
+              </Link>
             </Card>
           ),
         )}
