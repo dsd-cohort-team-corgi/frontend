@@ -40,22 +40,8 @@ export default function Page({ params }: { params: { slug: string } }) {
 
   return (
     <>
-      <Breadcrumbs>
-        <BreadcrumbItem>
-          <Link href="/" className="flex items-center">
-            <Image
-              src={leftArrow}
-              alt="navigate to previous page"
-              width={25}
-              height={25}
-              className="inline"
-            />
-            Back to home
-          </Link>
-        </BreadcrumbItem>
-      </Breadcrumbs>
       <main>
-        <h1>
+        <h1 className="font-black">
           {categoryHeader?.label ? categoryHeader.label : "Service Not Found"}
         </h1>
         {/* Chip container */}
@@ -70,14 +56,14 @@ export default function Page({ params }: { params: { slug: string } }) {
           endContent={
             <Image src={searchIcon} alt="Search Icon" height={25} width={25} />
           }
-          className="mx-auto w-4/5 max-w-5xl rounded-xl border-1 border-secondary-font-color"
+          className="max-w-5xl rounded-xl border-1 border-secondary-font-color"
         />
         <p>{lawnCareCompanies.length} Providers Available</p>
         {lawnCareCompanies.map(
           ({ id, companyName, rating, numberOfReviews, services }) => (
             <Card
               key={id}
-              className="mx-auto mb-4 w-4/5 max-w-5xl border-1 border-secondary-font-color"
+              className="mb-4 max-w-5xl border-1 border-secondary-font-color"
             >
               <CardHeader>{companyName}</CardHeader>
               <CardBody className="flex flex-row items-center gap-1">
