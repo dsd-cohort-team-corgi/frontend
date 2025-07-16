@@ -9,7 +9,7 @@ export default function ProvderListLayout({
   children: React.ReactNode;
 }) {
   return (
-    <section className="w-[90%] mx-auto">
+    <section className="w-[90%] max-w-5xl mx-auto">
       <Breadcrumbs>
         <BreadcrumbItem>
           <Link href="/" className="flex items-center">

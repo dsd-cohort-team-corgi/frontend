@@ -41,13 +41,16 @@ export default function Page({ params }: { params: { slug: string } }) {
   return (
     <>
       <main>
-        <h1 className="font-black">
+        <h1 className="my-4 text-3xl font-black md:text-4xl lg:text-5xl">
           {categoryHeader?.label ? categoryHeader.label : "Service Not Found"}
         </h1>
         {/* Chip container */}
-        <div className="flex">
+        <div className="mb-4 flex gap-1 overflow-x-scroll">
+          <Chip className="lg:text-lg">All</Chip>
           {chipServicesArray.map((service, idx) => (
-            <Chip key={idx}>{service}</Chip>
+            <Chip className="lg:text-lg" key={idx}>
+              {service}
+            </Chip>
           ))}
         </div>
         <Input
@@ -56,16 +59,17 @@ export default function Page({ params }: { params: { slug: string } }) {
           endContent={
             <Image src={searchIcon} alt="Search Icon" height={25} width={25} />
           }
-          className="max-w-5xl rounded-xl border-1 border-secondary-font-color"
+          className="my-4 max-w-5xl mx-auto rounded-xl border-1 border-secondary-font-color"
         />
-        <p>{lawnCareCompanies.length} Providers Available</p>
+        <p className="mb-4">{lawnCareCompanies.length} Providers Available</p>
         {lawnCareCompanies.map(
           ({ id, companyName, rating, numberOfReviews, services }) => (
             <Card
+              classNames={{ header: "pb-1", body: "py-0" }}
               key={id}
-              className="mb-4 max-w-5xl border-1 border-secondary-font-color"
+              className="mx-auto mb-4 max-w-5xl border-1 border-secondary-font-color"
             >
-              <CardHeader>{companyName}</CardHeader>
+              <CardHeader className="text-xl">{companyName}</CardHeader>
               <CardBody className="flex flex-row items-center gap-1">
                 <Image src={star} alt="star icon" width={22} height={22} />
                 <span className="font-black">{rating}</span>
@@ -73,7 +77,7 @@ export default function Page({ params }: { params: { slug: string } }) {
                   ({numberOfReviews} reviews)
                 </span>
               </CardBody>
-              <CardFooter>
+              <CardFooter className="flex gap-1 overflow-x-scroll">
                 {services.map((service, idx) => (
                   <Chip key={idx}>{service}</Chip>
                 ))}
