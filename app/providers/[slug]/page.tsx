@@ -2,11 +2,15 @@
 import Link from "next/link";
 import Image from "next/image";
 import leftArrow from "../../../public/leftArrow.svg";
-import { BreadcrumbItem, Breadcrumbs } from "@heroui/react";
+import searchIcon from "../../../public/searchIcon.svg";
+import { BreadcrumbItem, Breadcrumbs, Input } from "@heroui/react";
 import { lawnCareCompanies } from "@/data/mockProvidersList";
 import services from "../../../data/services";
+import { useState } from "react";
 
 export default function Page({ params }: { params: { slug: string } }) {
+  const [searchValue, setSearchValue] = useState<string>("Search Everything");
+
   //   returns an object from services array so we can have appropriate category header
   const service = services.find(({ href }) => {
     const hrefWithNoSlash = href.split("/")[1];
@@ -31,12 +35,14 @@ export default function Page({ params }: { params: { slug: string } }) {
       </Breadcrumbs>
       <main>
         <h1>{service?.label ? service.label : "Service Not Found"}</h1>
-        <input
+        {/* Chips for sub services */}
+        <Input
           type="search"
-          name=""
-          id=""
-          placeholder="Search"
-          className="border-1 border-black"
+          value={searchValue}
+          endContent={
+            <Image src={searchIcon} alt="Search Icon" height={25} width={25} />
+          }
+          className="border-secondary-font-color mx-auto w-4/5 max-w-5xl rounded-xl border-1"
         />
       </main>
     </>
