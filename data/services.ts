@@ -1,7 +1,7 @@
 export const services = [
   {
     label: "House Cleaning",
-    href: "/housecleaning",
+    href: "providers/housecleaning",
     description: "Regular, deep and move-in/out cleaning",
     price: "79",
     image: "/services-house-cleaning.png",
@@ -9,7 +9,7 @@ export const services = [
   },
   {
     label: "Lawn & Garden",
-    href: "/lawnandgarden",
+    href: "providers/lawnandgarden",
     description: "Mowing, landscaping, yard maintenance",
     price: "65",
     image: "/services-lawn-garden.png",
@@ -17,7 +17,7 @@ export const services = [
   },
   {
     label: "HandyMan & Repairs",
-    href: "/handymanandrepairs",
+    href: "providers/handymanandrepairs",
     description: "Plumbing, electrical, installations, general fixes",
     price: "95",
     image: "/services-handyman-repairs.png",
@@ -25,7 +25,7 @@ export const services = [
   },
   {
     label: "Exterior Cleaning",
-    href: "/exteriorcleaning",
+    href: "providers/exteriorcleaning",
     description: "Driveways, siding, decks, patios",
     price: "120",
     image: "/services-exterior-cleaning.png",
@@ -33,7 +33,7 @@ export const services = [
   },
   {
     label: "Specialized Cleaning",
-    href: "/specializedcleaning",
+    href: "providers/specializedcleaning",
     description: "Carpet, upholstery, post-construction",
     price: "150",
     image: "/services-specialized-cleaning.png",
@@ -41,7 +41,7 @@ export const services = [
   },
   {
     label: "Assembly & Installation",
-    href: "/assemblyandinstallation",
+    href: "providers/assemblyandinstallation",
     description: "Furniture assembly, TV mounting, applicances",
     price: "85",
     image: "/services-assembly-installation.png",
