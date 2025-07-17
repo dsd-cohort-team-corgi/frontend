@@ -11,38 +11,88 @@ import {
   CardFooter,
   Chip,
 } from "@heroui/react";
-import { lawnCareCompanies } from "@/data/mockProvidersList";
+// importing mock providers as module object
+import * as allMockProviders from "@/data/mockProvidersList";
 import services from "../../../data/services";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function Page({ params }: { params: { slug: string } }) {
   const [searchValue, setSearchValue] = useState<string>("Search Everything");
+  const [companyData, setCompanyData] = useState<any[]>([]);
+  const [chipServicesArray, setChipServicesArray] = useState<string[]>([]);
 
-  //   returns an object from services array so we can have appropriate category header
-  const categoryHeader = services.find(({ href }) => {
+  //returns an object from services array so we can have appropriate category header
+  const serviceObject = services.find(({ href }) => {
     const hrefWithNoSlash = href.split("/")[1];
     return hrefWithNoSlash === params.slug;
   });
+  console.log(serviceObject, "service obj");
+  console.log(companyData, "company data");
 
-  //Declares a set to easily allow non repeating values
-  const chipServicesSet = new Set();
-  //gathers all services from the companies and pushes them into the set
-  const addServicesToChipServicesSet = () => {
-    lawnCareCompanies.forEach(({ services }) => {
-      services.forEach((service) => {
-        chipServicesSet.add(service);
+  // Dynamic import of service providers for each category on home screen
+  const importCompanyList = (slug: string) => {
+    // helps TS find values from mock providers object
+    let companyListName: keyof typeof allMockProviders;
+    switch (slug) {
+      case "lawnandgarden":
+        companyListName = "lawnCareCompanies";
+        break;
+      case "assemblyandinstallation":
+        companyListName = "assemblyInstallationCompanies";
+        break;
+      case "specializedcleaning":
+        companyListName = "specializedCleaningCompanies";
+        break;
+      case "exteriorcleaning":
+        companyListName = "exteriorCleaningCompanies";
+        break;
+      case "handymanandrepairs":
+        companyListName = "handymanRepairCompanies";
+        break;
+      case "housecleaning":
+        companyListName = "houseCleaningCompanies";
+        break;
+      default:
+        return null;
+    }
+    const selectedCompanyList = allMockProviders[companyListName];
+    if (selectedCompanyList) {
+      return selectedCompanyList;
+    } else {
+      console.error(`Export ${companyListName} not found`);
+      return null;
+    }
+  };
+
+  // Gathers all services from the companies and pushes them into the set and back to array for easy non repeating values
+  const addServicesToChipServicesSet = (companyList: any[]) => {
+    const tempChipServicesSet = new Set<string>();
+    companyList.forEach((company) => {
+      company.services.forEach((service: string) => {
+        tempChipServicesSet.add(service);
       });
     });
+    setChipServicesArray(Array.from(tempChipServicesSet));
   };
-  addServicesToChipServicesSet();
-  //Creates a new array from the values in the set to map over in JSX
-  const chipServicesArray = Array.from(chipServicesSet) as string[];
+
+  useEffect(() => {
+    const fetchData = () => {
+      if (serviceObject?.companyList) {
+        const importedList = importCompanyList(params.slug);
+        if (importedList) {
+          setCompanyData(importedList);
+          addServicesToChipServicesSet(importedList);
+        }
+      }
+    };
+    fetchData();
+  }, [params.slug, serviceObject?.companyList]);
 
   return (
     <>
       <main>
         <h1 className="my-4 text-3xl font-black md:text-4xl lg:text-5xl">
-          {categoryHeader?.label ? categoryHeader.label : "Service Not Found"}
+          {serviceObject?.label ? serviceObject.label : "Service Not Found"}
         </h1>
         {/* Chip container */}
         <div className="mb-4 flex gap-1 overflow-x-scroll">
@@ -61,8 +111,8 @@ export default function Page({ params }: { params: { slug: string } }) {
           }
           className="mx-auto my-4 max-w-5xl rounded-xl border-1 border-secondary-font-color"
         />
-        <p className="mb-4">{lawnCareCompanies.length} Providers Available</p>
-        {lawnCareCompanies.map(
+        <p className="mb-4">{companyData.length} Providers Available</p>
+        {companyData.map(
           ({ id, companyName, rating, numberOfReviews, services }) => (
             <Card
               classNames={{ header: "pb-1", body: "py-0" }}
@@ -71,16 +121,18 @@ export default function Page({ params }: { params: { slug: string } }) {
             >
               {/* Temp links back to same page until we decide routing for unique providers*/}
               <Link href={`/providers/${params.slug}`}>
-                <CardHeader className="text-xl lg:text-3xl">{companyName}</CardHeader>
+                <CardHeader className="text-xl lg:text-3xl">
+                  {companyName}
+                </CardHeader>
                 <CardBody className="flex flex-row items-center gap-1">
                   <Image src={star} alt="star icon" width={22} height={22} />
-                  <span className="lg:text-xl font-black">{rating}</span>
-                  <span className="lg:text-xl text-secondary-font-color">
+                  <span className="font-black lg:text-xl">{rating}</span>
+                  <span className="text-secondary-font-color lg:text-xl">
                     ({numberOfReviews} reviews)
                   </span>
                 </CardBody>
                 <CardFooter className="flex gap-1 overflow-x-scroll">
-                  {services.map((service, idx) => (
+                  {services.map((service: string, idx: number) => (
                     <Chip key={idx} className="lg:text-lg">
                       {service}
                     </Chip>
