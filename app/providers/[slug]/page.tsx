@@ -13,7 +13,7 @@ import {
 } from "@heroui/react";
 // importing mock providers as module object
 import * as allMockProviders from "@/data/mockProvidersList";
-import services from "../../../data/services";
+import services from "@/data/services";
 import { useEffect, useState } from "react";
 import LoadingSkeleton from "@/components/LoadingSkeleton";
 
