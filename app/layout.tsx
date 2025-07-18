@@ -4,6 +4,12 @@ import type { Metadata } from "next";
 // import localFont from "next/font/local";
 import { DM_Sans } from "next/font/google"; // https://nextjs.org/docs/app/getting-started/fonts#google-fonts
 // "Next/font/google Fonts are included stored as static assets and served from the same domain as your deployment, meaning no requests are sent to Google by the browser when the user visits your site"
+// it improves performance:
+// 1. only downloads the font weights the app uses, not the entire library. So the page loads faster.
+// 2. no DNS lookups since its bundled in our app
+// 3. no layout shift, since the fonts load immediately so there is no flash of fallback text
+// improves privacy
+// 1. user's browser won't ping google's servers for the font data
 import "./globals.css";
 import Header from "../components/Header";
 
