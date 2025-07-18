@@ -1,9 +1,10 @@
 import React from "react";
 import { Button } from "@heroui/react";
-import Email from "@/components/icons/Email";
-import Phone from "@/components/icons/Phone";
-import ReviewStars from "@/components/ReviewStars";
-import StarRatingReview from "@/components/StarRatingReview";
+import EmailIcon from "@/components/icons/Email";
+import PhoneIcon from "@/components/icons/Phone";
+import StarRatingReview from "@/components/ProviderOverallRatingInfo";
+import IconServiceTime from "@/components/IconServiceTime";
+import ReviewCard from "@/components/ReviewCard";
 
 // https://nextjs.org/docs/app/api-reference/file-conventions/dynamic-routes#convention
 // the docs are showing the Next.JS 15 behavior where params is a promise
@@ -19,6 +20,12 @@ export default function page({ params }: { params: ProviderProps }) {
     "this is the providers description from the database";
   const providerName = "GreenThumb Pros";
 
+  const serviceOptions = [
+    { description: "Lawn Mowing", time: 60 },
+    { description: "Lawn Mowing", time: 60 },
+    { description: "Lawn Mowing", time: 60 },
+  ];
+
   return (
     <div>
       <section>
@@ -28,18 +35,18 @@ export default function page({ params }: { params: ProviderProps }) {
             <Button
               variant="ghost"
               // ghost turns the bg-transparent
-              className="border-none"
+              className="items-center border-none"
               // gets rid of the default border heroUI adds
-              startContent={<Phone />}
+              startContent={<PhoneIcon />}
             >
-              Call
+              <span> Call </span>
             </Button>
             <Button
               variant="ghost"
-              className="border-none"
-              startContent={<Email />}
+              className="items-center border-none"
+              startContent={<EmailIcon />}
             >
-              Call
+              Email
             </Button>
           </div>
         </div>
@@ -49,11 +56,18 @@ export default function page({ params }: { params: ProviderProps }) {
 
       <section>
         <h4> Select Service</h4>
+        {serviceOptions.map((service) => (
+          <IconServiceTime
+            key={`${service.description}`}
+            description={service.description}
+            time={service.time}
+          />
+        ))}
       </section>
 
       <section>
-        {" "}
-        <ReviewStars />{" "}
+        <h4>Customer Reviews</h4>
+        <ReviewCard />
       </section>
 
       <section>Book Service</section>
