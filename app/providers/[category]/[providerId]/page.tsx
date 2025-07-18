@@ -35,8 +35,13 @@ export default function page({ params }: { params: ProviderProps }) {
             <Button
               variant="ghost"
               // ghost turns the bg-transparent
-              className="items-center border-none"
-              // gets rid of the default border heroUI adds
+
+              // prettier-ignore
+              className=" items-center border-none  data-[hover=true]:!bg-primary hover:text-white"
+              // did prettier ignore so it doesn't move the data to the top of the className, we want data to stay at the end
+
+              // ! to override heroui's default grey hover styling which otherwise beats out tailwindcss's styling because of heroui's high specificity:
+              // dev tools showed: .data-\[hover\=true\]\!bg-default[data-hover="true"] { --tw-bg-opacity: 1 !important; background-color: hsl(var(--heroui-default))
               startContent={<PhoneIcon />}
             >
               <span> Call </span>
