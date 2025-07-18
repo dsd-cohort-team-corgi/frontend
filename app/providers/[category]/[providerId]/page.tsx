@@ -21,9 +21,9 @@ export default function page({ params }: { params: ProviderProps }) {
   const providerName = "GreenThumb Pros";
 
   const serviceOptions = [
-    { description: "Lawn Mowing", time: 60 },
-    { description: "Lawn Mowing", time: 60 },
-    { description: "Lawn Mowing", time: 60 },
+    { description: "Lawn Mowing", time: 60, price: 65 },
+    { description: "Garden Maintence", time: 90, price: 85 },
+    { description: "Garden Maintence", time: 120, price: 120 },
   ];
 
   const fakeReviews = [
@@ -101,6 +101,7 @@ export default function page({ params }: { params: ProviderProps }) {
             key={`${service.description}`}
             description={service.description}
             time={service.time}
+            price={service.price}
           />
         ))}
       </section>
