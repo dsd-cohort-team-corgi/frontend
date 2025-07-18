@@ -1,20 +1,14 @@
 import * as React from "react";
 import { HeroUIProvider } from "@heroui/react";
 import type { Metadata } from "next";
-import localFont from "next/font/local";
+// import localFont from "next/font/local";
+import { DM_Sans } from "next/font/google"; // https://nextjs.org/docs/app/getting-started/fonts#google-fonts
+// "Next/font/google Fonts are included stored as static assets and served from the same domain as your deployment, meaning no requests are sent to Google by the browser when the user visits your site"
 import "./globals.css";
 import Header from "../components/Header";
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
+const dmSans = DM_Sans({ subsets: ["latin"], variable: "--font-dm-sans" });
+// variable "--font-dm-sans" =  a custom css property we created so we can setup this font in Tailwindcss's config
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -28,9 +22,31 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className={` ${dmSans.variable} font-sans antialiased`}>
+        {/* Step 1. body className={` ${dmSans.variable...}`} === exposes (adds) the css variable "--font-dm-sans" to the DOM,
+         so tailwindcss can see and use it, if its setup up within tailwindcss.config.js (the setup in the config: fontFamily: { sans: ["var(--font-dm-sans)"],},)
+         Step 2. font-sans === tells Tailwindcss to globally USE the value of that css variable
+        
+        
+        why dmSans.className or dmSans.variable? 
+         When we call DM_Sans({ subsets: ["latin"], variable: "--font-dm-sans" }) we're getting an object back
+         ex: {
+         className: "font-dm-sans_abcafafdasdf1133", <==nextJS automatically creating a css class for that font
+         variable: "--font-dm-sans" <=== a custom css property we created so we can setup this font in Tailwindcss's config
+          }
+
+          dmSans.className = we're passing the unique css class that next.js automatically generated
+          dmSans.variable = we're passing the unique css variable that we made in the DM_Sans() setup to tailwindcss.config ("--font-dm-sans"). We then pass it to tailwindcss by referencing that variable in the fontFamily config inside tailwind.config.js
+
+          Either of the above work. 
+          dmSans.variable is a bit cleaner:
+          - because we'll see font-dm-sans instead of the long custom css that Next.JS made "font-dm-sans_abcafafdasdf1133"
+          - Putting it in tailwind's config makes it easier to keep track of themes
+
+          Using dm.Sans would not work, because react would try to return the entire object "[object object] antialiased"
+
+          Special note: if we make another layout, we'd have to import DM_Sans and pass it to that layouts body as well like we did with this root layout, so tailwindCSS can "see" it for that other layout's pages
+         */}
         <HeroUIProvider>
           <Header />
           {children}
