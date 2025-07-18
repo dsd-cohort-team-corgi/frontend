@@ -19,8 +19,11 @@ import LoadingSkeleton from "@/components/LoadingSkeleton";
 
 export default function Page({ params }: { params: { slug: string } }) {
   const [searchValue, setSearchValue] = useState<string>("Search Everything");
+  //making a copy so we always have the original data to if user ever removes filters
   const [companyData, setCompanyData] = useState<any[]>([]);
-  const [chipServicesArray, setChipServicesArray] = useState<string[]>([]);
+  const [filteredCompanyData, setFilteredCompanyData] = useState<any[]>();
+  const [chipServicesArray, setChipServicesArray] = useState<string[]>(["All"]);
+  const [activeChip, setActiveChip] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   //returns an object from services array so we can have appropriate category header
@@ -76,7 +79,10 @@ export default function Page({ params }: { params: { slug: string } }) {
         tempChipServicesSet.add(service);
       });
     });
-    setChipServicesArray(Array.from(tempChipServicesSet));
+    setChipServicesArray((prev) => [
+      ...prev,
+      ...Array.from(tempChipServicesSet),
+    ]);
   };
 
   useEffect(() => {
@@ -86,6 +92,7 @@ export default function Page({ params }: { params: { slug: string } }) {
         const importedList = await importCompanyList(params.slug);
         if (importedList) {
           setCompanyData(importedList);
+          setFilteredCompanyData(importedList);
           addServicesToChipServicesSet(importedList);
         }
       }
@@ -94,10 +101,26 @@ export default function Page({ params }: { params: { slug: string } }) {
     fetchData();
   }, [params.slug, serviceObject?.companyList]);
 
+  const handleChipFilter = (service: string) => {
+    if (service === "All") {
+      setFilteredCompanyData(companyData);
+      return;
+    }
+    // filter returns new array, does not mutate original array
+    const filteredCompanies = companyData.filter(({ services }) => {
+      return services.some((s: string) => s === service);
+    });
+    setFilteredCompanyData(filteredCompanies);
+  };
+
   return (
     <>
       {isLoading ? (
-        <LoadingSkeleton />
+        <>
+          <LoadingSkeleton />
+          <LoadingSkeleton />
+          <LoadingSkeleton />
+        </>
       ) : (
         <main>
           <h1 className="my-4 text-3xl font-black md:text-4xl lg:text-5xl">
@@ -107,9 +130,20 @@ export default function Page({ params }: { params: { slug: string } }) {
           {/* Conditionally render if there is a serice object */}
           {serviceObject?.label && (
             <div className="mb-4 flex gap-1 overflow-x-scroll">
-              <Chip className="lg:text-lg">All</Chip>
               {chipServicesArray.map((service, idx) => (
-                <Chip className="lg:text-lg" key={idx}>
+                <Chip
+                  onClick={() => {
+                    setActiveChip(idx);
+                    handleChipFilter(service);
+                  }}
+                  classNames={{ base: "bg-transparent" }}
+                  className={
+                    activeChip === idx
+                      ? "bg-gray-500 text-white hover:cursor-pointer lg:text-lg"
+                      : "hover:cursor-pointer lg:text-lg"
+                  }
+                  key={idx}
+                >
                   {service}
                 </Chip>
               ))}
@@ -128,8 +162,10 @@ export default function Page({ params }: { params: { slug: string } }) {
             }
             className="mx-auto my-4 max-w-5xl rounded-xl border-1 border-secondary-font-color"
           />
-          <p className="mb-4">{companyData.length} Providers Available</p>
-          {companyData.map(
+          <p className="mb-4">
+            {filteredCompanyData.length} Providers Available
+          </p>
+          {filteredCompanyData.map(
             ({ id, companyName, rating, numberOfReviews, services }) => (
               <Card
                 classNames={{ header: "pb-1", body: "py-0" }}
