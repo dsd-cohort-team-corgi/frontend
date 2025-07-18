@@ -3,7 +3,7 @@ import { HeroUIProvider } from "@heroui/react";
 import type { Metadata } from "next";
 // import localFont from "next/font/local";
 import { DM_Sans } from "next/font/google"; // https://nextjs.org/docs/app/getting-started/fonts#google-fonts
-// "Next/font/google Fonts are included stored as static assets and served from the same domain as your deployment, meaning no requests are sent to Google by the browser when the user visits your site"
+// "Next/font/google Fonts are included stored as static assets and served from the same domain as the deployment, meaning no requests are sent to Google by the browser when the user visits your site"
 // it improves performance:
 // 1. only downloads the font weights the app uses, not the entire library. So the page loads faster.
 // 2. no DNS lookups since its bundled in our app
