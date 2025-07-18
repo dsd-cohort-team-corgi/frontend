@@ -10,7 +10,7 @@ export default function phone() {
       stroke="currentColor"
       width="18"
       height="18"
-      className="fill-secondary-font-color"
+      className="stroke-secondary-font-color group-hover:stroke-white"
     >
       <path
         strokeLinecap="round"

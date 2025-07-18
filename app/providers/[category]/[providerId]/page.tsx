@@ -26,6 +26,41 @@ export default function page({ params }: { params: ProviderProps }) {
     { description: "Lawn Mowing", time: 60 },
   ];
 
+  const fakeReviews = [
+    {
+      customerId: 1267673,
+      customerName: "Sarah Johnson",
+      reviewTime: "2 weeks",
+      reviewText:
+        "Great service! Very professional and thorough. Mike arrived on time and did an excellent job on my lawn. The attention to detail was impressive.",
+      reviewRating: 5,
+    },
+    {
+      customerId: 1245351323,
+      customerName: "Evil Corgi",
+      reviewTime: "12 weeks",
+      reviewText:
+        "Great service! Very professional and thorough. Mike arrived on time and did an excellent job on my lawn. The attention to detail was impressive.",
+      reviewRating: 5,
+    },
+    {
+      customerId: 134243231323,
+      customerName: "Chaotic Neutral Corgi",
+      reviewTime: "15 weeks",
+      reviewText:
+        "Great service! Very professional and thorough. Mike arrived on time and did an excellent job on my lawn. The attention to detail was impressive.",
+      reviewRating: 5,
+    },
+    {
+      customerId: 12453453,
+      customerName: "Sir Barksworth II",
+      reviewTime: "6 weeks",
+      reviewText:
+        "Great service! Very professional and thorough. Mike arrived on time and did an excellent job on my lawn. The attention to detail was impressive.",
+      reviewRating: 5,
+    },
+  ];
+
   return (
     <div>
       <section>
@@ -37,7 +72,7 @@ export default function page({ params }: { params: ProviderProps }) {
               // ghost turns the bg-transparent
 
               // prettier-ignore
-              className=" items-center border-none  data-[hover=true]:!bg-primary hover:text-white"
+              className=" items-center border-none  data-[hover=true]:!bg-primary hover:text-white group"
               // did prettier ignore so it doesn't move the data to the top of the className, we want data to stay at the end
 
               // ! to override heroui's default grey hover styling which otherwise beats out tailwindcss's styling because of heroui's high specificity:
@@ -72,7 +107,17 @@ export default function page({ params }: { params: ProviderProps }) {
 
       <section>
         <h4>Customer Reviews</h4>
-        <ReviewCard />
+
+        {fakeReviews.map((review) => (
+          <ReviewCard
+            key={`review-${review.customerId}`}
+            // customer name can be duplicated, customer id won't be
+            customerName={review.customerName}
+            reviewTime={review.reviewTime}
+            reviewText={review.reviewText}
+            reviewRating={review.reviewRating}
+          />
+        ))}
       </section>
 
       <section>Book Service</section>

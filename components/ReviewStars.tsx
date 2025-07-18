@@ -1,17 +1,20 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import RepeatComponentXTimes from "@/utils/repeatComponentXTimes";
 import FullStar from "./icons/FullStar";
 
 type ReviewStarsType = {
   className?: string;
+  reviewRating?: number;
 };
 
-export default function ReviewStars({ className }: ReviewStarsType) {
-  //   const [numberOfStars, setNumberOfStars] = useState(0);
+export default function ReviewStars({
+  className,
+  reviewRating = 0,
+}: ReviewStarsType) {
+  const [numberOfStars, setNumberOfStars] = useState(reviewRating);
   //   let emptyStars = 5 - numberOfStars;
-  const numberOfStars = 5;
 
   return (
     <RepeatComponentXTimes

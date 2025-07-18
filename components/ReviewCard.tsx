@@ -1,36 +1,38 @@
 import React from "react";
 import ReviewStars from "./ReviewStars";
 
-export default function ReviewCard() {
+type ReviewCardType = {
+  customerName?: string;
+  reviewTime?: string;
+  reviewText?: string;
+  reviewRating?: number;
+};
+
+export default function ReviewCard({
+  customerName = "Sarah Johnson",
+  reviewTime = "2 weeks",
+  reviewText = "Great service! Very professional and thorough. Mike arrived on time and did an excellent job on my lawn. The attention to detail was impressive.",
+  reviewRating = 5,
+}: ReviewCardType) {
   return (
-    <section className="flex max-w-[1000px] pt-2">
+    <section className="my-10 flex max-w-[1000px] pt-2">
       {/* max-w-[1000px] so the review doesn't get weirdly stretched out on large screens */}
       <img
         src="/default-profile-image.png"
-        className="mt-2 h-[60px] w-[60px]"
+        className="mr-2 mt-2 h-[60px] w-[60px]"
         alt="default avatar"
       />
-      <div className="w-full">
+
+      <div>
         <div className="flex justify-between">
-          <span> Customer Name </span>
-          <span className="text-secondary-font-color"> 2 weeks ago </span>
+          <span> {customerName} </span>
+          <span className="text-secondary-font-color">
+            {" "}
+            {`${reviewTime} ago`}{" "}
+          </span>
         </div>
-        <ReviewStars className="my-2" />
-        <p>
-          {" "}
-          Review Review Review Review Review Review Review Review Review Review
-          Review Review Review Review Review Review Review Review Review Review
-          Review Review Review Review Review Review Review Review Review Review
-          Review Review Review Review Review Review Review Review Review Review
-          Review Review Review Review Review Review Review Review Review Review
-          Review Review Review Review Review Review Review Review Review Review
-          Review Review Review Review Review Review Review Review Review Review
-          Review Review Review Review Review Review Review Review Review Review
-          Review Review Review Review Review Review Review Review Review Review
-          Review Review Review Review Review Review Review Review Review Review
-          Review Review Review Review Review Review Review Review Review Review
-          Review Review Review Review Review Review Review Review{" "}
-        </p>
+        <ReviewStars reviewRating={reviewRating} className="my-2" />
+        <p>{reviewText}</p>
       </div>
     </section>
   );
