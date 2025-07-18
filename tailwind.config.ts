@@ -21,6 +21,9 @@ const config: Config = {
         // #62748e" light gray
         // "" is necessary with - because otherwise JS/TS interprets it as subtract sign and gets confused
       },
+      fontFamily: {
+        sans: ["var(--font-dm-sans)"],
+      },
     },
   },
   plugins: [heroui()],
