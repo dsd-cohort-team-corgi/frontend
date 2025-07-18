@@ -106,13 +106,34 @@ export default function Page({ params }: { params: { slug: string } }) {
       setFilteredCompanyData(companyData);
       return;
     }
-    // filter returns new array, does not mutate original array
     const filteredCompanies = companyData.filter(({ services }) => {
       return services.some((s: string) => s === service);
     });
     setFilteredCompanyData(filteredCompanies);
   };
 
+  const handleSearchBarFilter = (input: string) => {
+    // ensures all companies are shown on page if input is cleared
+    if (input === "") {
+      setFilteredCompanyData(companyData);
+      return;
+    }
+    const lowerCasedInput = input.toLocaleLowerCase();
+    const filteredCompanies = companyData.filter(
+      ({ companyName, services }) => {
+        // Gets company names from filter
+        const nameMatches = companyName.toLowerCase().includes(lowerCasedInput);
+
+        // Gets services from company from filter
+        const servicesMatch = services.some((service: string) => {
+          return service.toLowerCase().includes(lowerCasedInput);
+        });
+
+        return nameMatches || servicesMatch;
+      },
+    );
+    setFilteredCompanyData(filteredCompanies);
+  };
   return (
     <>
       {isLoading ? (
@@ -151,6 +172,11 @@ export default function Page({ params }: { params: { slug: string } }) {
           )}
           <Input
             type="search"
+            onClick={() => setSearchValue("")}
+            onChange={(e) => {
+              setSearchValue(e.target.value);
+              handleSearchBarFilter(e.target.value);
+            }}
             value={searchValue}
             endContent={
               <Image
@@ -163,38 +189,44 @@ export default function Page({ params }: { params: { slug: string } }) {
             className="mx-auto my-4 max-w-5xl rounded-xl border-1 border-secondary-font-color"
           />
           <p className="mb-4">
-            {filteredCompanyData.length} Providers Available
+            {filteredCompanyData?.length ?? 0} Providers Available
           </p>
-          {filteredCompanyData.map(
-            ({ id, companyName, rating, numberOfReviews, services }) => (
-              <Card
-                classNames={{ header: "pb-1", body: "py-0" }}
-                key={id}
-                className="mx-auto mb-4 max-w-5xl border-1 border-secondary-font-color"
-              >
-                {/* Temp links back to same page until we decide routing for unique providers*/}
-                <Link href={`/providers/${params.slug}`}>
-                  <CardHeader className="text-xl lg:text-3xl">
-                    {companyName}
-                  </CardHeader>
-                  <CardBody className="flex flex-row items-center gap-1">
-                    <Image src={star} alt="star icon" width={22} height={22} />
-                    <span className="font-black lg:text-xl">{rating}</span>
-                    <span className="text-secondary-font-color lg:text-xl">
-                      ({numberOfReviews} reviews)
-                    </span>
-                  </CardBody>
-                  <CardFooter className="flex gap-1 overflow-x-scroll">
-                    {services.map((service: string, idx: number) => (
-                      <Chip key={idx} className="lg:text-lg">
-                        {service}
-                      </Chip>
-                    ))}
-                  </CardFooter>
-                </Link>
-              </Card>
-            ),
-          )}
+          {filteredCompanyData &&
+            filteredCompanyData.map(
+              ({ id, companyName, rating, numberOfReviews, services }) => (
+                <Card
+                  classNames={{ header: "pb-1", body: "py-0" }}
+                  key={id}
+                  className="mx-auto mb-4 max-w-5xl border-1 border-secondary-font-color"
+                >
+                  {/* Temp links back to same page until we decide routing for unique providers*/}
+                  <Link href={`/providers/${params.slug}`}>
+                    <CardHeader className="text-xl lg:text-3xl">
+                      {companyName}
+                    </CardHeader>
+                    <CardBody className="flex flex-row items-center gap-1">
+                      <Image
+                        src={star}
+                        alt="star icon"
+                        width={22}
+                        height={22}
+                      />
+                      <span className="font-black lg:text-xl">{rating}</span>
+                      <span className="text-secondary-font-color lg:text-xl">
+                        ({numberOfReviews} reviews)
+                      </span>
+                    </CardBody>
+                    <CardFooter className="flex gap-1 overflow-x-scroll">
+                      {services.map((service: string, idx: number) => (
+                        <Chip key={idx} className="lg:text-lg">
+                          {service}
+                        </Chip>
+                      ))}
+                    </CardFooter>
+                  </Link>
+                </Card>
+              ),
+            )}
         </main>
       )}
     </>
