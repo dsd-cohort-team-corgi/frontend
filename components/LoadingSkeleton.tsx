@@ -12,22 +12,22 @@ function LoadingSkeleton() {
       </div>
       <div className="my-5">
         <div>
-          <Skeleton className="mx-auto flex h-20 w-8/10 rounded-xl" />
+          <Skeleton className="w-8/10 mx-auto flex h-20 rounded-xl" />
         </div>
       </div>
       <div className="my-5">
         <div>
-          <Skeleton className="mx-auto flex h-20 w-8/10 rounded-xl" />
+          <Skeleton className="w-8/10 mx-auto flex h-20 rounded-xl" />
         </div>
       </div>
       <div className="my-5">
         <div>
-          <Skeleton className="mx-auto flex h-20 w-8/10 rounded-xl" />
+          <Skeleton className="w-8/10 mx-auto flex h-20 rounded-xl" />
         </div>
       </div>
       <div className="my-5">
         <div>
-          <Skeleton className="mx-auto flex h-20 w-8/10 rounded-xl" />
+          <Skeleton className="w-8/10 mx-auto flex h-20 rounded-xl" />
         </div>
       </div>
     </div>

@@ -1,8 +1,8 @@
 "use client";
+
 import Link from "next/link";
 import Image from "next/image";
-import searchIcon from "../../../public/searchIcon.svg";
-import star from "../../../public/star.svg";
+import { useEffect, useState } from "react";
 import {
   Input,
   Card,
@@ -13,27 +13,39 @@ import {
 } from "@heroui/react";
 // importing mock providers as module object
 import * as allMockProviders from "@/data/mockProvidersList";
-import services from "@/data/services";
-import { useEffect, useState } from "react";
+import listOfServices from "@/data/services";
 import LoadingSkeleton from "@/components/LoadingSkeleton";
+import searchIcon from "../../../public/searchIcon.svg";
+import star from "../../../public/star.svg";
+
+interface CompanyListInterface {
+  id: string;
+  companyName: string;
+  rating: number;
+  numberOfReviews: number;
+  services: string[];
+}
 
 export default function Page({ params }: { params: { slug: string } }) {
   const [searchValue, setSearchValue] = useState<string>("Search Everything");
-  //making a copy so we always have the original data to if user ever removes filters
-  const [companyData, setCompanyData] = useState<any[]>([]);
-  const [filteredCompanyData, setFilteredCompanyData] = useState<any[]>();
+  // making a copy so we always have the original data to if user ever removes filters
+  const [companyData, setCompanyData] = useState<CompanyListInterface[]>([]);
+  const [filteredCompanyData, setFilteredCompanyData] =
+    useState<CompanyListInterface[]>();
   const [chipServicesArray, setChipServicesArray] = useState<string[]>(["All"]);
   const [activeChip, setActiveChip] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  //returns an object from services array so we can have appropriate category header
-  const serviceObject = services.find(({ href }) => {
+  // returns an object from services array so we can have appropriate category header
+  const serviceObject = listOfServices.find(({ href }) => {
     const hrefWithNoSlash = href.split("/")[1];
     return hrefWithNoSlash === params.slug;
   });
 
   // Dynamic import of service providers for each category on home screen, simulating a 1 second network call
-  const importCompanyList = (slug: string): Promise<any[] | null> => {
+  const importCompanyList = (
+    slug: string,
+  ): Promise<CompanyListInterface[] | null> => {
     return new Promise((resolve) => {
       setTimeout(() => {
         let companyListName: keyof typeof allMockProviders;
@@ -72,7 +84,9 @@ export default function Page({ params }: { params: { slug: string } }) {
   };
 
   // Gathers all services from the companies and pushes them into the set and back to array for easy non repeating values
-  const addServicesToChipServicesSet = (companyList: any[]) => {
+  const addServicesToChipServicesSet = (
+    companyList: CompanyListInterface[],
+  ) => {
     const tempChipServicesSet = new Set<string>();
     companyList.forEach((company) => {
       company.services.forEach((service: string) => {
@@ -135,7 +149,7 @@ export default function Page({ params }: { params: { slug: string } }) {
     setFilteredCompanyData(filteredCompanies);
   };
   return (
-    <>
+    <main>
       {isLoading ? (
         <>
           <LoadingSkeleton />
@@ -143,7 +157,7 @@ export default function Page({ params }: { params: { slug: string } }) {
           <LoadingSkeleton />
         </>
       ) : (
-        <main>
+        <>
           <h1 className="my-4 text-3xl font-black md:text-4xl lg:text-5xl">
             {serviceObject?.label ? serviceObject.label : "Service Not Found"}
           </h1>
@@ -163,7 +177,8 @@ export default function Page({ params }: { params: { slug: string } }) {
                       ? "bg-gray-500 text-white hover:cursor-pointer lg:text-lg"
                       : "hover:cursor-pointer lg:text-lg"
                   }
-                  key={idx}
+                  // receieved error in build to not use idx as key, adding number to prevent collisions with layout
+                  key={service + 2}
                 >
                   {service}
                 </Chip>
@@ -199,7 +214,7 @@ export default function Page({ params }: { params: { slug: string } }) {
                   key={id}
                   className="mx-auto mb-4 max-w-5xl border-1 border-secondary-font-color"
                 >
-                  {/* Temp links back to same page until we decide routing for unique providers*/}
+                  {/* Temp links back to same page until we decide routing for unique providers */}
                   <Link href={`/providers/${params.slug}`}>
                     <CardHeader className="text-xl lg:text-3xl">
                       {companyName}
@@ -217,8 +232,9 @@ export default function Page({ params }: { params: { slug: string } }) {
                       </span>
                     </CardBody>
                     <CardFooter className="flex gap-1 overflow-x-scroll">
-                      {services.map((service: string, idx: number) => (
-                        <Chip key={idx} className="lg:text-lg">
+                      {services.map((service: string) => (
+                        // getting build error if we use idx, using service and number
+                        <Chip key={service + 4} className="lg:text-lg">
                           {service}
                         </Chip>
                       ))}
@@ -227,8 +243,8 @@ export default function Page({ params }: { params: { slug: string } }) {
                 </Card>
               ),
             )}
-        </main>
+        </>
       )}
-    </>
+    </main>
   );
 }
