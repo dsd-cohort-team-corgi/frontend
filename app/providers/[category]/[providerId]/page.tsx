@@ -1,4 +1,6 @@
-import React from "react";
+"use client";
+
+import React, { useState } from "react";
 import EmailIcon from "@/components/icons/Email";
 import PhoneIcon from "@/components/icons/Phone";
 import StarRatingReview from "@/components/ProviderOverallRatingInfo";
@@ -6,6 +8,7 @@ import IconServiceTime from "@/components/IconServiceTime";
 import ReviewCard from "@/components/ReviewCard";
 import StyledAsButton from "@/components/StyledAsButton";
 import convertDateToTimeFromNow from "@/utils/convertDateToTimeFromNow";
+import objectIsEmptyCheck from "@/utils/objectIsEmptyCheck";
 
 // https://nextjs.org/docs/app/api-reference/file-conventions/dynamic-routes#convention
 // the docs are showing the Next.JS 15 behavior where params is a promise
@@ -17,6 +20,9 @@ type ProviderProps = {
 export default function page({ params }: { params: ProviderProps }) {
   const { category, providerId } = params;
   // params must match dynamic folder names,providerid !== providerId
+
+  const [selectedService, setSelectedService] = useState({} as any);
+
   const providerInfo = {
     description: "this is the providers description from the database",
     name: "GreenThumb Pros",
@@ -127,6 +133,8 @@ export default function page({ params }: { params: ProviderProps }) {
             description={service.description}
             time={service.time}
             price={service.price}
+            selectedService={selectedService}
+            setSelectedService={setSelectedService}
           />
         ))}
       </section>
@@ -137,7 +145,15 @@ export default function page({ params }: { params: ProviderProps }) {
         </h4>
         <h6 className="font-bold"> Select Time </h6>
         <span className="block"> Tuesday, July 15, 2025 at 11:00 AM </span>
-        <span className="block font-bold"> Lawn Mowing - $80 </span>
+        {objectIsEmptyCheck(selectedService) ? (
+          <span className="block font-bold"> Please select a service</span>
+        ) : (
+          <span className="block font-bold">
+            {" "}
+            {`${selectedService.description} (${selectedService.time} mins) - $${selectedService.price}`}
+          </span>
+        )}
+
         <StyledAsButton
           className="mb-4 mt-6 block w-full"
           label="Continue to Booking"

@@ -1,19 +1,38 @@
+"use client";
+
+import { Button } from "@heroui/react";
 import React from "react";
 import Leaf from "./icons/Leaf";
+import objectIsEmptyCheck from "@/utils/objectIsEmptyCheck";
 
 type IconServiceTimeType = {
   description: string;
   time: number;
   price: number;
+  setSelectedService: React.Dispatch<React.SetStateAction<object>>;
+  selectedService: object;
 };
 
 export default function IconServiceTime({
   description,
   time,
   price,
+  setSelectedService,
+  selectedService,
 }: IconServiceTimeType) {
+  const handleClick = () => {
+    if (objectIsEmptyCheck(selectedService)) {
+      setSelectedService({ description, time, price });
+    } else {
+      setSelectedService({});
+    }
+  };
   return (
-    <div className="group my-3 flex flex-col items-center rounded-lg border-1 border-light-accent p-4 hover:border-2 hover:border-primary sm:flex-row">
+    <Button
+      type="button"
+      className="group my-3 flex h-fit w-full flex-col items-center rounded-lg border-1 border-light-accent bg-transparent p-4 hover:border-2 hover:border-primary sm:flex-row"
+      onPress={handleClick}
+    >
       {/* group is used so when the div is hovered over the leaf icon also turns blue */}
       <span className="bg-slate-200 p-2 group-hover:bg-slate-300">
         <Leaf className="group-hover:fill-primary" />
@@ -25,6 +44,6 @@ export default function IconServiceTime({
        So it gets shoved to the right
        with flexbox and grid layouts, auto margins will take over the leftover space. Since everything else is staying to the left, theres a ton of space to the right
        */}
-    </div>
+    </Button>
   );
 }
