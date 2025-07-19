@@ -44,7 +44,7 @@ export default function Home() {
           Choose from our most popular home services
         </p>
         <section className="grid-row-1 sm:grid-row-2 grid grid-cols-1 gap-7 sm:grid-cols-2 md:grid-cols-3">
-          {listOfServices.map((service) => (
+          {Object.values(listOfServices).map((service) => (
             <Card
               key={service.label}
               service={service}

@@ -177,6 +177,7 @@ export default function Page({ params }: { params: { slug: string } }) {
                   ? "bg-gray-500 text-white hover:cursor-pointer lg:text-lg"
                   : "hover:cursor-pointer lg:text-lg"
               }
+              /* eslint-disable react/no-array-index-key */
               key={`chip-${service}-${idx}`}
             >
               {service}
@@ -221,7 +222,7 @@ export default function Page({ params }: { params: { slug: string } }) {
                   </span>
                 </CardBody>
                 <CardFooter className="flex gap-1 overflow-x-scroll">
-                  {services.map((service: string, idx: number) => (
+                  {services.map((service: string) => (
                     <Chip
                       key={`${companyName}cardChip-${service}`}
                       className="lg:text-lg"
