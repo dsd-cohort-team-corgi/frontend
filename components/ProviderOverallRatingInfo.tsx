@@ -13,7 +13,7 @@ export default function StarRatingReview({
   return (
     <div className="flex">
       <FullStar />
-      <span className="pr-2 font-bold">{providerRating}</span>
+      <span className="pl-1 pr-2 font-bold">{providerRating}</span>
       <span className="text-secondary-font-color">
         {`(${numberOfReviews} reviews)`}
       </span>
