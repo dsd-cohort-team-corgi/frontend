@@ -10,6 +10,13 @@
 // The JSX component looks like a button despite rendering as whatever component you desire (<a>,<Link>, ect)
 // if you don't use the "as" prop, it will default to rendering as a button
 
+// want to change bg color on hover? some special coding is necessary to override heroui's default bg-color on hover:
+// prettier-ignore
+// className=" items-center border-none  data-[hover=true]:!bg-primary hover:text-white group"
+// did prettier ignore so it doesn't move the data to the top of the className, we want data to stay at the end
+// ! to override heroui's default grey hover styling which otherwise beats out tailwindcss's styling because of heroui's high specificity:
+// dev tools showed: .data-\[hover\=true\]\!bg-default[data-hover="true"] { --tw-bg-opacity: 1 !important; background-color: hsl(var(--heroui-default))
+
 import React from "react";
 import { Button as HeroUiButton, type ButtonProps } from "@heroui/react";
 

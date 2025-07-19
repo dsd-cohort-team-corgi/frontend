@@ -5,6 +5,7 @@ import PhoneIcon from "@/components/icons/Phone";
 import StarRatingReview from "@/components/ProviderOverallRatingInfo";
 import IconServiceTime from "@/components/IconServiceTime";
 import ReviewCard from "@/components/ReviewCard";
+import StyledAsButton from "@/components/StyledAsButton";
 
 // https://nextjs.org/docs/app/api-reference/file-conventions/dynamic-routes#convention
 // the docs are showing the Next.JS 15 behavior where params is a promise
@@ -19,6 +20,8 @@ export default function page({ params }: { params: ProviderProps }) {
   const providerDescription =
     "this is the providers description from the database";
   const providerName = "GreenThumb Pros";
+  const providerEmail = "provider@gmail.com";
+  const providerPhone = "999-111-1111";
 
   const serviceOptions = [
     { description: "Lawn Mowing", time: 60, price: 65 },
@@ -65,29 +68,30 @@ export default function page({ params }: { params: ProviderProps }) {
     <div>
       <section>
         <div className="flex justify-between">
-          <h2 className="text-2xl font-bold">{providerName}</h2>
-          <div className="space-x-6">
-            <Button
-              variant="ghost"
-              // ghost turns the bg-transparent
-
-              // prettier-ignore
-              className=" items-center border-none  data-[hover=true]:!bg-primary hover:text-white group"
-              // did prettier ignore so it doesn't move the data to the top of the className, we want data to stay at the end
-
-              // ! to override heroui's default grey hover styling which otherwise beats out tailwindcss's styling because of heroui's high specificity:
-              // dev tools showed: .data-\[hover\=true\]\!bg-default[data-hover="true"] { --tw-bg-opacity: 1 !important; background-color: hsl(var(--heroui-default))
+          <div>
+            <h2 className="text-2xl font-bold">{providerName}</h2>
+            <span className="text-sm">{`Phone: ${providerPhone}`} </span>
+            <span className="ml-4 text-sm">{`Email: ${providerEmail}`} </span>
+            {/* Added here since the mailto and tel links can be problematic for some users. For example, they might not use the email client that mailto tries to open 
+            However, putting these under the actual call and email links looked strange and a long email would affect the layout. So placing it under the provider's name is likely the best choice */}
+          </div>
+          <div className="flex space-x-6">
+            <StyledAsButton
+              label="Call"
               startContent={<PhoneIcon />}
-            >
-              <span> Call </span>
-            </Button>
-            <Button
+              as="a"
+              className="group items-center border-none text-black hover:text-white data-[hover=true]:!bg-primary"
               variant="ghost"
-              className="items-center border-none"
+              href={`tel:${providerPhone}`}
+            />
+
+            <StyledAsButton
+              label="email"
+              variant="ghost"
+              className="group items-center border-none text-black hover:text-white data-[hover=true]:!bg-primary"
               startContent={<EmailIcon />}
-            >
-              Email
-            </Button>
+              href={`mailto:${providerEmail}`}
+            />
           </div>
         </div>
         <StarRatingReview />
