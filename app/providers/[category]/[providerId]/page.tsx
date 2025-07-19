@@ -70,13 +70,15 @@ export default function page({ params }: { params: ProviderProps }) {
   ];
 
   return (
-    <div className="m-4 flex flex-col sm:flex-row sm:flex-wrap">
+    <div className="m-4 flex flex-col gap-x-4 gap-y-4 sm:flex-row sm:flex-wrap">
       {/* Have to use flex, since we have to reorder some elements on different screen sizes, which grid does no support */}
 
-      {/* can't use gap-x-4 because of w-1/2 I could of used xl:w-[calc(50%-0.5rem)] but that is less easy to understand & its less dry that just adding padding, and if we changed gap's size we'd have to adjust there too */}
-      <section className="order-1 mb-6 w-full rounded-3xl border-1 border-light-accent bg-white px-4 py-5 xl:w-1/2">
-        <div className="flex justify-between">
-          <h2 className="mb-3 text-3xl font-bold">{providerInfo.name}</h2>
+      {/* if the gap-x-4's value is changed xl:w-[calc(50%-0.5rem)] will have to be adjusted in the following sections */}
+      <section className="order-1 w-full rounded-3xl border-1 border-light-accent bg-white px-4 py-5 xl:w-[calc(50%-0.5rem)]">
+        <div className="mb-4 justify-between sm:flex">
+          <h2 className="mb-3 text-3xl font-bold sm:mb-0">
+            {providerInfo.name}
+          </h2>
 
           <div className="flex space-x-6 px-2">
             <StyledAsButton
@@ -115,7 +117,7 @@ export default function page({ params }: { params: ProviderProps }) {
         <p className="my-3"> {providerInfo.description} </p>
       </section>
 
-      <section className="order-2 w-full rounded-3xl border-1 border-light-accent bg-white p-4 lg:w-1/2">
+      <section className="order-2 w-full rounded-3xl border-1 border-light-accent bg-white p-4 md:w-[calc(50%-0.5rem)]">
         <h4 className="my-4 pl-2 text-2xl text-secondary-font-color">
           Select Service
         </h4>
@@ -129,7 +131,7 @@ export default function page({ params }: { params: ProviderProps }) {
         ))}
       </section>
 
-      <section className="order-3 w-full rounded-3xl border-1 border-light-accent pl-4 lg:w-1/2 xl:order-4">
+      <section className="order-3 w-full rounded-3xl border-1 border-light-accent pl-4 md:w-[calc(50%-0.5rem)] xl:order-4">
         <h4 className="my-4 text-2xl text-secondary-font-color">
           Book Service
         </h4>
@@ -142,7 +144,7 @@ export default function page({ params }: { params: ProviderProps }) {
         />
       </section>
 
-      <section className="order-4 my-4 w-full rounded-3xl border-1 border-light-accent px-2 xl:order-3 xl:w-1/2">
+      <section className="order-4 w-full rounded-3xl border-1 border-light-accent px-2 xl:order-3 xl:w-[calc(50%-0.5rem)]">
         <h4 className="ml-4 mt-4 text-2xl text-secondary-font-color">
           Customer Reviews
         </h4>
