@@ -87,9 +87,10 @@ export default function page({ params }: { params: ProviderProps }) {
 
             <StyledAsButton
               label="email"
-              variant="ghost"
-              className="group items-center border-none text-black hover:text-white data-[hover=true]:!bg-primary"
               startContent={<EmailIcon />}
+              as="a"
+              className="group items-center border-none text-black hover:text-white data-[hover=true]:!bg-primary"
+              variant="ghost"
               href={`mailto:${providerEmail}`}
             />
           </div>
