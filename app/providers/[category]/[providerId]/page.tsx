@@ -78,11 +78,11 @@ export default function Page({ params }: { params: ProviderProps }) {
   ];
 
   return (
-    <div className="m-4 flex flex-col gap-x-4 gap-y-4 sm:flex-row sm:flex-wrap">
+    <div className="m-4 flex flex-col gap-x-6 gap-y-6 sm:flex-row sm:flex-wrap">
       {/* Have to use flex, since we have to reorder some elements on different screen sizes, which grid does no support */}
 
-      {/* if the gap-x-4's value is changed xl:w-[calc(50%-0.5rem)] will have to be adjusted in the following sections */}
-      <section className="order-1 w-full rounded-3xl border-1 border-light-accent bg-white px-4 py-5 xl:w-[calc(50%-0.5rem)]">
+      {/* if the gap-x-6's value is changed xl:w-[calc(50%-0.5rem)] will have to be adjusted in the following sections */}
+      <section className="order-1 h-fit w-full rounded-3xl border-1 border-light-accent bg-white px-4 py-5 xl:w-[calc(50%-1.5rem)]">
         <div className="mb-4 justify-between sm:flex">
           <h2 className="mb-3 text-3xl font-bold sm:mb-0">
             {providerInfo.name}
@@ -125,7 +125,7 @@ export default function Page({ params }: { params: ProviderProps }) {
         <p className="my-3"> {providerInfo.description} </p>
       </section>
 
-      <section className="order-2 w-full rounded-3xl border-1 border-light-accent bg-white p-4 md:w-[calc(50%-0.5rem)]">
+      <section className="order-2 w-full rounded-3xl border-1 border-light-accent bg-white p-4 md:w-[calc(50%-1.5rem)]">
         <h4 className="my-4 pl-2 text-2xl text-secondary-font-color">
           Select Service
         </h4>
@@ -141,7 +141,7 @@ export default function Page({ params }: { params: ProviderProps }) {
         ))}
       </section>
 
-      <section className="order-3 w-full rounded-3xl border-1 border-light-accent pl-4 md:w-[calc(50%-0.5rem)] xl:order-4">
+      <section className="order-3 w-full rounded-3xl border-1 border-light-accent bg-white pl-4 pt-4 md:w-[calc(50%-1.5rem)] xl:order-4">
         <h4 className="my-4 text-2xl text-secondary-font-color">
           Book Service
         </h4>
@@ -163,7 +163,7 @@ export default function Page({ params }: { params: ProviderProps }) {
         />
       </section>
 
-      <section className="order-4 w-full rounded-3xl border-1 border-light-accent px-2 xl:order-3 xl:w-[calc(50%-0.5rem)]">
+      <section className="order-4 w-full rounded-3xl border-1 border-light-accent bg-white px-2 pt-4 xl:order-3 xl:w-[calc(50%-1.5rem)]">
         <h4 className="ml-4 mt-4 text-2xl text-secondary-font-color">
           Customer Reviews
         </h4>

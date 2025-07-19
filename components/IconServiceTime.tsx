@@ -4,12 +4,13 @@ import { Button } from "@heroui/react";
 import React from "react";
 import Leaf from "./icons/Leaf";
 import objectIsEmptyCheck from "@/utils/objectIsEmptyCheck";
+import { Dispatch, SetStateAction } from "react";
 
 type IconServiceTimeType = {
   description: string;
   time: number;
   price: number;
-  setSelectedService: React.Dispatch<React.SetStateAction<object>>;
+  setSelectedService: Dispatch<SetStateAction<Record<string, string | number>>>;
   selectedService: object;
 };
 
@@ -30,7 +31,7 @@ export default function IconServiceTime({
   return (
     <Button
       type="button"
-      className="group my-3 flex h-fit w-full flex-col items-center rounded-lg border-1 border-light-accent bg-transparent p-4 hover:border-2 hover:border-primary sm:flex-row"
+      className="group my-3 flex h-fit w-full flex-col items-center rounded-lg border-1 border-light-accent bg-transparent p-4 text-[1rem] hover:border-2 hover:border-primary sm:flex-row"
       onPress={handleClick}
     >
       {/* group is used so when the div is hovered over the leaf icon also turns blue */}
