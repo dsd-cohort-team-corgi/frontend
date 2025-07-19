@@ -13,11 +13,9 @@ export default function ProvderListLayout({
   children: React.ReactNode;
   params: { slug: string };
 }) {
+  const serviceObject =
+    listOfServices[params.slug as keyof typeof listOfServices];
   const paramsArray = params.slug.split("/");
-  const serviceObject = listOfServices.find(({ href }) => {
-    const hrefWithNoSlash = href.split("/")[1];
-    return hrefWithNoSlash === params.slug;
-  });
   return (
     <section className="mx-auto w-[90%] max-w-5xl">
       <Breadcrumbs>

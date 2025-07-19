@@ -36,11 +36,8 @@ export default function Page({ params }: { params: { slug: string } }) {
   const [activeChip, setActiveChip] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  // returns an object from services array so we can have appropriate category header
-  const serviceObject = listOfServices.find(({ href }) => {
-    const hrefWithNoSlash = href.split("/")[1];
-    return hrefWithNoSlash === params.slug;
-  });
+  const serviceObject =
+    listOfServices[params.slug as keyof typeof listOfServices];
 
   // Dynamic import of service providers for each category on home screen, simulating a 1 second network call
   const importCompanyList = (
@@ -148,103 +145,95 @@ export default function Page({ params }: { params: { slug: string } }) {
     );
     setFilteredCompanyData(filteredCompanies);
   };
+
+  if (isLoading) {
+    return (
+      <>
+        <LoadingSkeleton />
+        <LoadingSkeleton />
+        <LoadingSkeleton />
+      </>
+    );
+  }
+
   return (
     <main>
-      {isLoading ? (
-        <>
-          <LoadingSkeleton />
-          <LoadingSkeleton />
-          <LoadingSkeleton />
-        </>
-      ) : (
-        <>
-          <h1 className="my-4 text-3xl font-black md:text-4xl lg:text-5xl">
-            {serviceObject?.label ? serviceObject.label : "Service Not Found"}
-          </h1>
-          {/* Chip container */}
-          {/* Conditionally render if there is a serice object */}
-          {serviceObject?.label && (
-            <div className="mb-4 flex gap-1 overflow-x-scroll">
-              {chipServicesArray.map((service, idx) => (
-                <Chip
-                  onClick={() => {
-                    setActiveChip(idx);
-                    handleChipFilter(service);
-                  }}
-                  classNames={{ base: "bg-transparent" }}
-                  className={
-                    activeChip === idx
-                      ? "bg-gray-500 text-white hover:cursor-pointer lg:text-lg"
-                      : "hover:cursor-pointer lg:text-lg"
-                  }
-                  // receieved error in build to not use idx as key, adding number to prevent collisions with layout
-                  key={service + 2}
-                >
-                  {service}
-                </Chip>
-              ))}
-            </div>
-          )}
-          <Input
-            type="search"
-            onClick={() => setSearchValue("")}
-            onChange={(e) => {
-              setSearchValue(e.target.value);
-              handleSearchBarFilter(e.target.value);
-            }}
-            value={searchValue}
-            endContent={
-              <Image
-                src={searchIcon}
-                alt="Search Icon"
-                height={25}
-                width={25}
-              />
-            }
-            className="mx-auto my-4 max-w-5xl rounded-xl border-1 border-secondary-font-color"
-          />
-          <p className="mb-4">
-            {filteredCompanyData?.length ?? 0} Providers Available
-          </p>
-          {filteredCompanyData &&
-            filteredCompanyData.map(
-              ({ id, companyName, rating, numberOfReviews, services }) => (
-                <Card
-                  classNames={{ header: "pb-1", body: "py-0" }}
-                  key={id}
-                  className="mx-auto mb-4 max-w-5xl border-1 border-secondary-font-color"
-                >
-                  {/* Temp links back to same page until we decide routing for unique providers */}
-                  <Link href={`/providers/${params.slug}`}>
-                    <CardHeader className="text-xl lg:text-3xl">
-                      {companyName}
-                    </CardHeader>
-                    <CardBody className="flex flex-row items-center gap-1">
-                      <Image
-                        src={star}
-                        alt="star icon"
-                        width={22}
-                        height={22}
-                      />
-                      <span className="font-black lg:text-xl">{rating}</span>
-                      <span className="text-secondary-font-color lg:text-xl">
-                        ({numberOfReviews} reviews)
-                      </span>
-                    </CardBody>
-                    <CardFooter className="flex gap-1 overflow-x-scroll">
-                      {services.map((service: string) => (
-                        // getting build error if we use idx, using service and number
-                        <Chip key={service + 4} className="lg:text-lg">
-                          {service}
-                        </Chip>
-                      ))}
-                    </CardFooter>
-                  </Link>
-                </Card>
-              ),
-            )}
-        </>
+      <h1 className="my-4 text-3xl font-black md:text-4xl lg:text-5xl">
+        {serviceObject?.label ? serviceObject.label : "Service Not Found"}
+      </h1>
+      {/* Chip container */}
+      {/* Conditionally render if there is a serice object */}
+      {serviceObject?.label && (
+        <div className="mb-4 flex gap-1 overflow-x-scroll">
+          {chipServicesArray.map((service, idx) => (
+            <Chip
+              onClick={() => {
+                setActiveChip(idx);
+                handleChipFilter(service);
+              }}
+              classNames={{ base: "bg-transparent" }}
+              className={
+                activeChip === idx
+                  ? "bg-gray-500 text-white hover:cursor-pointer lg:text-lg"
+                  : "hover:cursor-pointer lg:text-lg"
+              }
+              key={`chip-${service}-${idx}`}
+            >
+              {service}
+            </Chip>
+          ))}
+        </div>
       )}
+      <Input
+        type="search"
+        onClick={() => setSearchValue("")}
+        onChange={(e) => {
+          setSearchValue(e.target.value);
+          handleSearchBarFilter(e.target.value);
+        }}
+        value={searchValue}
+        endContent={
+          <Image src={searchIcon} alt="Search Icon" height={25} width={25} />
+        }
+        className="mx-auto my-4 max-w-5xl rounded-xl border-1 border-secondary-font-color"
+      />
+      <p className="mb-4">
+        {filteredCompanyData?.length ?? 0} Providers Available
+      </p>
+      {filteredCompanyData &&
+        filteredCompanyData.map(
+          ({ id, companyName, rating, numberOfReviews, services }) => (
+            <Card
+              classNames={{ header: "pb-1", body: "py-0" }}
+              key={`${companyName}-${id}`}
+              className="mx-auto mb-4 max-w-5xl border-1 border-secondary-font-color"
+            >
+              {/* Temp links back to same page until we decide routing for unique providers */}
+              <Link href={`/providers/${params.slug}`}>
+                <CardHeader className="text-xl lg:text-3xl">
+                  {companyName}
+                </CardHeader>
+                <CardBody className="flex flex-row items-center gap-1">
+                  <Image src={star} alt="star icon" width={22} height={22} />
+                  <span className="font-black lg:text-xl">{rating}</span>
+                  <span className="text-secondary-font-color lg:text-xl">
+                    ({numberOfReviews} reviews)
+                  </span>
+                </CardBody>
+                <CardFooter className="flex gap-1 overflow-x-scroll">
+                  {services.map((service: string, idx: number) => (
+                    <Chip
+                      key={`${companyName}cardChip-${service}`}
+                      className="lg:text-lg"
+                    >
+                      {service}
+                    </Chip>
+                  ))}
+                </CardFooter>
+              </Link>
+            </Card>
+          ),
+        )}
     </main>
   );
 }

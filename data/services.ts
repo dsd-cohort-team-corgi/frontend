@@ -1,5 +1,5 @@
-export const services = [
-  {
+export const services = {
+  housecleaning: {
     label: "House Cleaning",
     href: "providers/housecleaning",
     description: "Regular, deep and move-in/out cleaning",
@@ -8,7 +8,7 @@ export const services = [
     alt: "lady cleaning a table with a spray bottle and sponge",
     companyList: 'houseCleaningCompanies'
   },
-  {
+  lawnandgarden: {
     label: "Lawn & Garden",
     href: "providers/lawnandgarden",
     description: "Mowing, landscaping, yard maintenance",
@@ -17,7 +17,7 @@ export const services = [
     alt: "a man is seen from behind as he's pushing a wheelbarrow outdoors",
     companyList: 'lawnCareCompanies'
   },
-  {
+  handymanandrepairs: {
     label: "HandyMan & Repairs",
     href: "providers/handymanandrepairs",
     description: "Plumbing, electrical, installations, general fixes",
@@ -26,7 +26,7 @@ export const services = [
     alt: "A plumber shining a light under a sink",
     companyList: 'handymanRepairCompanies'
   },
-  {
+  exteriorcleaning: {
     label: "Exterior Cleaning",
     href: "providers/exteriorcleaning",
     description: "Driveways, siding, decks, patios",
@@ -35,7 +35,7 @@ export const services = [
     alt: "A man is using a professional sprayed to spray a car",
     companyList: 'exteriorCleaningCompanies'
   },
-  {
+  specializedcleaning: {
     label: "Specialized Cleaning",
     href: "providers/specializedcleaning",
     description: "Carpet, upholstery, post-construction",
@@ -44,7 +44,7 @@ export const services = [
     alt: "A lady smiles as she leands down into the camera, as shes pushing a vacuum angled towards the camera",
     companyList: 'specializedCleaningCompanies'
   },
-  {
+  assemblyandinstallation: {
     label: "Assembly & Installation",
     href: "providers/assemblyandinstallation",
     description: "Furniture assembly, TV mounting, applicances",
@@ -53,5 +53,5 @@ export const services = [
     alt: "Gloved hands adjusting some wires from an opened panel",
     companyList: 'assebmlyInstallationCompanies'
   },
-];
+};
 export default services;
