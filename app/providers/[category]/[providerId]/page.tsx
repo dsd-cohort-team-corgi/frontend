@@ -5,6 +5,7 @@ import StarRatingReview from "@/components/ProviderOverallRatingInfo";
 import IconServiceTime from "@/components/IconServiceTime";
 import ReviewCard from "@/components/ReviewCard";
 import StyledAsButton from "@/components/StyledAsButton";
+import convertDateToTimeFromNow from "@/utils/convertDateToTimeFromNow";
 
 // https://nextjs.org/docs/app/api-reference/file-conventions/dynamic-routes#convention
 // the docs are showing the Next.JS 15 behavior where params is a promise
@@ -33,7 +34,7 @@ export default function page({ params }: { params: ProviderProps }) {
     {
       customer_id: 1267673,
       customer_name: "Sarah Johnson",
-      created_at: "2 weeks",
+      created_at: "2025-07-05T14:23:45.123456+00:00",
       updated_at: "",
       description:
         "Great service! Very professional and thorough. Mike arrived on time and did an excellent job on my lawn. The attention to detail was impressive.",
@@ -42,7 +43,7 @@ export default function page({ params }: { params: ProviderProps }) {
     {
       customer_id: 1245351323,
       customer_name: "Evil Corgi",
-      created_at: "12 weeks",
+      created_at: "2025-07-05T14:23:45.123456+00:00",
       updated_at: "",
       description:
         "Great service! Very professional and thorough. Mike arrived on time and did an excellent job on my lawn. The attention to detail was impressive.",
@@ -51,7 +52,7 @@ export default function page({ params }: { params: ProviderProps }) {
     {
       customer_id: 134243231323,
       customer_name: "Chaotic Neutral Corgi",
-      created_at: "15 weeks",
+      created_at: "2025-07-05T14:23:45.123456+00:00",
       updated_at: "",
       description:
         "Great service! Very professional and thorough. Mike arrived on time and did an excellent job on my lawn. The attention to detail was impressive.",
@@ -60,7 +61,7 @@ export default function page({ params }: { params: ProviderProps }) {
     {
       customer_id: 12453453,
       customer_name: "Sir Barksworth II",
-      created_at: "6 weeks",
+      created_at: "2025-07-05T14:23:45.123456+00:00",
       updated_at: "",
       description:
         "Great service! Very professional and thorough. Mike arrived on time and did an excellent job on my lawn. The attention to detail was impressive.",
@@ -146,7 +147,7 @@ export default function page({ params }: { params: ProviderProps }) {
           <ReviewCard
             key={`review-${review.customer_id}`}
             customerName={review.customer_name}
-            createdAt={review.created_at}
+            createdAt={convertDateToTimeFromNow(review.created_at)}
             description={review.description}
             rating={review.rating}
           />

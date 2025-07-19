@@ -26,10 +26,7 @@ export default function ReviewCard({
       <div>
         <div className="flex justify-between">
           <span> {customerName} </span>
-          <span className="text-secondary-font-color">
-            {" "}
-            {`${createdAt} ago`}{" "}
-          </span>
+          <span className="text-secondary-font-color"> {createdAt}</span>
         </div>
         <ReviewStars rating={rating} className="my-2" />
         <p>{description}</p>
