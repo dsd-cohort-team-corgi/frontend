@@ -1,5 +1,4 @@
 import React from "react";
-import { Button } from "@heroui/react";
 import EmailIcon from "@/components/icons/Email";
 import PhoneIcon from "@/components/icons/Phone";
 import StarRatingReview from "@/components/ProviderOverallRatingInfo";
@@ -15,7 +14,7 @@ type ProviderProps = {
   providerId: string;
 };
 export default function page({ params }: { params: ProviderProps }) {
-  const { category, provider_id } = params;
+  const { category, providerId } = params;
   // params must match dynamic folder names,providerid !== providerId
   const providerInfo = {
     description: "this is the providers description from the database",
@@ -32,36 +31,40 @@ export default function page({ params }: { params: ProviderProps }) {
 
   const fakeReviews = [
     {
-      customerId: 1267673,
-      customerName: "Sarah Johnson",
-      reviewTime: "2 weeks",
-      reviewText:
+      customer_id: 1267673,
+      customer_name: "Sarah Johnson",
+      created_at: "2 weeks",
+      updated_at: "",
+      description:
         "Great service! Very professional and thorough. Mike arrived on time and did an excellent job on my lawn. The attention to detail was impressive.",
-      reviewRating: 5,
+      rating: 5,
     },
     {
-      customerId: 1245351323,
-      customerName: "Evil Corgi",
-      reviewTime: "12 weeks",
-      reviewText:
+      customer_id: 1245351323,
+      customer_name: "Evil Corgi",
+      created_at: "12 weeks",
+      updated_at: "",
+      description:
         "Great service! Very professional and thorough. Mike arrived on time and did an excellent job on my lawn. The attention to detail was impressive.",
-      reviewRating: 5,
+      rating: 5,
     },
     {
-      customerId: 134243231323,
-      customerName: "Chaotic Neutral Corgi",
-      reviewTime: "15 weeks",
-      reviewText:
+      customer_id: 134243231323,
+      customer_name: "Chaotic Neutral Corgi",
+      created_at: "15 weeks",
+      updated_at: "",
+      description:
         "Great service! Very professional and thorough. Mike arrived on time and did an excellent job on my lawn. The attention to detail was impressive.",
-      reviewRating: 5,
+      rating: 5,
     },
     {
-      customerId: 12453453,
-      customerName: "Sir Barksworth II",
-      reviewTime: "6 weeks",
-      reviewText:
+      customer_id: 12453453,
+      customer_name: "Sir Barksworth II",
+      created_at: "6 weeks",
+      updated_at: "",
+      description:
         "Great service! Very professional and thorough. Mike arrived on time and did an excellent job on my lawn. The attention to detail was impressive.",
-      reviewRating: 5,
+      rating: 5,
     },
   ];
 
@@ -141,12 +144,11 @@ export default function page({ params }: { params: ProviderProps }) {
 
         {fakeReviews.map((review) => (
           <ReviewCard
-            key={`review-${review.customerId}`}
-            // customer name can be duplicated, customer id won't be
-            customerName={review.customerName}
-            reviewTime={review.reviewTime}
-            reviewText={review.reviewText}
-            reviewRating={review.reviewRating}
+            key={`review-${review.customer_id}`}
+            customerName={review.customer_name}
+            createdAt={review.created_at}
+            description={review.description}
+            rating={review.rating}
           />
         ))}
       </section>

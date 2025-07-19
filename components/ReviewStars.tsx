@@ -6,14 +6,14 @@ import FullStar from "./icons/FullStar";
 
 type ReviewStarsType = {
   className?: string;
-  reviewRating?: number;
+  rating?: number;
 };
 
 export default function ReviewStars({
   className,
-  reviewRating = 0,
+  rating = 0,
 }: ReviewStarsType) {
-  const [numberOfStars, setNumberOfStars] = useState(reviewRating);
+  const [numberOfStars, setNumberOfStars] = useState(rating);
   //   let emptyStars = 5 - numberOfStars;
 
   return (

@@ -3,16 +3,16 @@ import ReviewStars from "./ReviewStars";
 
 type ReviewCardType = {
   customerName?: string;
-  reviewTime?: string;
-  reviewText?: string;
-  reviewRating?: number;
+  createdAt?: string;
+  description?: string;
+  rating?: number;
 };
 
 export default function ReviewCard({
-  customerName = "Sarah Johnson",
-  reviewTime = "2 weeks",
-  reviewText = "Great service! Very professional and thorough. Mike arrived on time and did an excellent job on my lawn. The attention to detail was impressive.",
-  reviewRating = 5,
+  customerName,
+  createdAt,
+  description,
+  rating,
 }: ReviewCardType) {
   return (
     <section className="my-10 flex max-w-[1000px] pt-2">
@@ -28,11 +28,11 @@ export default function ReviewCard({
           <span> {customerName} </span>
           <span className="text-secondary-font-color">
             {" "}
-            {`${reviewTime} ago`}{" "}
+            {`${createdAt} ago`}{" "}
           </span>
         </div>
-        <ReviewStars reviewRating={reviewRating} className="my-2" />
-        <p>{reviewText}</p>
+        <ReviewStars rating={rating} className="my-2" />
+        <p>{description}</p>
       </div>
     </section>
   );
