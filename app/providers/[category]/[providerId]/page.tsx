@@ -15,13 +15,14 @@ type ProviderProps = {
   providerId: string;
 };
 export default function page({ params }: { params: ProviderProps }) {
-  const { category, providerId } = params;
+  const { category, provider_id } = params;
   // params must match dynamic folder names,providerid !== providerId
-  const providerDescription =
-    "this is the providers description from the database";
-  const providerName = "GreenThumb Pros";
-  const providerEmail = "provider@gmail.com";
-  const providerPhone = "999-111-1111";
+  const providerInfo = {
+    description: "this is the providers description from the database",
+    name: "GreenThumb Pros",
+    email: "provider@gmail.com",
+    phone_number: "999-111-1111",
+  };
 
   const serviceOptions = [
     { description: "Lawn Mowing", time: 60, price: 65 },
@@ -72,14 +73,14 @@ export default function page({ params }: { params: ProviderProps }) {
       <section className="order-1 mb-6 w-full xl:w-1/2">
         <div className="flex justify-between">
           <div className="mb-1">
-            <h2 className="mb-1 text-2xl font-bold">{providerName}</h2>
+            <h2 className="mb-1 text-2xl font-bold">{providerInfo.name}</h2>
             <span className="text-sm">
               <span className="font-semibold"> Phone: </span>
-              {providerPhone}
+              {providerInfo.phone_number}
             </span>
             <span className="ml-4 text-sm">
               <span className="font-semibold"> Email: </span>
-              {providerEmail}
+              {providerInfo.email}
             </span>
             {/* Added here since the mailto and tel links can be problematic for some users. For example, they might not use the email client that mailto tries to open 
             However, putting these under the actual call and email links looked strange and a long email would affect the layout. So placing it under the provider's name is likely the best choice */}
@@ -91,7 +92,7 @@ export default function page({ params }: { params: ProviderProps }) {
               as="a"
               className="group items-center border-none text-black hover:text-white data-[hover=true]:!bg-primary"
               variant="ghost"
-              href={`tel:${providerPhone}`}
+              href={`tel:${providerInfo.phone_number}`}
             />
 
             <StyledAsButton
@@ -100,12 +101,12 @@ export default function page({ params }: { params: ProviderProps }) {
               as="a"
               className="group items-center border-none text-black hover:text-white data-[hover=true]:!bg-primary"
               variant="ghost"
-              href={`mailto:${providerEmail}`}
+              href={`mailto:${providerInfo.email}`}
             />
           </div>
         </div>
         <StarRatingReview />
-        <p className="my-2"> {providerDescription} </p>
+        <p className="my-2"> {providerInfo.description} </p>
       </section>
 
       <section className="order-2 w-full px-2 lg:order-2 lg:w-1/2">
