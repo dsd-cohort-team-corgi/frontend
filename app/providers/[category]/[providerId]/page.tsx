@@ -17,12 +17,14 @@ type ProviderProps = {
   category: string;
   providerId: string;
 };
-export default function page({ params }: { params: ProviderProps }) {
+export default function Page({ params }: { params: ProviderProps }) {
   const { category, providerId } = params;
   // params must match dynamic folder names,providerid !== providerId
 
-  const [selectedService, setSelectedService] = useState({} as any);
-
+  const [selectedService, setSelectedService] = useState<
+    Record<string, string | number>
+  >({});
+  // the object has key value pairs the keys will be strings and the values can be strings or numbers, the object can also be empty
   const providerInfo = {
     description: "this is the providers description from the database",
     name: "GreenThumb Pros",
@@ -155,8 +157,9 @@ export default function page({ params }: { params: ProviderProps }) {
         )}
 
         <StyledAsButton
-          className="mb-4 mt-6 block w-full"
+          className="mb-4 mt-6 block w-full disabled:bg-gray-500"
           label="Continue to Booking"
+          disabled={objectIsEmptyCheck(selectedService)}
         />
       </section>
 
