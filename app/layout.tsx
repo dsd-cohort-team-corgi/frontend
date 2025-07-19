@@ -28,7 +28,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={` ${dmSans.variable} font-sans antialiased`}>
+      <body className={` ${dmSans.variable} bg-gray-50 font-sans antialiased`}>
         {/* Step 1. body className={` ${dmSans.variable...}`} === exposes (adds) the css variable "--font-dm-sans" to the DOM,
          so tailwindcss can see and use it, if its setup up within tailwindcss.config.js (the setup in the config: fontFamily: { sans: ["var(--font-dm-sans)"],},)
          Step 2. font-sans === tells Tailwindcss to globally USE the value of that css variable

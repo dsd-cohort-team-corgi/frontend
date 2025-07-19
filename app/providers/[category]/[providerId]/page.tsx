@@ -74,27 +74,16 @@ export default function page({ params }: { params: ProviderProps }) {
       {/* Have to use flex, since we have to reorder some elements on different screen sizes, which grid does no support */}
 
       {/* can't use gap-x-4 because of w-1/2 I could of used xl:w-[calc(50%-0.5rem)] but that is less easy to understand & its less dry that just adding padding, and if we changed gap's size we'd have to adjust there too */}
-      <section className="order-1 mb-6 w-full xl:w-1/2">
+      <section className="order-1 mb-6 w-full rounded-3xl border-1 border-light-accent bg-white px-4 py-5 xl:w-1/2">
         <div className="flex justify-between">
-          <div className="mb-1">
-            <h2 className="mb-1 text-2xl font-bold">{providerInfo.name}</h2>
-            <span className="text-sm">
-              <span className="font-semibold"> Phone: </span>
-              {providerInfo.phone_number}
-            </span>
-            <span className="ml-4 text-sm">
-              <span className="font-semibold"> Email: </span>
-              {providerInfo.email}
-            </span>
-            {/* Added here since the mailto and tel links can be problematic for some users. For example, they might not use the email client that mailto tries to open 
-            However, putting these under the actual call and email links looked strange and a long email would affect the layout. So placing it under the provider's name is likely the best choice */}
-          </div>
+          <h2 className="mb-3 text-3xl font-bold">{providerInfo.name}</h2>
+
           <div className="flex space-x-6 px-2">
             <StyledAsButton
               label="Call"
               startContent={<PhoneIcon />}
               as="a"
-              className="group items-center border-none text-black hover:text-white data-[hover=true]:!bg-primary"
+              className="text-md group items-center border-1 border-light-accent text-black hover:text-white data-[hover=true]:!bg-primary"
               variant="ghost"
               href={`tel:${providerInfo.phone_number}`}
             />
@@ -103,18 +92,31 @@ export default function page({ params }: { params: ProviderProps }) {
               label="Email"
               startContent={<EmailIcon />}
               as="a"
-              className="group items-center border-none text-black hover:text-white data-[hover=true]:!bg-primary"
+              className="text-md group items-center border-1 border-light-accent text-black hover:text-white data-[hover=true]:!bg-primary"
               variant="ghost"
               href={`mailto:${providerInfo.email}`}
             />
           </div>
         </div>
+        <div className="mb-4 text-xs">
+          <span>
+            <span className="font-semibold"> Phone: </span>
+            {providerInfo.phone_number}
+          </span>
+          <span className="ml-4">
+            <span className="font-semibold sm:inline"> Email: </span>
+            {providerInfo.email}
+          </span>
+        </div>
+
+        {/* Added string versions the phone number and email since the mailto and tel links can be problematic for some users. For example, they might not use the email client that mailto tries to open. However, putting these under the actual call and email links looked strange and a long email would affect the layout
+        placed here to long emails don't wrap strangely (like it would in the flexed provider name box) */}
         <StarRatingReview />
-        <p className="my-2"> {providerInfo.description} </p>
+        <p className="my-3"> {providerInfo.description} </p>
       </section>
 
-      <section className="order-2 w-full px-2 lg:order-2 lg:w-1/2">
-        <h4 className="my-4 text-lg text-secondary-font-color">
+      <section className="order-2 w-full rounded-3xl border-1 border-light-accent bg-white p-4 lg:w-1/2">
+        <h4 className="my-4 pl-2 text-2xl text-secondary-font-color">
           Select Service
         </h4>
         {serviceOptions.map((service) => (
@@ -127,19 +129,21 @@ export default function page({ params }: { params: ProviderProps }) {
         ))}
       </section>
 
-      <section className="order-3 w-full px-2 lg:w-1/2 xl:order-4">
-        <h4 className="my-4 text-lg text-secondary-font-color">
-          {" "}
+      <section className="order-3 w-full rounded-3xl border-1 border-light-accent pl-4 lg:w-1/2 xl:order-4">
+        <h4 className="my-4 text-2xl text-secondary-font-color">
           Book Service
         </h4>
-        <h6> Select Time </h6>
+        <h6 className="font-bold"> Select Time </h6>
         <span className="block"> Tuesday, July 15, 2025 at 11:00 AM </span>
-        <span className="block"> Lawn Mowing - $80 </span>
-        <StyledAsButton className="block w-full" label="Continue to Booking" />
+        <span className="block font-bold"> Lawn Mowing - $80 </span>
+        <StyledAsButton
+          className="mb-4 mt-6 block w-full"
+          label="Continue to Booking"
+        />
       </section>
 
-      <section className="order-4 w-full px-2 xl:order-3 xl:w-1/2">
-        <h4 className="my-4 text-lg text-secondary-font-color">
+      <section className="order-4 my-4 w-full rounded-3xl border-1 border-light-accent px-2 xl:order-3 xl:w-1/2">
+        <h4 className="ml-4 mt-4 text-2xl text-secondary-font-color">
           Customer Reviews
         </h4>
 

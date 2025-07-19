@@ -15,7 +15,7 @@ export default function ReviewCard({
   rating,
 }: ReviewCardType) {
   return (
-    <section className="my-10 flex max-w-[1000px] pt-2">
+    <section className="my-10 flex max-w-[1000px] px-4 pt-2">
       {/* max-w-[1000px] so the review doesn't get weirdly stretched out on large screens */}
       <img
         src="/default-profile-image.png"
@@ -26,7 +26,10 @@ export default function ReviewCard({
       <div>
         <div className="flex justify-between">
           <span> {customerName} </span>
-          <span className="text-secondary-font-color"> {createdAt}</span>
+          <span className="text-xs text-secondary-font-color">
+            {" "}
+            {createdAt}
+          </span>
         </div>
         <ReviewStars rating={rating} className="my-2" />
         <p>{description}</p>

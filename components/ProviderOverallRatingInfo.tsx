@@ -11,8 +11,8 @@ export default function StarRatingReview({
   numberOfReviews = 65,
 }: StarRatingReviewTypes) {
   return (
-    <div className="flex">
-      <FullStar />
+    <div className="flex text-xs">
+      <FullStar width={16} height={16} />
       <span className="pl-1 pr-2 font-bold">{providerRating}</span>
       <span className="text-secondary-font-color">
         {`(${numberOfReviews} reviews)`}
