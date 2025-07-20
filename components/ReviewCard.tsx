@@ -1,5 +1,5 @@
 import React from "react";
-import ReviewStars from "./ReviewStars";
+import ReviewStarRating from "./ReviewStarRating";
 
 type ReviewCardType = {
   customerName?: string;
@@ -31,7 +31,7 @@ export default function ReviewCard({
             {createdAt}
           </span>
         </div>
-        <ReviewStars rating={rating} className="my-2" />
+        <ReviewStarRating rating={rating} />
         <p>{description}</p>
       </div>
     </section>

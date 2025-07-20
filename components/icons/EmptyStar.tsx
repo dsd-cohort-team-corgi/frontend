@@ -1,8 +1,18 @@
 import React from "react";
 
-export default function EmptyStar() {
+type EmptyStarType = {
+  width?: number;
+  height?: number;
+};
+
+export default function EmptyStar({ width = 20, height = 20 }: EmptyStarType) {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 576 512"
+      width={width}
+      height={height}
+    >
       {/* <!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--> */}
 
       <path

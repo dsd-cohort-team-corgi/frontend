@@ -1,6 +1,6 @@
 type FullStarType = {
-  width: number;
-  height: number;
+  width?: number;
+  height?: number;
 };
 
 export default function FullStar({ width = 20, height = 20 }: FullStarType) {
