@@ -1,10 +1,9 @@
 "use client";
 
 import { Button } from "@heroui/react";
-import React from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import Leaf from "./icons/Leaf";
 import objectIsEmptyCheck from "@/utils/objectIsEmptyCheck";
-import { Dispatch, SetStateAction } from "react";
 
 type IconServiceTimeType = {
   description: string;
@@ -35,10 +34,12 @@ export default function IconServiceTime({
       onPress={handleClick}
     >
       {/* group is used so when the div is hovered over the leaf icon also turns blue */}
-      <span className="bg-slate-200 p-2 group-hover:bg-slate-300">
+
+      <span className="inline-block bg-slate-200 p-2 group-hover:bg-slate-300">
         <Leaf className="group-hover:fill-primary" />
       </span>
-      <p className="pl-4 pr-2 font-bold"> {description} </p>
+      <p className="inline-block pl-4 pr-2 font-bold"> {description} </p>
+
       <span className="text-secondary-font-color"> {`(${time} mins)`}</span>
       <span className="pl-2 font-bold sm:ml-auto"> {`$${price}`} </span>
       {/* ml-auto works because its basically telling the last item, hey I want you to put as much margin on your left as you possibly can

@@ -9,6 +9,7 @@ import ReviewCard from "@/components/ReviewCard";
 import StyledAsButton from "@/components/StyledAsButton";
 import convertDateToTimeFromNow from "@/utils/convertDateToTimeFromNow";
 import objectIsEmptyCheck from "@/utils/objectIsEmptyCheck";
+import useMediaQuery from "@/utils/useMediaQuery";
 
 // https://nextjs.org/docs/app/api-reference/file-conventions/dynamic-routes#convention
 // the docs are showing the Next.JS 15 behavior where params is a promise
@@ -35,7 +36,11 @@ export default function Page({ params }: { params: ProviderProps }) {
   const serviceOptions = [
     { description: "Lawn Mowing", time: 60, price: 65 },
     { description: "Garden Maintence", time: 90, price: 85 },
-    { description: "Garden Maintence", time: 120, price: 120 },
+    { description: "Garden Maintence", time: 90, price: 85 },
+    { description: "Garden Maintence", time: 90, price: 85 },
+    { description: "Garden Maintence", time: 90, price: 85 },
+    { description: "Garden Maintence", time: 90, price: 85 },
+    { description: "Garden Maintence", time: 90, price: 85 },
   ];
 
   const fakeReviews = [
@@ -77,12 +82,40 @@ export default function Page({ params }: { params: ProviderProps }) {
     },
   ];
 
+  // we need customer reviews to move up on large screens to fill the leftover space when there are 2 or more services
+  // how can we do this? with a classMap so tailwindcss understands what we want to do:
+
+  // Tailwind CSS purges unused styles based on the class names it finds in source files during build time
+  // So dynamically generating class names like `xl:-mt-[${offset}px]` won't work because Tailwind never "sees" those strings, because its created after
+  //  a classMap has all the string literals created already, so tailwindcss can see they exist
+  // This way, Tailwind includes the corresponding styles in the final CSS bundle, ensuring your dynamic logic works at runtime.
+
+  // why won't style={{}} work? because we need this to only apply on xl screens, which would require a media query to work, which would result in a flash of unflash content because we'd have to wait until everythings rendered to access window.matchMedia(query)
+
+  const offset = Math.max(0, 70 * (serviceOptions.length - 1));
+
+  const marginMap: Record<number, string> = {
+    0: "xl:mt-0",
+    70: "xl:-mt-[70px]",
+    140: "xl:-mt-[140px]",
+    210: "xl:-mt-[210px]",
+    280: "xl:-mt-[280px]",
+    350: "xl:-mt-[350px]",
+    420: "xl:-mt-[420px]",
+    490: "xl:-mt-[490px]",
+    560: "xl:-mt-[560px]",
+    630: "xl:-mt-[630px]",
+  };
+
+  const marginClass = marginMap[offset] || "";
+
   return (
-    <div className="m-4 flex flex-col gap-x-6 gap-y-6 sm:flex-row sm:flex-wrap">
+    <div className="xl:cols-2 m-4 flex columns-2 flex-col flex-wrap gap-6 sm:flex-row">
       {/* Have to use flex, since we have to reorder some elements on different screen sizes, which grid does no support */}
 
       {/* if the gap-x-6's value is changed xl:w-[calc(50%-0.5rem)] will have to be adjusted in the following sections */}
-      <section className="order-1 h-fit w-full rounded-3xl border-1 border-light-accent bg-white px-4 py-5 xl:w-[calc(50%-1.5rem)]">
+      <section className="order-1 mb-6 h-fit w-full rounded-3xl border-1 border-light-accent bg-white px-4 py-5 xl:w-[calc(50%-1.5rem)]">
+        {/* //  ${serviceOptions.length > 2 ? "max-h-[calc(100%-400px)]" : ""} */}
         <div className="mb-4 justify-between sm:flex">
           <h2 className="mb-3 text-3xl font-bold sm:mb-0">
             {providerInfo.name}
@@ -125,7 +158,7 @@ export default function Page({ params }: { params: ProviderProps }) {
         <p className="my-3"> {providerInfo.description} </p>
       </section>
 
-      <section className="order-2 w-full rounded-3xl border-1 border-light-accent bg-white p-4 md:w-[calc(50%-1.5rem)]">
+      <section className="order-2 mb-6 w-full break-inside-avoid rounded-3xl border-1 border-light-accent bg-white p-4 md:w-[calc(50%-1.5rem)]">
         <h4 className="my-4 pl-2 text-2xl text-secondary-font-color">
           Select Service
         </h4>
@@ -141,7 +174,7 @@ export default function Page({ params }: { params: ProviderProps }) {
         ))}
       </section>
 
-      <section className="order-3 w-full rounded-3xl border-1 border-light-accent bg-white pl-4 pt-4 md:w-[calc(50%-1.5rem)] xl:order-4">
+      <section className="order-3 mb-6 w-full break-inside-avoid rounded-3xl border-1 border-light-accent bg-white pl-4 pt-4 md:w-[calc(50%-1.5rem)] xl:order-4">
         <h4 className="my-4 text-2xl text-secondary-font-color">
           Book Service
         </h4>
@@ -163,7 +196,10 @@ export default function Page({ params }: { params: ProviderProps }) {
         />
       </section>
 
-      <section className="order-4 w-full rounded-3xl border-1 border-light-accent bg-white px-2 pt-4 xl:order-3 xl:w-[calc(50%-1.5rem)]">
+      <section
+        className={`order-4 w-full rounded-3xl border-1 border-light-accent bg-white px-2 pt-4 xl:order-3 xl:w-[calc(50%-1.5rem)] ${marginClass}`}
+      >
+        {/* if there is more than one service offering, then we need to move customer reviews up to fill the negative space under GreenThumbPros */}
         <h4 className="ml-4 mt-4 text-2xl text-secondary-font-color">
           Customer Reviews
         </h4>
