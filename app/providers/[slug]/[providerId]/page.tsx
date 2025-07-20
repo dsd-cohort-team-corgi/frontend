@@ -158,13 +158,15 @@ export default function Page({ params }: { params: ProviderProps }) {
         <p className="my-3"> {providerInfo.description} </p>
       </section>
 
-      <section className="order-2 mb-6 w-full break-inside-avoid rounded-3xl border-1 border-light-accent bg-white p-4 md:w-[calc(50%-1.5rem)]">
+      <section className="w-fullrounded-3xl order-2 mb-6 border-1 border-light-accent bg-white p-4 md:w-[calc(50%-1.5rem)]">
         <h4 className="my-4 pl-2 text-2xl text-secondary-font-color">
           Select Service
         </h4>
-        {serviceOptions.map((service) => (
+        {/* the index is just there for development, in production the services will always be unique */}
+        {/* eslint-disable react/no-array-index-key */}
+        {serviceOptions.map((service, index) => (
           <IconServiceTime
-            key={`${service.description}`}
+            key={`${service.description} ${service.time} ${index}`}
             description={service.description}
             time={service.time}
             price={service.price}
@@ -174,7 +176,7 @@ export default function Page({ params }: { params: ProviderProps }) {
         ))}
       </section>
 
-      <section className="order-3 mb-6 w-full break-inside-avoid rounded-3xl border-1 border-light-accent bg-white pl-4 pt-4 md:w-[calc(50%-1.5rem)] xl:order-4">
+      <section className="order-3 mb-6 w-full rounded-3xl border-1 border-light-accent bg-white pl-4 pt-4 md:w-[calc(50%-1.5rem)] xl:order-4">
         <h4 className="my-4 text-2xl text-secondary-font-color">
           Book Service
         </h4>
@@ -190,7 +192,7 @@ export default function Page({ params }: { params: ProviderProps }) {
         )}
 
         <StyledAsButton
-          className="mb-4 mt-6 block w-full disabled:bg-gray-500"
+          className="mb-4 mt-6 block w-11/12 px-0 disabled:bg-gray-500"
           label="Continue to Booking"
           disabled={objectIsEmptyCheck(selectedService)}
         />
