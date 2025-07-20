@@ -9,7 +9,6 @@ import ReviewCard from "@/components/ReviewCard";
 import StyledAsButton from "@/components/StyledAsButton";
 import convertDateToTimeFromNow from "@/utils/convertDateToTimeFromNow";
 import objectIsEmptyCheck from "@/utils/objectIsEmptyCheck";
-import StarRating from "@/components/ReviewStarRating";
 
 // https://nextjs.org/docs/app/api-reference/file-conventions/dynamic-routes#convention
 // the docs are showing the Next.JS 15 behavior where params is a promise
