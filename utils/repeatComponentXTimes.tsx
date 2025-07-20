@@ -1,6 +1,7 @@
 type RepeatTsxNumOfTimesType = {
   times: number;
-  Element: React.ComponentType;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  Element: React.ComponentType<any>;
   className?: string;
 };
 

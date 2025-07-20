@@ -9,7 +9,6 @@ import ReviewCard from "@/components/ReviewCard";
 import StyledAsButton from "@/components/StyledAsButton";
 import convertDateToTimeFromNow from "@/utils/convertDateToTimeFromNow";
 import objectIsEmptyCheck from "@/utils/objectIsEmptyCheck";
-import useMediaQuery from "@/utils/useMediaQuery";
 
 // https://nextjs.org/docs/app/api-reference/file-conventions/dynamic-routes#convention
 // the docs are showing the Next.JS 15 behavior where params is a promise
@@ -19,7 +18,7 @@ type ProviderProps = {
   providerId: string;
 };
 export default function Page({ params }: { params: ProviderProps }) {
-  const { category, providerId } = params;
+  // const { slug, providerId } = params;
   // params must match dynamic folder names,providerid !== providerId
 
   const [selectedService, setSelectedService] = useState<
@@ -111,9 +110,9 @@ export default function Page({ params }: { params: ProviderProps }) {
 
   return (
     <div className="xl:cols-2 m-4 flex columns-2 flex-col flex-wrap gap-6 sm:flex-row">
-      {/* Have to use flex, since we have to reorder some elements on different screen sizes, which grid does no support */}
+      {/* Have to use flex, since we have to reorder some elements on different screen sizes, which grid does not support */}
 
-      {/* if the gap-x-6's value is changed xl:w-[calc(50%-0.5rem)] will have to be adjusted in the following sections */}
+      {/* if the gap-6's value is changed xl:w-[calc(50%-1.5rem)] will have to be adjusted in the following sections */}
       <section className="order-1 mb-6 h-fit w-full rounded-3xl border-1 border-light-accent bg-white px-4 py-5 xl:w-[calc(50%-1.5rem)]">
         {/* //  ${serviceOptions.length > 2 ? "max-h-[calc(100%-400px)]" : ""} */}
         <div className="mb-4 justify-between sm:flex">
