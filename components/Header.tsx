@@ -61,7 +61,7 @@ export default function App() {
 
   const mobileNavMenuItems = [
     ...(userIsSignedIn ? loggedInMenuItems : guestMenuItems),
-    ...listOfServices,
+    ...Object.values(listOfServices),
   ];
 
   return (
@@ -114,7 +114,7 @@ export default function App() {
               base: "gap-4",
             }}
           >
-            {listOfServices.map((service) => (
+            {Object.values(listOfServices).map((service) => (
               <DropdownItem
                 key={service.label}
                 description={service.description}

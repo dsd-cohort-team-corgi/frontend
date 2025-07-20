@@ -1,51 +1,57 @@
-export const services = [
-  {
+export const services = {
+  housecleaning: {
     label: "House Cleaning",
-    href: "/housecleaning",
+    href: "providers/housecleaning",
     description: "Regular, deep and move-in/out cleaning",
     price: "79",
     image: "/services-house-cleaning.png",
     alt: "lady cleaning a table with a spray bottle and sponge",
+    companyList: 'houseCleaningCompanies'
   },
-  {
+  lawnandgarden: {
     label: "Lawn & Garden",
-    href: "/lawnandgarden",
+    href: "providers/lawnandgarden",
     description: "Mowing, landscaping, yard maintenance",
     price: "65",
     image: "/services-lawn-garden.png",
     alt: "a man is seen from behind as he's pushing a wheelbarrow outdoors",
+    companyList: 'lawnCareCompanies'
   },
-  {
+  handymanandrepairs: {
     label: "HandyMan & Repairs",
-    href: "/handymanandrepairs",
+    href: "providers/handymanandrepairs",
     description: "Plumbing, electrical, installations, general fixes",
     price: "95",
     image: "/services-handyman-repairs.png",
     alt: "A plumber shining a light under a sink",
+    companyList: 'handymanRepairCompanies'
   },
-  {
+  exteriorcleaning: {
     label: "Exterior Cleaning",
-    href: "/exteriorcleaning",
+    href: "providers/exteriorcleaning",
     description: "Driveways, siding, decks, patios",
     price: "120",
     image: "/services-exterior-cleaning.png",
     alt: "A man is using a professional sprayed to spray a car",
+    companyList: 'exteriorCleaningCompanies'
   },
-  {
+  specializedcleaning: {
     label: "Specialized Cleaning",
-    href: "/specializedcleaning",
+    href: "providers/specializedcleaning",
     description: "Carpet, upholstery, post-construction",
     price: "150",
     image: "/services-specialized-cleaning.png",
     alt: "A lady smiles as she leands down into the camera, as shes pushing a vacuum angled towards the camera",
+    companyList: 'specializedCleaningCompanies'
   },
-  {
+  assemblyandinstallation: {
     label: "Assembly & Installation",
-    href: "/assemblyandinstallation",
+    href: "providers/assemblyandinstallation",
     description: "Furniture assembly, TV mounting, applicances",
     price: "85",
     image: "/services-assembly-installation.png",
     alt: "Gloved hands adjusting some wires from an opened panel",
+    companyList: 'assebmlyInstallationCompanies'
   },
-];
+};
 export default services;
