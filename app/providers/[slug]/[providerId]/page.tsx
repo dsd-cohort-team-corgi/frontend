@@ -40,6 +40,9 @@ export default function Page({ params }: { params: ProviderProps }) {
     { description: "Garden Maintence", time: 90, price: 85 },
     { description: "Garden Maintence", time: 90, price: 85 },
     { description: "Garden Maintence", time: 90, price: 85 },
+    { description: "Garden Maintence", time: 90, price: 85 },
+    { description: "Garden Maintence", time: 90, price: 85 },
+    { description: "Garden Maintence", time: 90, price: 85 },
   ];
 
   const fakeReviews = [
@@ -157,7 +160,7 @@ export default function Page({ params }: { params: ProviderProps }) {
         <p className="my-3"> {providerInfo.description} </p>
       </section>
 
-      <section className="w-fullrounded-3xl order-2 mb-6 border-1 border-light-accent bg-white p-4 md:w-[calc(50%-1.5rem)]">
+      <section className="order-2 mb-6 w-full rounded-3xl border-1 border-light-accent bg-white p-4 md:w-[calc(50%-1.5rem)]">
         <h4 className="my-4 pl-2 text-2xl text-secondary-font-color">
           Select Service
         </h4>
