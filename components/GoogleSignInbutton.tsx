@@ -63,6 +63,7 @@ export default function GoogleSignInButton() {
             size: "large",
             type: "standard",
             shape: "pill",
+            text: "continue_with",
           },
         );
       }
