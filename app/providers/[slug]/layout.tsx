@@ -33,8 +33,11 @@ export default function ProvderListLayout({
         </BreadcrumbItem>
         {paramsArray.map((slug) => (
           // added 1000 to key due to two items on route having same key
-          <BreadcrumbItem href={`/${slug}`} key={slug + 1000}>
-            {serviceObject?.label}
+
+          <BreadcrumbItem key={slug + 1000}>
+            <Link href={`/providers/${slug}`} className="flex items-center">
+              {serviceObject?.label}
+            </Link>
           </BreadcrumbItem>
         ))}
       </Breadcrumbs>

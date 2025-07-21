@@ -210,7 +210,7 @@ export default function Page({ params }: { params: { slug: string } }) {
               className="mx-auto mb-4 max-w-5xl border-1 border-secondary-font-color"
             >
               {/* Temp links back to same page until we decide routing for unique providers */}
-              <Link href={`/providers/${params.slug}`}>
+              <Link href={`/providers/${params.slug}/${id}`}>
                 <CardHeader className="text-xl lg:text-3xl">
                   {companyName}
                 </CardHeader>
