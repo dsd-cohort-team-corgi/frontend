@@ -1,6 +1,9 @@
 import * as React from "react";
-import { HeroUIProvider } from "@heroui/react";
+
+import { HeroUIProvider, useCalendarContext } from "@heroui/react";
+
 import type { Metadata } from "next";
+import Script from "next/script";
 // import localFont from "next/font/local";
 import { DM_Sans } from "next/font/google"; // https://nextjs.org/docs/app/getting-started/fonts#google-fonts
 // "Next/font/google Fonts are included stored as static assets and served from the same domain as the deployment, meaning no requests are sent to Google by the browser when the user visits your site"
@@ -10,6 +13,8 @@ import { DM_Sans } from "next/font/google"; // https://nextjs.org/docs/app/getti
 // 3. no layout shift, since the fonts load immediately so there is no flash of fallback text
 // improves privacy
 // 1. user's browser won't ping google's servers for the font data
+import { UserProvider } from "../components/context-wrappers/UserInfo";
+
 import "./globals.css";
 import Header from "../components/Header";
 
@@ -28,6 +33,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        {/* Load Google Identity Services globally, so it is available in the navbar */}
+        <Script
+          src="https://accounts.google.com/gsi/client"
+          async
+          // Load the Google client library in your app by including the third-party script https://supabase.com/docs/guides/auth/social-login/auth-google
+          strategy="beforeInteractive"
+          //   strategy="beforeInteractive"=  load the script before any interactive components mount, like the navbar/Header and google login button
+        />
+      </head>
+      {/* <UserProvider> */}
       <body className={` ${dmSans.variable} bg-gray-50 font-sans antialiased`}>
         {/* Step 1. body className={` ${dmSans.variable...}`} === exposes (adds) the css variable "--font-dm-sans" to the DOM,
          so tailwindcss can see and use it, if its setup up within tailwindcss.config.js (the setup in the config: fontFamily: { sans: ["var(--font-dm-sans)"],},)
@@ -55,9 +71,10 @@ export default function RootLayout({
          */}
         <HeroUIProvider>
           <Header />
-          {children}
+          {children};
         </HeroUIProvider>
       </body>
+      {/* </UserProvider> */}
     </html>
   );
 }

@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
+import { useDisclosure } from "@heroui/react";
+
 import EmailIcon from "@/components/icons/Email";
 import PhoneIcon from "@/components/icons/Phone";
 import StarRatingReview from "@/components/ProviderOverallRatingInfo";
@@ -9,6 +11,7 @@ import ReviewCard from "@/components/ReviewCard";
 import StyledAsButton from "@/components/StyledAsButton";
 import convertDateToTimeFromNow from "@/utils/convertDateToTimeFromNow";
 import objectIsEmptyCheck from "@/utils/objectIsEmptyCheck";
+import SignInModal from "@/components/SignInModal";
 
 // https://nextjs.org/docs/app/api-reference/file-conventions/dynamic-routes#convention
 // the docs are showing the Next.JS 15 behavior where params is a promise
@@ -20,7 +23,7 @@ type ProviderProps = {
 export default function Page({ params }: { params: ProviderProps }) {
   // const { slug, providerId } = params;
   // params must match dynamic folder names,providerid !== providerId
-
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [selectedService, setSelectedService] = useState<
     Record<string, string | number>
   >({});
@@ -114,6 +117,7 @@ export default function Page({ params }: { params: ProviderProps }) {
   return (
     <div className="xl:cols-2 m-4 flex columns-2 flex-col flex-wrap gap-6 sm:flex-row">
       {/* Have to use flex, since we have to reorder some elements on different screen sizes, which grid does not support */}
+      <SignInModal isOpen={isOpen} onOpenChange={onOpenChange} />
 
       {/* if the gap-6's value is changed xl:w-[calc(50%-1.5rem)] will have to be adjusted in the following sections */}
       <section className="order-1 mb-6 h-fit w-full rounded-3xl border-1 border-light-accent bg-white px-4 py-5 xl:w-[calc(50%-1.5rem)]">
@@ -197,6 +201,8 @@ export default function Page({ params }: { params: ProviderProps }) {
           className="mb-4 mt-6 block w-11/12 px-0 disabled:bg-gray-500"
           label="Continue to Booking"
           disabled={objectIsEmptyCheck(selectedService)}
+          onPress={onOpen}
+          // opens modal
         />
       </section>
 
