@@ -2,7 +2,8 @@
 
 import { Button } from "@heroui/react";
 import React, { Dispatch, SetStateAction } from "react";
-import Leaf from "./icons/Leaf";
+import { Leaf } from "lucide-react";
+
 import objectIsEmptyCheck from "@/utils/objectIsEmptyCheck";
 
 type IconServiceTimeType = {
@@ -36,7 +37,7 @@ export default function IconServiceTime({
       {/* group is used so when the div is hovered over the leaf icon also turns blue */}
 
       <span className="inline-block bg-slate-200 p-2 group-hover:bg-slate-300">
-        <Leaf className="group-hover:fill-primary" />
+        <Leaf className="group-hover:stroke-primary" />
       </span>
       <p className="inline-block pl-4 pr-2 font-bold"> {description} </p>
 

@@ -1,8 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import EmailIcon from "@/components/icons/Email";
-import PhoneIcon from "@/components/icons/Phone";
+import { Mail, Phone } from "lucide-react";
 import StarRatingReview from "@/components/ProviderOverallRatingInfo";
 import IconServiceTime from "@/components/IconServiceTime";
 import ReviewCard from "@/components/ReviewCard";
@@ -128,7 +127,13 @@ export default function Page() {
           <div className="flex space-x-6 px-2">
             <StyledAsButton
               label="Call"
-              startContent={<PhoneIcon />}
+              startContent={
+                <Phone
+                  size={18}
+                  color="gray"
+                  className="group-hover:stroke-white"
+                />
+              }
               as="a"
               className="text-md group items-center border-1 border-light-accent text-black hover:text-white data-[hover=true]:!bg-primary"
               variant="ghost"
@@ -137,7 +142,13 @@ export default function Page() {
 
             <StyledAsButton
               label="Email"
-              startContent={<EmailIcon />}
+              startContent={
+                <Mail
+                  size={18}
+                  color="gray"
+                  className="group-hover:stroke-white"
+                />
+              }
               as="a"
               className="text-md group items-center border-1 border-light-accent text-black hover:text-white data-[hover=true]:!bg-primary"
               variant="ghost"
