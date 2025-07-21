@@ -1,13 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Mail, Phone } from "lucide-react";
 import StarRatingReview from "@/components/ProviderOverallRatingInfo";
 import IconServiceTime from "@/components/IconServiceTime";
 import ReviewCard from "@/components/ReviewCard";
 import StyledAsButton from "@/components/StyledAsButton";
 import convertDateToTimeFromNow from "@/utils/convertDateToTimeFromNow";
-import objectIsEmptyCheck from "@/utils/objectIsEmptyCheck";
 
 // https://nextjs.org/docs/app/api-reference/file-conventions/dynamic-routes#convention
 // the docs are showing the Next.JS 15 behavior where params is a promise
@@ -22,10 +21,14 @@ export default function Page() {
   // const { slug, providerId } = params;
   // params must match dynamic folder names,providerid !== providerId
 
-  const [selectedService, setSelectedService] = useState<
+  const [selectedServiceId, setSelectedServiceId] = useState<string | null>(
+    null,
+  );
+  const [selectedServiceObject, setSelectedServiceObject] = useState<
     Record<string, string | number>
   >({});
   // the object has key value pairs the keys will be strings and the values can be strings or numbers, the object can also be empty
+
   const providerInfo = {
     description: "this is the providers description from the database",
     name: "GreenThumb Pros",
@@ -34,16 +37,12 @@ export default function Page() {
   };
 
   const serviceOptions = [
-    { description: "Lawn Mowing", time: 60, price: 65 },
-    { description: "Garden Maintence", time: 90, price: 85 },
-    { description: "Garden Maintence", time: 90, price: 85 },
-    { description: "Garden Maintence", time: 90, price: 85 },
-    { description: "Garden Maintence", time: 90, price: 85 },
-    { description: "Garden Maintence", time: 90, price: 85 },
-    { description: "Garden Maintence", time: 90, price: 85 },
-    { description: "Garden Maintence", time: 90, price: 85 },
-    { description: "Garden Maintence", time: 90, price: 85 },
-    { description: "Garden Maintence", time: 90, price: 85 },
+    { description: "Lawn Mowing", time: 60, price: 65, id: "453543" },
+    { description: "Garden Maintence", time: 90, price: 85, id: "12343424" },
+    { description: "Garden Maintence", time: 90, price: 85, id: "4435" },
+    { description: "Garden Maintence", time: 90, price: 85, id: "45353" },
+    { description: "Garden Maintence", time: 90, price: 85, id: "764564" },
+    { description: "Garden Maintence", time: 90, price: 85, id: "90934234" },
   ];
 
   const fakeReviews = [
@@ -111,6 +110,15 @@ export default function Page() {
   };
 
   const marginClass = marginMap[offset] || "";
+
+  useEffect(() => {
+    const foundServiceObject = serviceOptions.find(
+      (service) => service.id === selectedServiceId,
+    );
+    if (foundServiceObject !== undefined) {
+      setSelectedServiceObject(foundServiceObject);
+    }
+  }, [selectedServiceId]);
 
   return (
     <div className="xl:cols-2 m-4 flex columns-2 flex-col flex-wrap gap-6 sm:flex-row">
@@ -185,8 +193,9 @@ export default function Page() {
             description={service.description}
             time={service.time}
             price={service.price}
-            selectedService={selectedService}
-            setSelectedService={setSelectedService}
+            id={service.id}
+            selectedServiceId={selectedServiceId}
+            setSelectedServiceId={setSelectedServiceId}
           />
         ))}
       </section>
@@ -197,19 +206,18 @@ export default function Page() {
         </h4>
         <h6 className="font-bold"> Select Time </h6>
         <span className="block"> Tuesday, July 15, 2025 at 11:00 AM </span>
-        {objectIsEmptyCheck(selectedService) ? (
+        {selectedServiceId === null ? (
           <span className="block font-bold"> Please select a service</span>
         ) : (
           <span className="block font-bold">
-            {" "}
-            {`${selectedService.description} (${selectedService.time} mins) - $${selectedService.price}`}
+            {`${selectedServiceObject?.description} (${selectedServiceObject?.time} mins) - $${selectedServiceObject?.price}`}
           </span>
         )}
 
         <StyledAsButton
           className="mb-4 mt-6 block w-11/12 px-0 disabled:bg-gray-500"
           label="Continue to Booking"
-          disabled={objectIsEmptyCheck(selectedService)}
+          disabled={selectedServiceId === null}
         />
       </section>
 

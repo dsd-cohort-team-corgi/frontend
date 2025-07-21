@@ -4,35 +4,35 @@ import { Button } from "@heroui/react";
 import React, { Dispatch, SetStateAction } from "react";
 import { Leaf } from "lucide-react";
 
-import objectIsEmptyCheck from "@/utils/objectIsEmptyCheck";
-
 type IconServiceTimeType = {
   description: string;
   time: number;
   price: number;
-  setSelectedService: Dispatch<SetStateAction<Record<string, string | number>>>;
-  selectedService: object;
+  id: string;
+  setSelectedServiceId: Dispatch<SetStateAction<string | null>>;
+  selectedServiceId: string | null;
 };
 
 export default function IconServiceTime({
   description,
   time,
   price,
-  setSelectedService,
-  selectedService,
+  id,
+  setSelectedServiceId,
+  selectedServiceId,
 }: IconServiceTimeType) {
-  const handleClick = () => {
-    if (objectIsEmptyCheck(selectedService)) {
-      setSelectedService({ description, time, price });
+  const handleToggle = () => {
+    if (selectedServiceId === null) {
+      setSelectedServiceId(id);
     } else {
-      setSelectedService({});
+      setSelectedServiceId(null);
     }
   };
   return (
     <Button
       type="button"
       className="group my-3 flex h-fit w-full flex-col items-center rounded-lg border-1 border-light-accent bg-transparent p-4 text-[1rem] hover:border-2 hover:border-primary sm:flex-row"
-      onPress={handleClick}
+      onPress={handleToggle}
     >
       {/* group is used so when the div is hovered over the leaf icon also turns blue */}
 
