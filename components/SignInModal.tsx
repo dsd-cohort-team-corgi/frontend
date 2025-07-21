@@ -7,7 +7,7 @@ import {
   ModalBody,
   ModalFooter,
 } from "@heroui/react";
-import GoogleSignInbutton from "./googleSignInbutton";
+import GoogleSignInbutton from "./GoogleSignInButton";
 
 // const params = new URLSearchParams({
 //   client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!,
@@ -48,8 +48,12 @@ export default function LoginPage({ isOpen, onOpenChange }: LoginPageType) {
                 <span>Total:</span> $65
               </p>
             </ModalBody>
-            <ModalFooter>
-              <p> Sign in or create an account to complete your booking </p>
+            <ModalFooter className="flex-col">
+              {/* // footer automatically is flexed as flex-row, flex-none is ignored, so I told it to flex-col */}
+              <p className="w-full">
+                {" "}
+                Sign in or create an account to complete your booking{" "}
+              </p>
               <GoogleSignInbutton />
             </ModalFooter>
           </>

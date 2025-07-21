@@ -6,22 +6,13 @@ import {
   createContext,
   Suspense,
   useContext,
-  useEffect,
   useState,
   ReactNode,
+  useMemo,
 } from "react";
 
-import axios from "axios";
-
 // describes the user object
-type UserContextObjectType = {
-  user_name: string;
-  $id?: string;
-  profile_image?: string;
-  $permission?: string[];
-  $sequence?: string;
-  $updatedAt?: string;
-};
+type UserContextObjectType = Record<string, string | number | boolean>;
 
 // describes the context value (what you put in Context.Provider)
 type ContextProviderType = {
@@ -32,124 +23,54 @@ type ContextProviderType = {
 
 const Context = createContext<ContextProviderType | undefined>(undefined);
 
-export const UserProvider = ({ children }: { children: ReactNode }) {
+export function UserProvider({ children }: { children: ReactNode }) {
   // ReactNode allows any valid React child (JSX, string, number, fragment, etc.).
   // This is the standard way to type children for a provider or layout component in React with TypeScript
 
   const [triggerRecheck, setTriggerRecheck] = useState(true);
-  const [currentUsersId, setCurrentUsersId] = useState("guest");
+
   const [currentUsersInfo, setCurrentUsersInfo] =
     useState<UserContextObjectType>({
       user_name: "guest",
     });
-
-  const getUserId = async () => {
-
-    // this is a client component so we can't use this directly
-    //  const user = await getSignedInUser();
-    // instead we use fetch, since it uses a server only api to look at the cookies
-
-    const res = await fetch("/api/get-signed-in-user");
-    const data = await res.json();
-    const user = data.user;
-    console.log("getUserId() returned:", user);
-
-    const usersId = user ? user.$id : "guest";
-    // console.log(`this is users in getUserId ${JSON.stringify(usersId)}`);
-    setCurrentUsersId(usersId);
-    // use that id to now get users info
-    // await was necessary here to avoid a race condition, where setTriggerRecheck(false) BEFORE setCurrentUsersInfo(user) is called, causing a race condition where the context value is not updated in time for the NavBar to see it.
-    return usersId;
-  };
-
-  const getUsersInfo = async (usersId: string) => {
-    console.log(`get Users Info Ran ${usersId}`);
-
-    if (usersId !== "guest") {
-      // console.log(`in if loop of getUsersInfo ${usersId}`);
-      const usersData = await axios.post("/api/users/getspecificuser", {
-        usersId,
-      });
-
-      // console.log(`getcurrentUsersData early ${JSON.stringify(usersData)}`);
-      const user = usersData.data.trimmedUserObject;
-      return user;
-    } else {
-      const user = null;
-      return user;
-
-      // console.log("user is a guest");
-      // console.log(
-      //   `this is currentUsersInfo ${JSON.stringify(currentUsersInfo)}`,
-      // );
-    }
-  };
-
-  const updateContextWithUserInfo = async (user: UserContextObjectType) => {
-    //will be a user object
-    if (user !== null) {
-      setCurrentUsersInfo(user);
-    } else {
-      setCurrentUsersInfo({
-        user_name: "guest",
-      });
-    }
-  };
-  useEffect(() => {
-    console.log(
-      "UserProvider useEffect running, triggerRecheck:",
-      triggerRecheck,
-    );
-
-    //had to wrap the call in an async function due to the warning "useEffect must not return anything besides a function, which is used for clean-up" Because the callback getUserId() is returning a promise which is incompatible with useEffect, so it has to be wrapped in an async function
-    if (triggerRecheck) {
-      const loadData = async () => {
-        const usersIdFromGetUserAuthFunc = await getUserId();
-
-        const userInfoFromFunc = await getUsersInfo(usersIdFromGetUserAuthFunc);
-
-        await updateContextWithUserInfo(userInfoFromFunc);
-        //reset trigger to false, so we can retrigger it later if needed
-        setTriggerRecheck(false);
-      };
-      loadData();
-    } else {
-      console.log(`trigger recheck is false ${triggerRecheck}`);
-    }
-  }, [triggerRecheck]);
-
+  const contextValue = useMemo(
+    () => ({ currentUsersInfo, setTriggerRecheck, triggerRecheck }),
+    [currentUsersInfo, triggerRecheck],
+    // list of dependencies for useMemo to watch for changes
+  );
+  // why useMemo? To avoid potential rerenders / help performance
+  // React will re-render every consumer of the context whenever the value prop changes — even if the change is just a new object reference and the values are technically the same!
+  // this could trigger rerenders:
+  //  <Context.Provider
+  //     value={{ currentUsersInfo, setTriggerRecheck, triggerRecheck }}
+  // Eslint error: The object passed as the value prop to the Context provider (at line 39) changes every render. To fix this consider wrapping it in a useMemo hook.
+  //
   return (
     <Suspense>
-      <Context.Provider
-        value={{ currentUsersInfo, setTriggerRecheck, triggerRecheck }}
-      >
-        {children}
-      </Context.Provider>
+      <Context.Provider value={contextValue}>{children}</Context.Provider>
     </Suspense>
   );
-};
+}
 export const useUser = () => {
+  // a hook to easily call on the user information stored in this context
   const context = useContext(Context);
   if (!context) {
-    throw new Error("useUser must be used within a UserProvider");
+    throw new Error(
+      "Error! useUser can only be used in a component wrapped in UserProvider",
+    );
   }
   return context;
 
-  //However, when trying to destructure the context later
+  // Reason for throw new Error logic: by making the hook throw if context is missing, typescript will allow the object to be destructured later since it satisfies typescripts worry about it potentially being undefined
+
   // const { currentUsersInfo, ...other } = useUser();
 
-  //we got this typescript error:
-  // the error given is Property 'currentUsersInfo' does not exist on type 'ContextProviderType | undefined'
+  // If the throw is removed you get this error:
+  // Property 'currentUsersInfo' does not exist on type 'ContextProviderType | undefined'
 
-  //Why? useUser() hook returns ContextProviderType | undefined, so TypeScript thinks the result could be undefined.
+  // Why? useUser() hook returns ContextProviderType | undefined, so TypeScript thinks the result could be undefined.
 
-  //You can't destructure currentUsersInfo directly unless you guarantee the context is defined.
+  // You can't destructure currentUsersInfo directly unless you guarantee the context is defined.
 
-  //by making the hook throw if the context is missing, it satisfys typescript since it now knows it will never be undefined
+  // by making the hook throw if the context is missing, it satisfys typescript since it now knows it will never be undefined
 };
-
-//To use:
-// import { useUser } from "../components/context-wrappers/UserInfo";
-
-// const { currentUsersInfo, ...other } = useUser();
-// let currentUsersId = currentUsersInfo ? currentUsersInfo.$id : "guest";

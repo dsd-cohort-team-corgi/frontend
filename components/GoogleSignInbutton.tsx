@@ -1,17 +1,16 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import supabaseClient from "@/lib/supabase";
 
 export default function GoogleSignInButton() {
-  const handleLogin = async () => {
-    const { error } = await supabaseClient.auth.signInWithOAuth({
+  const handleLoginWithSupabase = async () => {
+    const { data, error } = await supabaseClient.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${process.env.NEXT_PUBLIC_URL}/auth/callback`, // or your deployed domain
+        redirectTo: `${process.env.NEXT_PUBLIC_URL}/auth/callback`,
       },
     });
-
     // When a user clicks on the login to google button:
     // 1. Supabase redirects the browser to Google's oauth endpoint
     // 2. Google shows the login screen
@@ -35,14 +34,40 @@ export default function GoogleSignInButton() {
     if (error) console.error("Login failed:", error);
     // supabase handles the session, and stores it in localStorage.
   };
+  useEffect(() => {
+    // to render the google button according to google's strict specifications:
+    // the script tag is in layout, we have to wait for the window to load the google script which does the button rendering
+    // https://blog.designly.biz/create-a-google-login-button-with-no-dependencies-in-react-next-js
+    // https://developers.google.com/identity/gsi/web/guides/display-button#button_rendering
+    const interval = setInterval(() => {
+      const googleReady =
+        typeof window !== "undefined" &&
+        window.google &&
+        window.google.accounts &&
+        window.google.accounts.id;
 
-  return (
-    <button
-      className="rounded border bg-white px-4 py-2 shadow-md hover:bg-gray-100"
-      type="button"
-      onClick={handleLogin}
-    >
-      Sign in with Google 🚀
-    </button>
-  );
+      const buttonDiv = document.getElementById("google-signin-btn");
+
+      if (googleReady && buttonDiv) {
+        clearInterval(interval);
+        // now that window.google is loaded, stop checking
+        window.google.accounts.id.initialize({
+          client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+          callback: handleLoginWithSupabase, // Function to pass the token to supabase
+        });
+
+        window.google.accounts.id.renderButton(
+          document.getElementById("google-signin-btn"),
+          {
+            theme: "outline",
+            size: "large",
+            type: "standard",
+            shape: "pill",
+          },
+        );
+      }
+    }, 300);
+  }, []); // Empty dependency array ensures this runs once after mount
+
+  return <div id="google-signin-btn" />;
 }
