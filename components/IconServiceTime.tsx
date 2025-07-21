@@ -10,7 +10,6 @@ type IconServiceTimeType = {
   price: number;
   id: string;
   setSelectedServiceId: Dispatch<SetStateAction<string | null>>;
-  selectedServiceId: string | null;
 };
 
 export default function IconServiceTime({
@@ -19,20 +18,16 @@ export default function IconServiceTime({
   price,
   id,
   setSelectedServiceId,
-  selectedServiceId,
 }: IconServiceTimeType) {
-  const handleToggle = () => {
-    if (selectedServiceId === null) {
-      setSelectedServiceId(id);
-    } else {
-      setSelectedServiceId(null);
-    }
+  const handleToggle = (newId: string) => {
+    setSelectedServiceId((prevId) => (prevId === newId ? null : newId));
   };
+
   return (
     <Button
       type="button"
       className="group my-3 flex h-fit w-full flex-col items-center rounded-lg border-1 border-light-accent bg-transparent p-4 text-[1rem] hover:border-2 hover:border-primary sm:flex-row"
-      onPress={handleToggle}
+      onPress={() => handleToggle(id)}
     >
       {/* group is used so when the div is hovered over the leaf icon also turns blue */}
 

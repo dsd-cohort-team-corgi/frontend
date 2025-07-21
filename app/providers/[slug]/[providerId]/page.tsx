@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useMemo } from "react";
 import { Mail, Phone } from "lucide-react";
 import StarRatingReview from "@/components/ProviderOverallRatingInfo";
 import IconServiceTime from "@/components/IconServiceTime";
@@ -24,10 +24,6 @@ export default function Page() {
   const [selectedServiceId, setSelectedServiceId] = useState<string | null>(
     null,
   );
-  const [selectedServiceObject, setSelectedServiceObject] = useState<
-    Record<string, string | number>
-  >({});
-  // the object has key value pairs the keys will be strings and the values can be strings or numbers, the object can also be empty
 
   const providerInfo = {
     description: "this is the providers description from the database",
@@ -39,10 +35,9 @@ export default function Page() {
   const serviceOptions = [
     { description: "Lawn Mowing", time: 60, price: 65, id: "453543" },
     { description: "Garden Maintence", time: 90, price: 85, id: "12343424" },
-    { description: "Garden Maintence", time: 90, price: 85, id: "4435" },
-    { description: "Garden Maintence", time: 90, price: 85, id: "45353" },
-    { description: "Garden Maintence", time: 90, price: 85, id: "764564" },
-    { description: "Garden Maintence", time: 90, price: 85, id: "90934234" },
+    { description: "Garden Maintence 2", time: 90, price: 85, id: "4435" },
+    { description: "Garden Maintence 3", time: 90, price: 85, id: "45353" },
+    { description: "Garden Maintence 4", time: 90, price: 85, id: "764564" },
   ];
 
   const fakeReviews = [
@@ -96,6 +91,8 @@ export default function Page() {
 
   const offset = Math.max(0, 70 * (serviceOptions.length - 1));
 
+  console.log("selectedServiceId updated:", selectedServiceId);
+
   const marginMap: Record<number, string> = {
     0: "xl:mt-0",
     70: "xl:-mt-[70px]",
@@ -103,22 +100,13 @@ export default function Page() {
     210: "xl:-mt-[210px]",
     280: "xl:-mt-[280px]",
     350: "xl:-mt-[350px]",
-    420: "xl:-mt-[420px]",
-    490: "xl:-mt-[490px]",
-    560: "xl:-mt-[560px]",
-    630: "xl:-mt-[630px]",
   };
 
   const marginClass = marginMap[offset] || "";
 
-  useEffect(() => {
-    const foundServiceObject = serviceOptions.find(
-      (service) => service.id === selectedServiceId,
-    );
-    if (foundServiceObject !== undefined) {
-      setSelectedServiceObject(foundServiceObject);
-    }
-  }, [selectedServiceId]);
+  const selectedServiceObject = useMemo(() => {
+    return serviceOptions.find((service) => service.id === selectedServiceId);
+  }, [selectedServiceId, serviceOptions]);
 
   return (
     <div className="xl:cols-2 m-4 flex columns-2 flex-col flex-wrap gap-6 sm:flex-row">
@@ -187,6 +175,7 @@ export default function Page() {
         </h4>
         {/* the index is just there for development, in production the services will always be unique */}
         {/* eslint-disable react/no-array-index-key */}
+
         {serviceOptions.map((service, index) => (
           <IconServiceTime
             key={`${service.description} ${service.time} ${index}`}
@@ -194,7 +183,6 @@ export default function Page() {
             time={service.time}
             price={service.price}
             id={service.id}
-            selectedServiceId={selectedServiceId}
             setSelectedServiceId={setSelectedServiceId}
           />
         ))}
