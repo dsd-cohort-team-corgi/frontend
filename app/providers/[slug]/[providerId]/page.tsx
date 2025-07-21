@@ -13,11 +13,13 @@ import objectIsEmptyCheck from "@/utils/objectIsEmptyCheck";
 // https://nextjs.org/docs/app/api-reference/file-conventions/dynamic-routes#convention
 // the docs are showing the Next.JS 15 behavior where params is a promise
 // however for Next.js 14 it is synchronous prop
-type ProviderProps = {
-  category: string;
-  providerId: string;
-};
-export default function Page({ params }: { params: ProviderProps }) {
+
+// type ProviderProps = {
+//   category: string;
+//   providerId: string;
+// };
+export default function Page() {
+  // { params }: { params: ProviderProps }
   // const { slug, providerId } = params;
   // params must match dynamic folder names,providerid !== providerId
 
