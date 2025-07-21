@@ -1,4 +1,6 @@
-// "use client";
+"use client";
+
+// This must be a client component, because Supabase sets the session from a fragment URL (#access_token=...) which is only accessible in the browser
 //   const router = useRouter();
 // if we want to redirect the user
 import supabaseClient from "@/lib/supabase";
