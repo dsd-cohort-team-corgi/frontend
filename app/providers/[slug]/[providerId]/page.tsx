@@ -23,7 +23,7 @@ export default function Page() {
   // const { slug, providerId } = params;
   // params must match dynamic folder names,providerid !== providerId
 
-  const { isOpen, onOpenChange } = useDisclosure();
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   const [selectedServiceId, setSelectedServiceId] = useState<string | null>(
     null,
@@ -210,6 +210,7 @@ export default function Page() {
         <StyledAsButton
           className="mb-4 mt-6 block w-11/12 px-0 disabled:bg-gray-500"
           label="Continue to Booking"
+          onPress={onOpen}
           disabled={selectedServiceId === null}
         />
       </section>
