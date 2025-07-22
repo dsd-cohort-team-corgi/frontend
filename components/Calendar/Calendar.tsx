@@ -9,16 +9,17 @@ import AvailableTimeSlots from "./AvailableTimeSlots";
 type CalendarType = {
   providersAppointments: Appointment[];
   serviceLength: number;
+  selectedTimeSlot: string | undefined;
+  setSelectedTimeSlot: React.Dispatch<React.SetStateAction<string | undefined>>;
 };
 
 export default function Calendar({
   providersAppointments,
   serviceLength,
+  selectedTimeSlot,
+  setSelectedTimeSlot,
 }: CalendarType) {
   const [selectedDay, setSelectedDay] = useState<Date | undefined>();
-  const [selectedTimeSlot, setSelectedTimeSlot] = useState<
-    string | undefined
-  >();
 
   // if all slots for the day are gone, add it as an unavailable day
 

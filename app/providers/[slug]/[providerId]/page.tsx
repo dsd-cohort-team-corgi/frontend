@@ -30,6 +30,10 @@ export default function Page() {
     string | undefined
   >();
 
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState<
+    string | undefined
+  >();
+
   const providerInfo = {
     description: "this is the providers description from the database",
     name: "GreenThumb Pros",
@@ -216,6 +220,8 @@ export default function Page() {
         The calendar will only be interactive after they click a service object, so in reality serviceLength will always be defined */}
         <Calendar
           providersAppointments={providerInfo.appointments}
+          selectedTimeSlot={selectedTimeSlot}
+          setSelectedTimeSlot={setSelectedTimeSlot}
           serviceLength={selectedServiceObject?.time ?? 60}
         />
 
@@ -223,7 +229,7 @@ export default function Page() {
           className="mb-4 mt-6 block w-11/12 px-0 disabled:bg-gray-500"
           label="Continue to Booking"
           onPress={onOpen}
-          disabled={selectedServiceId === undefined}
+          disabled={!selectedServiceId || !selectedTimeSlot}
         />
       </section>
 
