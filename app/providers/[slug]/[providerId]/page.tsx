@@ -9,6 +9,7 @@ import ReviewCard from "@/components/ReviewCard";
 import StyledAsButton from "@/components/StyledAsButton";
 import convertDateToTimeFromNow from "@/utils/convertDateToTimeFromNow";
 import SignInModal from "@/components/SignInModal";
+import Calendar from "@/components/Calendar/Calendar";
 
 // https://nextjs.org/docs/app/api-reference/file-conventions/dynamic-routes#convention
 // the docs are showing the Next.JS 15 behavior where params is a promise
@@ -25,15 +26,20 @@ export default function Page() {
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
-  const [selectedServiceId, setSelectedServiceId] = useState<string | null>(
-    null,
-  );
+  const [selectedServiceId, setSelectedServiceId] = useState<
+    string | undefined
+  >();
 
   const providerInfo = {
     description: "this is the providers description from the database",
     name: "GreenThumb Pros",
     email: "provider@gmail.com",
     phone_number: "999-111-1111",
+    appointments: [
+      // UTC time string not PST
+      { start_time: "2025-07-23T17:00:00Z", duration: 60 },
+      { start_time: "2025-07-25T18:30:00Z", duration: 60 },
+    ],
   };
 
   const serviceOptions = [
@@ -94,8 +100,6 @@ export default function Page() {
   // why won't style={{}} work? because we need this to only apply on xl screens, which would require a media query to work, which would result in a flash of unflash content because we'd have to wait until everythings rendered to access window.matchMedia(query)
 
   const offset = Math.max(0, 70 * (serviceOptions.length - 1));
-
-  console.log("selectedServiceId updated:", selectedServiceId);
 
   const marginMap: Record<number, string> = {
     0: "xl:mt-0",
@@ -199,7 +203,7 @@ export default function Page() {
         </h4>
         <h6 className="font-bold"> Select Time </h6>
         <span className="block"> Tuesday, July 15, 2025 at 11:00 AM </span>
-        {selectedServiceId === null ? (
+        {selectedServiceId === undefined ? (
           <span className="block font-bold"> Please select a service</span>
         ) : (
           <span className="block font-bold">
@@ -207,11 +211,19 @@ export default function Page() {
           </span>
         )}
 
+        {/* we want calendar to ALWAYS be visible 
+        We're putting a default of 60 to keep typescript happy (otherwise it worries that it could be undefined)
+        The calendar will only be interactive after they click a service object, so in reality serviceLength will always be defined */}
+        <Calendar
+          providersAppointments={providerInfo.appointments}
+          serviceLength={selectedServiceObject?.time ?? 60}
+        />
+
         <StyledAsButton
           className="mb-4 mt-6 block w-11/12 px-0 disabled:bg-gray-500"
           label="Continue to Booking"
           onPress={onOpen}
-          disabled={selectedServiceId === null}
+          disabled={selectedServiceId === undefined}
         />
       </section>
 
