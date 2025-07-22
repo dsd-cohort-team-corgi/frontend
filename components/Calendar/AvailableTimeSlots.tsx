@@ -4,6 +4,7 @@ import getValidAppointmentStartTimes from "@/utils/getValidAppointmentStartTimes
 import StyledAsButton from "../StyledAsButton";
 import handleClickToggleOffOrChangeState from "@/utils/handleClickToggleOffOrChangeState";
 import generateTimeSlots from "@/utils/generateTimeSlots";
+import convertTimeFrom24To12Hours from "@/utils/convertTimeFrom24To12Hours";
 
 type AvailableTimeSlotsType = {
   serviceLength: number;
@@ -24,10 +25,13 @@ export default function AvailableTimeSlots({
     busySlots, // [   ("10:30", "11:00", "13:00", "14:00") ];
     serviceLength, // 60 === needs 2 consecutive open slots
   });
+
+  const availableTimesIn12HourFormat =
+    convertTimeFrom24To12Hours(availableStartTimes);
   return (
     <div className="w-full">
       <ul className="flex w-full flex-col gap-y-3">
-        {availableStartTimes.map((slot) => (
+        {availableTimesIn12HourFormat.map((slot) => (
           <li
             className="group w-full rounded-md border-1 border-light-accent text-center hover:bg-primary"
             key={`li available time ${slot}`}

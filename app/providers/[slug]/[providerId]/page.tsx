@@ -206,14 +206,6 @@ export default function Page() {
           Book Service
         </h4>
         <h6 className="font-bold"> Select Time </h6>
-        <span className="block"> Tuesday, July 15, 2025 at 11:00 AM </span>
-        {selectedServiceId === undefined ? (
-          <span className="block font-bold"> Please select a service</span>
-        ) : (
-          <span className="block font-bold">
-            {`${selectedServiceObject?.description} (${selectedServiceObject?.time} mins) - $${selectedServiceObject?.price}`}
-          </span>
-        )}
 
         {/* we want calendar to ALWAYS be visible 
         We're putting a default of 60 to keep typescript happy (otherwise it worries that it could be undefined)
@@ -224,6 +216,16 @@ export default function Page() {
           setSelectedTimeSlot={setSelectedTimeSlot}
           serviceLength={selectedServiceObject?.time ?? 60}
         />
+        <div className="mt-8">
+          <span className="block"> Tuesday, July 15, 2025 at 11:00 AM </span>
+          {selectedServiceId === undefined ? (
+            <span className="block font-bold"> Please select a service</span>
+          ) : (
+            <span className="block font-bold">
+              {`${selectedServiceObject?.description} (${selectedServiceObject?.time} mins) - $${selectedServiceObject?.price}`}
+            </span>
+          )}
+        </div>
 
         <StyledAsButton
           className="mb-4 mt-6 block w-11/12 px-0 disabled:bg-gray-500"
