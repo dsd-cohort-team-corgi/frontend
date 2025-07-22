@@ -30,7 +30,7 @@ export default function LoginPage({ isOpen, onOpenChange }: LoginPageType) {
       }}
     >
       <ModalContent>
-        {(onClose) => (
+        {() => (
           <>
             <ModalHeader className="my-4 flex flex-col gap-1 text-2xl font-extrabold">
               Sign in to continue{" "}
