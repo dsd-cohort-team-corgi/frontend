@@ -1,33 +1,30 @@
 "use client";
 
-import React, { useState } from "react";
-import { useDisclosure } from "@heroui/react";
-
-import EmailIcon from "@/components/icons/Email";
-import PhoneIcon from "@/components/icons/Phone";
+import React, { useState, useMemo } from "react";
+import { Mail, Phone } from "lucide-react";
 import StarRatingReview from "@/components/ProviderOverallRatingInfo";
 import IconServiceTime from "@/components/IconServiceTime";
 import ReviewCard from "@/components/ReviewCard";
 import StyledAsButton from "@/components/StyledAsButton";
 import convertDateToTimeFromNow from "@/utils/convertDateToTimeFromNow";
-import objectIsEmptyCheck from "@/utils/objectIsEmptyCheck";
-import SignInModal from "@/components/SignInModal";
 
 // https://nextjs.org/docs/app/api-reference/file-conventions/dynamic-routes#convention
 // the docs are showing the Next.JS 15 behavior where params is a promise
 // however for Next.js 14 it is synchronous prop
-type ProviderProps = {
-  category: string;
-  providerId: string;
-};
-export default function Page({ params }: { params: ProviderProps }) {
+
+// type ProviderProps = {
+//   category: string;
+//   providerId: string;
+// };
+export default function Page() {
+  // { params }: { params: ProviderProps }
   // const { slug, providerId } = params;
   // params must match dynamic folder names,providerid !== providerId
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const [selectedService, setSelectedService] = useState<
-    Record<string, string | number>
-  >({});
-  // the object has key value pairs the keys will be strings and the values can be strings or numbers, the object can also be empty
+
+  const [selectedServiceId, setSelectedServiceId] = useState<string | null>(
+    null,
+  );
+
   const providerInfo = {
     description: "this is the providers description from the database",
     name: "GreenThumb Pros",
@@ -36,16 +33,11 @@ export default function Page({ params }: { params: ProviderProps }) {
   };
 
   const serviceOptions = [
-    { description: "Lawn Mowing", time: 60, price: 65 },
-    { description: "Garden Maintence", time: 90, price: 85 },
-    { description: "Garden Maintence", time: 90, price: 85 },
-    { description: "Garden Maintence", time: 90, price: 85 },
-    { description: "Garden Maintence", time: 90, price: 85 },
-    { description: "Garden Maintence", time: 90, price: 85 },
-    { description: "Garden Maintence", time: 90, price: 85 },
-    { description: "Garden Maintence", time: 90, price: 85 },
-    { description: "Garden Maintence", time: 90, price: 85 },
-    { description: "Garden Maintence", time: 90, price: 85 },
+    { description: "Lawn Mowing", time: 60, price: 65, id: "453543" },
+    { description: "Garden Maintence", time: 90, price: 85, id: "12343424" },
+    { description: "Garden Maintence 2", time: 90, price: 85, id: "4435" },
+    { description: "Garden Maintence 3", time: 90, price: 85, id: "45353" },
+    { description: "Garden Maintence 4", time: 90, price: 85, id: "764564" },
   ];
 
   const fakeReviews = [
@@ -99,6 +91,8 @@ export default function Page({ params }: { params: ProviderProps }) {
 
   const offset = Math.max(0, 70 * (serviceOptions.length - 1));
 
+  console.log("selectedServiceId updated:", selectedServiceId);
+
   const marginMap: Record<number, string> = {
     0: "xl:mt-0",
     70: "xl:-mt-[70px]",
@@ -106,13 +100,13 @@ export default function Page({ params }: { params: ProviderProps }) {
     210: "xl:-mt-[210px]",
     280: "xl:-mt-[280px]",
     350: "xl:-mt-[350px]",
-    420: "xl:-mt-[420px]",
-    490: "xl:-mt-[490px]",
-    560: "xl:-mt-[560px]",
-    630: "xl:-mt-[630px]",
   };
 
   const marginClass = marginMap[offset] || "";
+
+  const selectedServiceObject = useMemo(() => {
+    return serviceOptions.find((service) => service.id === selectedServiceId);
+  }, [selectedServiceId, serviceOptions]);
 
   return (
     <div className="xl:cols-2 m-4 flex columns-2 flex-col flex-wrap gap-6 sm:flex-row">
@@ -130,7 +124,13 @@ export default function Page({ params }: { params: ProviderProps }) {
           <div className="flex space-x-6 px-2">
             <StyledAsButton
               label="Call"
-              startContent={<PhoneIcon />}
+              startContent={
+                <Phone
+                  size={18}
+                  color="gray"
+                  className="group-hover:stroke-white"
+                />
+              }
               as="a"
               className="text-md group items-center border-1 border-light-accent text-black hover:text-white data-[hover=true]:!bg-primary"
               variant="ghost"
@@ -139,7 +139,13 @@ export default function Page({ params }: { params: ProviderProps }) {
 
             <StyledAsButton
               label="Email"
-              startContent={<EmailIcon />}
+              startContent={
+                <Mail
+                  size={18}
+                  color="gray"
+                  className="group-hover:stroke-white"
+                />
+              }
               as="a"
               className="text-md group items-center border-1 border-light-accent text-black hover:text-white data-[hover=true]:!bg-primary"
               variant="ghost"
@@ -170,14 +176,15 @@ export default function Page({ params }: { params: ProviderProps }) {
         </h4>
         {/* the index is just there for development, in production the services will always be unique */}
         {/* eslint-disable react/no-array-index-key */}
+
         {serviceOptions.map((service, index) => (
           <IconServiceTime
             key={`${service.description} ${service.time} ${index}`}
             description={service.description}
             time={service.time}
             price={service.price}
-            selectedService={selectedService}
-            setSelectedService={setSelectedService}
+            id={service.id}
+            setSelectedServiceId={setSelectedServiceId}
           />
         ))}
       </section>
@@ -188,21 +195,18 @@ export default function Page({ params }: { params: ProviderProps }) {
         </h4>
         <h6 className="font-bold"> Select Time </h6>
         <span className="block"> Tuesday, July 15, 2025 at 11:00 AM </span>
-        {objectIsEmptyCheck(selectedService) ? (
+        {selectedServiceId === null ? (
           <span className="block font-bold"> Please select a service</span>
         ) : (
           <span className="block font-bold">
-            {" "}
-            {`${selectedService.description} (${selectedService.time} mins) - $${selectedService.price}`}
+            {`${selectedServiceObject?.description} (${selectedServiceObject?.time} mins) - $${selectedServiceObject?.price}`}
           </span>
         )}
 
         <StyledAsButton
           className="mb-4 mt-6 block w-11/12 px-0 disabled:bg-gray-500"
           label="Continue to Booking"
-          disabled={objectIsEmptyCheck(selectedService)}
-          onPress={onOpen}
-          // opens modal
+          disabled={selectedServiceId === null}
         />
       </section>
 
