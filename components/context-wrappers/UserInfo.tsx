@@ -29,6 +29,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   const [triggerRecheck, setTriggerRecheck] = useState(true);
 
+  // since we'll be using setCurrentUsersInfo later, I'm temporarily disabling this warning
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [currentUsersInfo, setCurrentUsersInfo] =
     useState<UserContextObjectType>({
       user_name: "guest",

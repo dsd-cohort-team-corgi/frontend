@@ -2,11 +2,13 @@
 
 import React, { useState, useMemo } from "react";
 import { Mail, Phone } from "lucide-react";
+import { useDisclosure } from "@heroui/react";
 import StarRatingReview from "@/components/ProviderOverallRatingInfo";
 import IconServiceTime from "@/components/IconServiceTime";
 import ReviewCard from "@/components/ReviewCard";
 import StyledAsButton from "@/components/StyledAsButton";
 import convertDateToTimeFromNow from "@/utils/convertDateToTimeFromNow";
+import SignInModal from "@/components/SignInModal";
 
 // https://nextjs.org/docs/app/api-reference/file-conventions/dynamic-routes#convention
 // the docs are showing the Next.JS 15 behavior where params is a promise
@@ -20,6 +22,8 @@ export default function Page() {
   // { params }: { params: ProviderProps }
   // const { slug, providerId } = params;
   // params must match dynamic folder names,providerid !== providerId
+
+  const { isOpen, onOpenChange } = useDisclosure();
 
   const [selectedServiceId, setSelectedServiceId] = useState<string | null>(
     null,

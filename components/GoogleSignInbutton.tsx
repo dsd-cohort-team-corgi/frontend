@@ -5,7 +5,7 @@ import supabaseClient from "@/lib/supabase";
 
 export default function GoogleSignInButton() {
   const handleLoginWithSupabase = async () => {
-    const { data, error } = await supabaseClient.auth.signInWithOAuth({
+    const result = await supabaseClient.auth.signInWithOAuth({
       provider: "google",
       options: {
         redirectTo: `${process.env.NEXT_PUBLIC_URL}/auth/callback`,
@@ -31,7 +31,7 @@ export default function GoogleSignInButton() {
     //  to read the access token (JWT) from the end of the url and store it in local storage (automatically)
     // 6. They are now logged in! JWT is then used for all future Supabase requests, like: supabase.from("users").select("*"); // Automatically sends JWT in headers
 
-    if (error) console.error("Login failed:", error);
+    if (result.error) console.error("Login failed:", result.error);
     // supabase handles the session, and stores it in localStorage.
   };
   useEffect(() => {

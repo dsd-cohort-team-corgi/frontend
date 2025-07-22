@@ -5,6 +5,9 @@
 // if we want to redirect the user
 import supabaseClient from "@/lib/supabase";
 
+// needs to be a page.tsx not a route.ts because supabaseClient.auth.getSession() is using client side logic
+// otherwise they'll be an error because route.ts is just for api handlers
+
 // https://supabase.com/docs/guides/auth/social-login/auth-google?queryGroups=environment&environment=client#google-pre-built
 
 export default function AuthCallback() {
