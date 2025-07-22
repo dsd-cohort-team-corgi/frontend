@@ -21,7 +21,10 @@ export default function calculateBusyTimes(
       // loop 0: Original Date time + 0 * 30   result: 2025-07-23T10:30:00.000Z
       // loop 1: Original Date Time + 1 * 30   result: 2025-07-23T11:00:00.000Z
       // loop 2: Original Date Time + 2 * 30   result: 2025-07-23T11:30:00.000Z
-      const label = slot.toLocaleTimeString([], {
+      const label = slot.toLocaleString([], {
+        // year: "numeric",
+        // month: "2-digit",
+        // day: "2-digit",
         hour: "2-digit",
         minute: "2-digit",
         hour12: false,

@@ -41,8 +41,9 @@ export default function Page() {
     phone_number: "999-111-1111",
     appointments: [
       // UTC time string not PST
-      { start_time: "2025-07-23T17:00:00Z", duration: 60 },
-      { start_time: "2025-07-25T18:30:00Z", duration: 60 },
+      { start_time: "2025-07-28T17:30:00Z", duration: 60 },
+      { start_time: "2025-07-28T18:00:00Z", duration: 60 },
+      { start_time: "2025-07-28T20:00:00Z", duration: 60 },
     ],
   };
 
@@ -123,9 +124,11 @@ export default function Page() {
   return (
     <div className="xl:cols-2 m-4 flex columns-2 flex-col flex-wrap gap-6 sm:flex-row">
       {/* Have to use flex, since we have to reorder some elements on different screen sizes, which grid does not support */}
+      {/* if the gap-6's value is changed xl:w-[calc(50%-1.5rem)] will have to be adjusted in the following sections */}
       <SignInModal isOpen={isOpen} onOpenChange={onOpenChange} />
 
-      {/* if the gap-6's value is changed xl:w-[calc(50%-1.5rem)] will have to be adjusted in the following sections */}
+      {/* ################# PROVIDER INFO ################ */}
+
       <section className="order-1 mb-6 h-fit w-full rounded-3xl border-1 border-light-accent bg-white px-4 py-5 xl:w-[calc(50%-1.5rem)]">
         {/* //  ${serviceOptions.length > 2 ? "max-h-[calc(100%-400px)]" : ""} */}
         <div className="mb-4 justify-between sm:flex">
@@ -182,6 +185,8 @@ export default function Page() {
         <p className="my-3"> {providerInfo.description} </p>
       </section>
 
+      {/* ################# SELECT SERVICE ################ */}
+
       <section className="order-2 mb-6 w-full rounded-3xl border-1 border-light-accent bg-white p-4 md:w-[calc(50%-1.5rem)]">
         <h4 className="my-4 pl-2 text-2xl text-secondary-font-color">
           Select Service
@@ -200,6 +205,8 @@ export default function Page() {
           />
         ))}
       </section>
+
+      {/* ################# CALENDAR ################ */}
 
       <section className="order-3 mb-6 w-full rounded-3xl border-1 border-light-accent bg-white pl-4 pt-4 md:w-[calc(50%-1.5rem)] xl:order-4">
         <h4 className="my-4 text-2xl text-secondary-font-color">
@@ -232,6 +239,8 @@ export default function Page() {
           disabled={!selectedServiceId || !selectedTimeSlot}
         />
       </section>
+
+      {/* ################# REVIEWS ################ */}
 
       <section
         className={`order-4 w-full rounded-3xl border-1 border-light-accent bg-white px-2 pt-4 xl:order-3 xl:w-[calc(50%-1.5rem)] ${marginClass}`}
