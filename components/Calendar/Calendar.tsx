@@ -56,14 +56,16 @@ export default function Calendar({
           />
         )}
       </div>
-      {selectedDay && (
-        <p className="mt-2 block">
-          Selected: {format(selectedDay, "PPP")}
-          {selectedTimeSlot === undefined
-            ? "Please select a time"
-            : `${selectedTimeSlot}`}
-        </p>
-      )}
+      <div className="mt-8">
+        <span className="">
+          {selectedDay instanceof Date
+            ? format(selectedDay, "EEEE, MMMM d, yyyy")
+            : "Select a day and time"}
+        </span>
+        {selectedDay && (
+          <span> {`at ${selectedTimeSlot || "select a time"}`}</span>
+        )}
+      </div>
     </div>
   );
 }
