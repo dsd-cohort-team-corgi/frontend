@@ -7,16 +7,8 @@ import {
   ModalBody,
   ModalFooter,
 } from "@heroui/react";
-import GoogleSignInbutton from "./GoogleSignInButton";
+import GoogleSignInButton from "./GoogleSignInButton";
 
-// const params = new URLSearchParams({
-//   client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!,
-//   redirect_uri: "http://localhost:3000/auth/callback",
-//   response_type: "code",
-//   scope: "openid email profile",
-//   access_type: "offline", // get refresh token if needed
-//   prompt: "consent", // always ask user
-// });
 type LoginPageType = {
   isOpen: boolean;
   onOpenChange: () => void;
@@ -32,7 +24,9 @@ export default function LoginPage({ isOpen, onOpenChange }: LoginPageType) {
       onOpenChange={onOpenChange}
       classNames={{
         closeButton: "text-black top-8 right-6 hover:text-primary",
+        // the X defaults to the top right corner, moved it with top and right
         base: "max-w-[500px]",
+        // default version was too small and had a max-w-m
       }}
     >
       <ModalContent>
@@ -70,7 +64,7 @@ export default function LoginPage({ isOpen, onOpenChange }: LoginPageType) {
               <p className="mb-3 ml-3 w-full">
                 Sign in or create an account to complete your booking
               </p>
-              <GoogleSignInbutton />
+              <GoogleSignInButton />
             </ModalFooter>
           </>
         )}
