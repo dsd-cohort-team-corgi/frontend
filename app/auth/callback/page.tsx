@@ -54,6 +54,7 @@ export default function AuthCallback() {
   //     // router.push("/login");
   //   }
   // });
+  return <p>Finishing signing you in ... </p>;
 }
 
 // even though we're subscribed to auth changes in the header (aka if the session changes) we still need this because:
