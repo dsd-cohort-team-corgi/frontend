@@ -4,7 +4,7 @@ import React, { useEffect } from "react";
 import supabaseClient from "@/lib/supabase";
 
 export default function GoogleSignInButton() {
-  // Save the current path before login, so they get sent back to the right page
+  // Save the current path before login so they get sent back to the right page
   localStorage.setItem("redirectPath", window.location.pathname);
 
   const handleLoginWithSupabase = async () => {
