@@ -13,9 +13,16 @@ import supabaseClient from "@/lib/supabase";
 export default function AuthCallback() {
   //   const router = useRouter();
 
-  // Supabase will look at the URL hash and set session
+  // Supabase will look at the URL hash and automatically set a session in cookies
   supabaseClient.auth.getSession().then(({ data: { session } }) => {
     if (session) {
+      // Supabase stores session data (especially the JWT and user identity info) in a cookie. Sometimes, this data gets too big for a single cookie (max ~4KB), so Supabase will split it into two parts:
+
+      //  sb-<project-ref>-auth-token.0: This is part 1 of the token (typically the access token).
+      // sb-<project-ref>-auth-token.1: This is part 2 (often identity data, maybe even the refresh token).
+
+      // They work together as one session.
+
       console.log("Session restored:", session);
       // 👇 You could also save user info in context or global state here
       // router.push("/dashboard");  or wherever your app should go next
