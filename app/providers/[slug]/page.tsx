@@ -17,6 +17,8 @@ import listOfServices from "@/data/services";
 import LoadingSkeleton from "@/components/LoadingSkeleton";
 import searchIcon from "../../../public/searchIcon.svg";
 import star from "../../../public/star.svg";
+import { useQuery } from "@tanstack/react-query";
+import { h1 } from "framer-motion/client";
 
 interface CompanyListInterface {
   id: string;
@@ -34,7 +36,16 @@ export default function Page({ params }: { params: { slug: string } }) {
     useState<CompanyListInterface[]>();
   const [chipServicesArray, setChipServicesArray] = useState<string[]>(["All"]);
   const [activeChip, setActiveChip] = useState<number>(0);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  // const [isLoading, setIsLoading] = useState<boolean>(true);
+  const { isPending, error, data, isFetching } = useQuery({
+    queryKey: ["providersList"],
+    queryFn: async () => {
+      const response = await fetch("http://localhost:8000/providers");
+      return response;
+    },
+  });
+
+  console.log("queryData", data);
 
   const serviceObject =
     listOfServices[params.slug as keyof typeof listOfServices];
@@ -96,21 +107,21 @@ export default function Page({ params }: { params: { slug: string } }) {
     ]);
   };
 
-  useEffect(() => {
-    setIsLoading(true);
-    const fetchData = async () => {
-      if (serviceObject?.companyList) {
-        const importedList = await importCompanyList(params.slug);
-        if (importedList) {
-          setCompanyData(importedList);
-          setFilteredCompanyData(importedList);
-          addServicesToChipServicesSet(importedList);
-        }
-      }
-      setIsLoading(false);
-    };
-    fetchData();
-  }, [params.slug, serviceObject?.companyList]);
+  // useEffect(() => {
+  //   setIsLoading(true);
+  //   const fetchData = async () => {
+  //     if (serviceObject?.companyList) {
+  //       const importedList = await importCompanyList(params.slug);
+  //       if (importedList) {
+  //         setCompanyData(importedList);
+  //         setFilteredCompanyData(importedList);
+  //         addServicesToChipServicesSet(importedList);
+  //       }
+  //     }
+  //     setIsLoading(false);
+  //   };
+  //   fetchData();
+  // }, [params.slug, serviceObject?.companyList]);
 
   const handleChipFilter = (service: string) => {
     if (service === "All") {
@@ -146,7 +157,7 @@ export default function Page({ params }: { params: { slug: string } }) {
     setFilteredCompanyData(filteredCompanies);
   };
 
-  if (isLoading) {
+  if (isPending) {
     return (
       <>
         <LoadingSkeleton />
@@ -154,6 +165,10 @@ export default function Page({ params }: { params: { slug: string } }) {
         <LoadingSkeleton />
       </>
     );
+  }
+
+  if (error) {
+    return <h1>An error has occured: {error.message}</h1>;
   }
 
   return (
