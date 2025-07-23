@@ -31,15 +31,18 @@ export default function ProvderListLayout({
             Back to home
           </Link>
         </BreadcrumbItem>
-        {paramsArray.map((slug) => (
-          // added 1000 to key due to two items on route having same key
-
-          <BreadcrumbItem key={slug + 1000}>
-            <Link href={`/providers/${slug}`} className="flex items-center">
-              {serviceObject?.label}
-            </Link>
-          </BreadcrumbItem>
-        ))}
+        {paramsArray.map((slug, index) => {
+          const path = `/providers/${paramsArray.slice(0, index + 1).join("/")}`;
+          // 0 => /providers/lawnandgarden
+          // 1 => /providers/lawnandgarden/someproviderid
+          return (
+            <BreadcrumbItem key={slug + 1000}>
+              <Link href={path} className="flex items-center">
+                {serviceObject?.label}
+              </Link>
+            </BreadcrumbItem>
+          );
+        })}
       </Breadcrumbs>
       {children}
     </section>

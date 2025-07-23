@@ -37,8 +37,6 @@ export default function RootLayout({
         {/* Load Google Identity Services globally, so it is available in the navbar */}
         <Script
           src="https://accounts.google.com/gsi/client"
-          async
-          // Load the Google client library in your app by including the third-party script https://supabase.com/docs/guides/auth/social-login/auth-google
           strategy="beforeInteractive"
           //   strategy="beforeInteractive"=  load the script before any interactive components mount, like the navbar/Header and google login button
         />
