@@ -20,7 +20,8 @@ export default function AuthCallback() {
 
   useEffect(() => {
     // Supabase will handle restoring the session from the URL
-    let redirectPath = localStorage.getItem("redirectPath") || "/";
+    const redirectPathFirstCheck = localStorage.getItem("redirectPath");
+    //  redirectPathFirstCheck will be either something from local storage "/providers/lawnandgarden/bobsgardening" or null
 
     const {
       data: { subscription },
@@ -40,16 +41,18 @@ export default function AuthCallback() {
         );
       }
 
-      if (!redirectPath) {
+      if (!redirectPathFirstCheck) {
+        // if redirectPathFirstCheck is null, this means it didn't find anything in localStorage!
         // Wait and retry once before defaulting to "/"
         setTimeout(() => {
-          redirectPath = localStorage.getItem("redirectPath") || "/";
+          const redirectPathSecondCheck =
+            localStorage.getItem("redirectPath") || "/";
           localStorage.removeItem("redirectPath");
-          router.replace(redirectPath);
+          router.replace(redirectPathSecondCheck);
         }, 50);
       } else {
         localStorage.removeItem("redirectPath");
-        router.replace(redirectPath);
+        router.replace(redirectPathFirstCheck);
       }
     });
 
