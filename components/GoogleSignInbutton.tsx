@@ -29,9 +29,9 @@ export default function GoogleSignInButton() {
     // 4. auth callback is needed because we need to catch the token from that url and persist the session on the client
     // otherwise the user won't be signed in to the app
 
-    // 5. In  /auth/callback  we do:
-    //   const { data: { session } } = await supabase.auth.getSession();
-    //  to read the access token (JWT) from the end of the url and store it in local storage (automatically)
+    // 5. In  /auth/callback we do:
+    //    const {  data: { subscription },} = supabaseClient.auth.onAuthStateChange((event, session) =>
+    //    to read the access token (JWT) from the end of the url and store it in local storage (automatically)
     // 6. They are now logged in! JWT is then used for all future Supabase requests, like: supabase.from("users").select("*"); // Automatically sends JWT in headers
 
     if (result.error) console.error("Login failed:", result.error);
@@ -40,6 +40,8 @@ export default function GoogleSignInButton() {
   useEffect(() => {
     // to render the google button according to google's strict specifications:
     // the script tag is in layout, we have to wait for the window to load the google script which does the button rendering
+    // I used the javaScript version so I could pass our callback easily handleLoginWithSupabase and the styling is easier to understand and change
+    //  {theme: "outline", size: "large", ....}
     // https://blog.designly.biz/create-a-google-login-button-with-no-dependencies-in-react-next-js
     // https://developers.google.com/identity/gsi/web/guides/display-button#button_rendering
     const interval = setInterval(() => {
