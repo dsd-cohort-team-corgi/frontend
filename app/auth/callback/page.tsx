@@ -20,6 +20,8 @@ export default function AuthCallback() {
 
   useEffect(() => {
     // Supabase will handle restoring the session from the URL
+    let redirectPath = localStorage.getItem("redirectPath") || "/";
+
     const {
       data: { subscription },
     } = supabaseClient.auth.onAuthStateChange((event, session) => {
@@ -31,15 +33,24 @@ export default function AuthCallback() {
       // so it has been simplified
       // whether successful or not, we'll want to send the user back to the original page
       // but we'll pass a message to them if setting the session did fail
-      const redirectPath = localStorage.getItem("redirectPath") || "/";
+
       if (!session) {
         setMessageToUser(
           "There was an error when signing you in! No session was found. Returning to previous page ",
         );
       }
 
-      localStorage.removeItem("redirectPath");
-      router.replace(redirectPath);
+      if (!redirectPath) {
+        // Wait and retry once before defaulting to "/"
+        setTimeout(() => {
+          redirectPath = localStorage.getItem("redirectPath") || "/";
+          localStorage.removeItem("redirectPath");
+          router.replace(redirectPath);
+        }, 50);
+      } else {
+        localStorage.removeItem("redirectPath");
+        router.replace(redirectPath);
+      }
     });
 
     return () => subscription.unsubscribe();
