@@ -4,6 +4,7 @@ import Card from "@/components/CardWithImage";
 import HomePageHeroImage from "../public/HomePageHeroImage.png";
 import StyledAsButton from "@/components/StyledAsButton";
 import listOfServices from "@/data/services";
+import CompleteProfileModal from "@/components/CompleteProfileModal";
 
 export default function Home() {
   return (
@@ -35,7 +36,7 @@ export default function Home() {
           </div>
         </div>
       </div>
-
+      <CompleteProfileModal />
       <section className="mx-auto mt-20 max-w-[1200px] px-5 text-center sm:text-left">
         <h3 className="text-4xl font-bold text-primary-font-color">
           What service do you need?

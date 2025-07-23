@@ -14,6 +14,7 @@ import StyledAsButton from "@/components/StyledAsButton";
 import User from "./icons/User";
 import Phone from "./icons/Phone";
 import MapPin from "./icons/MapPin";
+import { useState } from "react";
 
 const usStates = [
   "Alabama",
@@ -75,8 +76,27 @@ const usStates = [
   "Northern Mariana Islands",
 ];
 
+interface ProfileData {
+  fullName: string;
+  phone: string;
+  streetAddress: string;
+  city: string;
+  state: string;
+  zip: string;
+}
+
 function CompleteProfileModal() {
-  const handleSubmit = () => {};
+  const [profileData, setProfileData] = useState<ProfileData>({
+    fullName: "",
+    phone: "",
+    streetAddress: "",
+    city: "",
+    state: "",
+    zip: "",
+  });
+  const handleSubmit = () => {
+    console.log(profileData)
+  };
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   return (
     <>
@@ -111,9 +131,15 @@ function CompleteProfileModal() {
                   }}
                 >
                   <Input
+                    onChange={(e) =>
+                      setProfileData((prev) => ({
+                        ...prev,
+                        fullName: e.target.value,
+                      }))
+                    }
+                    value={profileData.fullName}
                     placeholder="John Smith"
                     startContent={<User size={18} color="#62748e" />}
-                    // labelPlacement="outside-top"
                     isRequired
                     name="full_name"
                     type="text"
@@ -121,10 +147,16 @@ function CompleteProfileModal() {
                     label="Full Name"
                   />
                   <Input
+                    onChange={(e) =>
+                      setProfileData((prev) => ({
+                        ...prev,
+                        phone: e.target.value,
+                      }))
+                    }
+                    value={profileData.phone}
                     description="For service updates and provider contact"
                     placeholder="xxx-xxx-xxxx"
                     startContent={<Phone size={18} color="#62748e" />}
-                    // labelPlacement="outside-top"
                     isRequired
                     name="phone_number"
                     type="tel"
@@ -134,9 +166,15 @@ function CompleteProfileModal() {
                     pattern="[0-9]{10}"
                   />
                   <Input
+                    onChange={(e) =>
+                      setProfileData((prev) => ({
+                        ...prev,
+                        streetAddress: e.target.value,
+                      }))
+                    }
+                    value={profileData.streetAddress}
                     placeholder="123 Main Street"
                     startContent={<MapPin size={18} color="#62748e" />}
-                    // labelPlacement="outside-top"
                     isRequired
                     name="street_address_1"
                     type="text"
@@ -145,8 +183,14 @@ function CompleteProfileModal() {
                   />
                   <div className="w-full lg:flex lg:gap-2">
                     <Input
+                      onChange={(e) =>
+                        setProfileData((prev) => ({
+                          ...prev,
+                          city: e.target.value,
+                        }))
+                      }
+                      value={profileData.city}
                       placeholder="San Francisco"
-                      // labelPlacement="outside-top"
                       isRequired
                       name="city"
                       type="text"
@@ -154,8 +198,14 @@ function CompleteProfileModal() {
                       label="City"
                     />
                     <Input
+                      onChange={(e) =>
+                        setProfileData((prev) => ({
+                          ...prev,
+                          state: e.target.value,
+                        }))
+                      }
+                      value={profileData.state}
                       placeholder="CA"
-                      // labelPlacement="outside-top"
                       isRequired
                       name="state"
                       type="text"
@@ -172,8 +222,14 @@ function CompleteProfileModal() {
                       ))}
                     </datalist>
                     <Input
+                      onChange={(e) =>
+                        setProfileData((prev) => ({
+                          ...prev,
+                          zip: e.target.value,
+                        }))
+                      }
+                      value={profileData.zip}
                       placeholder="94102"
-                      // labelPlacement="outside-top"
                       isRequired
                       name="zip"
                       type="number"
