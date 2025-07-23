@@ -13,7 +13,7 @@ import { DM_Sans } from "next/font/google"; // https://nextjs.org/docs/app/getti
 // 3. no layout shift, since the fonts load immediately so there is no flash of fallback text
 // improves privacy
 // 1. user's browser won't ping google's servers for the font data
-import { UserProvider } from "../components/context-wrappers/UserInfo";
+// import { UserProvider } from "../components/context-wrappers/UserInfo";
 
 import "./globals.css";
 import Header from "../components/Header";
@@ -43,11 +43,9 @@ export default function RootLayout({
           //   strategy="beforeInteractive"=  load the script before any interactive components mount, like the navbar/Header and google login button
         />
       </head>
-      <UserProvider>
-        <body
-          className={` ${dmSans.variable} bg-gray-50 font-sans antialiased`}
-        >
-          {/* Step 1. body className={` ${dmSans.variable...}`} === exposes (adds) the css variable "--font-dm-sans" to the DOM,
+      {/* <UserProvider> */}
+      <body className={` ${dmSans.variable} bg-gray-50 font-sans antialiased`}>
+        {/* Step 1. body className={` ${dmSans.variable...}`} === exposes (adds) the css variable "--font-dm-sans" to the DOM,
          so tailwindcss can see and use it, if its setup up within tailwindcss.config.js (the setup in the config: fontFamily: { sans: ["var(--font-dm-sans)"],},)
          Step 2. font-sans === tells Tailwindcss to globally USE the value of that css variable
         
@@ -71,12 +69,12 @@ export default function RootLayout({
 
           Special note: if we make another layout, we'd have to import DM_Sans and pass it to that layouts body as well like we did with this root layout, so tailwindCSS can "see" it for that other layout's pages
          */}
-          <HeroUIProvider>
-            <Header />
-            {children};
-          </HeroUIProvider>
-        </body>
-      </UserProvider>
+        <HeroUIProvider>
+          <Header />
+          {children};
+        </HeroUIProvider>
+      </body>
+      {/* </UserProvider> */}
     </html>
   );
 }
