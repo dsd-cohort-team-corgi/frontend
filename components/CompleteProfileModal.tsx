@@ -15,6 +15,7 @@ import User from "./icons/User";
 import Phone from "./icons/Phone";
 import MapPin from "./icons/MapPin";
 import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
 
 const usStates = [
   "Alabama",
@@ -94,8 +95,28 @@ function CompleteProfileModal() {
     state: "",
     zip: "",
   });
+  const mutation = useMutation({
+    mutationFn: async () => {
+      // Simulate a 500ms network delay
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      const response = await fetch("http://localhost:8000/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer YOUR_TOKEN_HERE",
+        },
+        body: JSON.stringify(profileData),
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message);
+      }
+      return response.json();
+    },
+  });
   const handleSubmit = () => {
-    console.log(profileData)
+    console.log(profileData);
+    mutation.mutate();
   };
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   return (
@@ -131,6 +152,7 @@ function CompleteProfileModal() {
                   }}
                 >
                   <Input
+                    isDisabled={mutation.isPending}
                     onChange={(e) =>
                       setProfileData((prev) => ({
                         ...prev,
@@ -147,6 +169,7 @@ function CompleteProfileModal() {
                     label="Full Name"
                   />
                   <Input
+                    isDisabled={mutation.isPending}
                     onChange={(e) =>
                       setProfileData((prev) => ({
                         ...prev,
@@ -166,6 +189,7 @@ function CompleteProfileModal() {
                     pattern="[0-9]{10}"
                   />
                   <Input
+                    isDisabled={mutation.isPending}
                     onChange={(e) =>
                       setProfileData((prev) => ({
                         ...prev,
@@ -183,6 +207,7 @@ function CompleteProfileModal() {
                   />
                   <div className="w-full lg:flex lg:gap-2">
                     <Input
+                      isDisabled={mutation.isPending}
                       onChange={(e) =>
                         setProfileData((prev) => ({
                           ...prev,
@@ -198,6 +223,7 @@ function CompleteProfileModal() {
                       label="City"
                     />
                     <Input
+                      isDisabled={mutation.isPending}
                       onChange={(e) =>
                         setProfileData((prev) => ({
                           ...prev,
@@ -222,6 +248,7 @@ function CompleteProfileModal() {
                       ))}
                     </datalist>
                     <Input
+                      isDisabled={mutation.isPending}
                       onChange={(e) =>
                         setProfileData((prev) => ({
                           ...prev,
@@ -240,7 +267,15 @@ function CompleteProfileModal() {
                   <StyledAsButton
                     className="m-auto w-full rounded-md"
                     type="submit"
-                    label="Complete Profile"
+                    label={
+                      mutation.isPending
+                        ? "Submitting Profile..."
+                        : mutation.isError
+                          ? "Submission Failed. Retry?"
+                          : mutation.isSuccess
+                            ? "Profile Updated!"
+                            : "Complete Profile"
+                    }
                   />
                   <p className="m-auto text-center text-xs text-[#62748e]">
                     This will be your default address for future bookings
