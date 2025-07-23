@@ -7,7 +7,7 @@ import {
   ModalBody,
   ModalFooter,
 } from "@heroui/react";
-import GoogleSignInButton from "./GoogleSignInButton";
+import GoogleSignInButton from "./GoogleSignInbutton";
 
 type LoginPageType = {
   isOpen: boolean;
