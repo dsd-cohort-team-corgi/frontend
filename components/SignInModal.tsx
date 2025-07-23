@@ -59,9 +59,9 @@ export default function LoginPage({ isOpen, onOpenChange }: LoginPageType) {
                 <span className="font-bold"> $65</span>
               </div>
             </ModalBody>
-            <ModalFooter className="flex-col">
+            <ModalFooter className="flex-col items-center">
               {/* // footer automatically is flexed as flex-row, flex-none is ignored, so I told it to flex-col */}
-              <p className="mb-3 ml-3 w-full">
+              <p className="mx-auto mb-3 ml-3">
                 Sign in or create an account to complete your booking
               </p>
               <GoogleSignInButton />

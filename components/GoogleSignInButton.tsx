@@ -81,6 +81,7 @@ export default function GoogleSignInButton() {
             type: "standard",
             shape: "pill",
             text: "continue_with",
+            width: "480px",
           },
         );
       }
