@@ -19,31 +19,32 @@ export default function AuthCallback() {
   const router = useRouter();
 
   useEffect(() => {
-    // Supabase will handle restoring the session from the URL
-    const redirectPathFirstCheck = localStorage.getItem("redirectPath");
-    //  redirectPathFirstCheck will be either something from local storage "/providers/lawnandgarden/bobsgardening" or null
+    // edge case if someone visits the raw http://localhost:3000/auth/callback page
+    // this prevents them from getting stuck forever on "Finishing signing you in..."
+    // since Supabase never receives valid tokens to process.
+    const isAuthCallbackEmpty =
+      typeof window !== "undefined" &&
+      // we're running on the browser not the server
+      !window.location.hash &&
+      // there is no # in the url
+      !window.location.search;
+    // there is no ? in the rul
 
-    const {
-      data: { subscription },
-    } = supabaseClient.auth.onAuthStateChange((event, session) => {
-      // normally when you're subscribing to authChange events we'd want to specify what events we'd redirect on
-      //  if ((event === "SIGNED_IN" || event === "INITIAL_SESSION") && session)
-      // HOWEVER, this subscription does not apply globally, once we navigate away from app\auth\callback it will be gone
-      // we're only accessing this page after the google sign in has succeeded
+    if (isAuthCallbackEmpty) {
+      setMessageToUser(
+        "signin failed, recheck your url. No valid authentication info was found. Redirecting...",
+      );
+      setTimeout(() => {
+        router.replace("/");
+      }, 1000);
+    }
 
-      // so it has been simplified
-      // whether successful or not, we'll want to send the user back to the original page
-      // but we'll pass a message to them if setting the session did fail
-
-      if (!session) {
-        setMessageToUser(
-          "There was an error when signing you in! No session was found. Returning to previous page ",
-        );
-      }
-
+    const handleRedirect = () => {
+      const redirectPathFirstCheck = localStorage.getItem("redirectPath");
+      //  redirectPathFirstCheck will be either something from local storage "/providers/lawnandgarden/bobsgardening" or null
       if (!redirectPathFirstCheck) {
         // if redirectPathFirstCheck is null, this means it didn't find anything in localStorage!
-        // Wait and retry once before defaulting to "/"
+        // Wait and retry once before defaulting to "/" because certain browsers like chrome might having timing issues
         setTimeout(() => {
           const redirectPathSecondCheck =
             localStorage.getItem("redirectPath") || "/";
@@ -53,6 +54,62 @@ export default function AuthCallback() {
       } else {
         localStorage.removeItem("redirectPath");
         router.replace(redirectPathFirstCheck);
+      }
+    };
+
+    const {
+      data: { subscription },
+    } = supabaseClient.auth.onAuthStateChange((event, session) => {
+      // normally when you're subscribing to authChange events we'd want to specify what events we'd redirect on
+      //  if ((event === "SIGNED_IN" || event === "INITIAL_SESSION") && session)
+      // HOWEVER, this subscription does not apply globally, once we navigate away from app\auth\callback it will be gone so theres little point in checking the exact event
+      // why? because we're only accessing this page after the google sign in has succeeded
+
+      // supabaseClient.auth.onAuthStateChange is used because
+
+      // whether successful or not, we'll want to send the user back to the original page
+      // but we'll pass a message to them if setting the session did fail
+
+      if (session) {
+        // so an event like "SIGNED_IN" that would fire when the user completes signing in
+        // or an "intial_session" that hydrated in time
+        // session is hydrated/ available
+        handleRedirect();
+      } else {
+        if (!isAuthCallbackEmpty) {
+          // if a user is waiting to be redirected after landing at a faulty url without any hash information /auth/callback(nothinghere) then the error message  "signin failed, recheck your url. No valid authentication info was found. Redirecting..." to the user won't be overwritten with this one
+          setMessageToUser("Still signing you in ...  ");
+        }
+
+        // if supabase returned INITIAL_SESSION on immediate page load, the session might still be null or incomplete since its still loading
+        // INITIAL_SESSION means supabase is checking if theres an existing session cached locally or in the url token
+        // subscription listens for event changes (example Initial_session => signedIn) so the code for this currentl running onAuthState will still go to the timeout below
+        // but a second onAuthState will start, and see the session has updated and thus run the handleRedirect() above before the fallback setTimeOut below has finished running
+
+        setTimeout(async () => {
+          // Handling edge case of a delayed but valid session
+          // getSession is a fallback in case the event isn't changing fast enough, so subscription isn't retriggering onAuthStateChange
+          //  due to some odd edge case (timing, hydration, weird browswer quirks)
+          // this setTimeOut buys the valid but slow session time to hydrate before we jump to handleRedirect()
+          // ex 'INITIAL_SESSION', null)
+          // no second 'SIGNED_IN' event ever fires (due to timing/browser issue)
+          // then you're stuck with a null session, this is doing one quick recheck in case it was very delayed
+          const {
+            data: { session: delayedSession },
+          } = await supabaseClient.auth.getSession();
+
+          if (delayedSession) {
+            handleRedirect();
+          } else {
+            if (!isAuthCallbackEmpty) {
+              // if a user is waiting to be redirected after landing at a faulty url without any hash information /auth/callback(nothinghere) then the error message "signin failed, recheck your url. No valid authentication info was found. Redirecting..." to the user won't be overwritten with this one
+              setMessageToUser(
+                "There was an error when signing you in! No session was found. Returning to previous page.",
+              );
+            }
+            handleRedirect();
+          }
+        }, 500);
       }
     });
 
