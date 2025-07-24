@@ -10,10 +10,10 @@ interface IconProps {
 function User({ size, color, strokeWidth, fill }: IconProps) {
   return (
     <UserIcon
-      size={size ? size : 24}
-      color={color ? color : "currentColor"}
-      strokeWidth={strokeWidth ? strokeWidth : 2}
-      fill={fill ? fill : "none"}
+      size={size || 24}
+      color={color || "currentColor"}
+      strokeWidth={strokeWidth || 2}
+      fill={fill || "none"}
     />
   );
 }

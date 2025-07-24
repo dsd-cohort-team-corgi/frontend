@@ -107,6 +107,8 @@ function CompleteProfileModal({
   const mutation = useMutation({
     mutationFn: async () => {
       // Simulate a 500ms network delay
+      // temp disabling this rule since this is mock flow
+      /* eslint-disable no-promise-executor-return */
       await new Promise((resolve) => setTimeout(resolve, 500));
       const response = await fetch("http://localhost:8000/", {
         method: "POST",
@@ -132,6 +134,19 @@ function CompleteProfileModal({
       onOpenChange(false);
     }
   }, [mutation.isSuccess, onOpenChange]);
+
+  // submit button label condtions
+  let buttonLabel;
+  if (mutation.isPending) {
+    buttonLabel = "Submitting Profile...";
+  } else if (mutation.isError) {
+    buttonLabel = "Submission Failed. Retry?";
+  } else if (mutation.isSuccess) {
+    buttonLabel = "Profile Updated!";
+  } else {
+    buttonLabel = "Complete Profile"; // Default case
+  }
+
   return (
     <>
       <Button onPress={onOpen}>Open</Button>
@@ -277,19 +292,13 @@ function CompleteProfileModal({
                       label="Zip"
                     />
                   </div>
+                  return (
                   <StyledAsButton
                     className="m-auto w-full rounded-md"
                     type="submit"
-                    label={
-                      mutation.isPending
-                        ? "Submitting Profile..."
-                        : mutation.isError
-                          ? "Submission Failed. Retry?"
-                          : mutation.isSuccess
-                            ? "Profile Updated!"
-                            : "Complete Profile"
-                    }
+                    label={buttonLabel}
                   />
+                  );
                   <p className="m-auto text-center text-xs text-[#62748e]">
                     This will be your default address for future bookings
                   </p>

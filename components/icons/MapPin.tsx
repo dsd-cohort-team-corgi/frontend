@@ -1,4 +1,5 @@
 import { MapPin as MapPinIcon } from "lucide-react";
+
 interface IconProps {
   size?: number;
   color?: string;
@@ -8,10 +9,10 @@ interface IconProps {
 function MapPin({ size, color, strokeWidth, fill }: IconProps) {
   return (
     <MapPinIcon
-      size={size ? size : 24}
-      color={color ? color : "currentColor"}
-      strokeWidth={strokeWidth ? strokeWidth : 2}
-      fill={fill ? fill : "none"}
+      size={size || 24}
+      color={color || "currentColor"}
+      strokeWidth={strokeWidth || 2}
+      fill={fill || "none"}
     />
   );
 }

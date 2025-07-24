@@ -15,7 +15,7 @@ export default function Home() {
   // temporary useEffect. Once we have a user object to interact with in db we can check if the user has completed profile
   // doing this check for a cookie after booking flow to show complete user profile modal
   useEffect(() => {
-    const cookie = document.cookie;
+    const { cookie } = document;
     if (cookie) {
       onOpen();
     }
