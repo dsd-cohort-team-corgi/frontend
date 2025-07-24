@@ -36,7 +36,7 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <CompleteProfileModal />
+
       <section className="mx-auto mt-20 max-w-[1200px] px-5 text-center sm:text-left">
         <h3 className="text-4xl font-bold text-primary-font-color">
           What service do you need?
@@ -56,6 +56,8 @@ export default function Home() {
           ))}
         </section>
       </section>
+      {/* Temp home for modal, just for review */}
+      <CompleteProfileModal />
     </div>
   );
 }
