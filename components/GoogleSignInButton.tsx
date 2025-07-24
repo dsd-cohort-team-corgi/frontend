@@ -14,7 +14,7 @@ export default function GoogleSignInButton() {
 
     if (typeof window === "undefined") return;
 
-    localStorage.setItem("redirectPath", window.location.pathname);
+    document.cookie = `redirectPath=${window.location.pathname}; path=/; max-age=300`;
     console.log("Origin:", window.location.origin);
 
     // lets make sure we're entirely signed out for a fresh log in

@@ -27,23 +27,10 @@ export default function AuthCallback() {
     const handleRedirect = () => {
       if (hasRedirected) return;
       hasRedirected = true;
-      const redirectPathFirstCheck = localStorage.getItem("redirectPath");
-
-      //  redirectPathFirstCheck will be either something from local storage "/providers/lawnandgarden/bobsgardening" or null
-      if (!redirectPathFirstCheck) {
-        // if redirectPathFirstCheck is null, this means it didn't find anything in localStorage!
-        // Wait and retry once before defaulting to "/" because certain browsers like chrome might having timing issues
-        setTimeout(() => {
-          const redirectPathSecondCheck =
-            localStorage.getItem("redirectPath") || "/";
-
-          localStorage.removeItem("redirectPath");
-          router.replace(redirectPathSecondCheck);
-        }, 50);
-      } else {
-        localStorage.removeItem("redirectPath");
-        router.replace(redirectPathFirstCheck);
-      }
+      const match = document.cookie.match(/redirectPath=([^;]+)/);
+      const path = match ? decodeURIComponent(match[1]) : "/";
+      document.cookie = "redirectPath=; Max-Age=0; path=/"; // deleting redirect cookie
+      router.replace(path);
     };
 
     const urlParams = new URLSearchParams(window.location.search);
