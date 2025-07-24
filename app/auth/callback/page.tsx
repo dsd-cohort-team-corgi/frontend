@@ -22,11 +22,19 @@ export default function AuthCallback() {
     // edge case if someone visits the raw http://localhost:3000/auth/callback page
     // this prevents them from getting stuck forever on "Finishing signing you in..."
     // since Supabase never receives valid tokens to process.
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const hasAuthCode =
+      urlParams.has("code") || urlParams.has("error_description");
+
     const isAuthCallbackEmpty =
       typeof window !== "undefined" &&
       // we're running on the browser not the server
-      !window.location.search;
-    // there is no ? in the rul
+      !window.location.search &&
+      // there is no ? in the rul
+      // example: http://localhost:3000/auth/callback?code=62c29060-3a18-4daf-a1a6-7b44449bbdee
+      !hasAuthCode;
+    // if it doesn't have code or error_description, supabase won't know what to do with it, and they'll be stuck on the page with a "Finishing signing you in ..." message
 
     if (isAuthCallbackEmpty) {
       setMessageToUser(
