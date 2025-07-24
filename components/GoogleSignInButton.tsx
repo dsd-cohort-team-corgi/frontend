@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 import supabaseClient from "@/lib/supabase";
 
 export default function GoogleSignInButton() {
@@ -13,6 +13,15 @@ export default function GoogleSignInButton() {
     // so the window object is available, avoiding hydration errors
 
     if (typeof window === "undefined") return;
+
+    localStorage.setItem("redirectPath", window.location.pathname);
+    console.log("Origin:", window.location.origin);
+
+    // lets make sure we're entirely signed out for a fresh log in
+    // this will avoid errors with supabase accidently using an invalid old session for api calls
+    // auth.signOut logs out of client
+    await supabaseClient.auth.signOut({ scope: "global" });
+    // auth.signInWithOAuth logs out on server
 
     const result = await supabaseClient.auth.signInWithOAuth({
       provider: "google",
@@ -47,14 +56,6 @@ export default function GoogleSignInButton() {
     if (result.error) console.error("Login failed:", result.error);
     // supabase handles the session, and stores it in localStorage.
   };
-
-  useEffect(() => {
-    // Now safe to access window and localStorage
-    if (typeof window !== "undefined") {
-      localStorage.setItem("redirectPath", window.location.pathname);
-      console.log("Origin:", window.location.origin);
-    }
-  }, []); // Empty dependency array ensures this runs once after mount
 
   return (
     <button type="button" onClick={handleLoginWithSupabase}>
