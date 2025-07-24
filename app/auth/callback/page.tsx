@@ -19,22 +19,36 @@ export default function AuthCallback() {
   const router = useRouter();
 
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const hasAuthCode =
-      urlParams.has("code") || urlParams.has("error_description");
-
-    const redirectPath = urlParams.get("redirectPath") || "/";
-    console.log("redirectPath");
     // edge case if someone visits the raw http://localhost:3000/auth/callback page
     // this prevents them from getting stuck forever on "Finishing signing you in..."
     // since Supabase never receives valid tokens to process.
-    let hasRedirected = false;
 
     const handleRedirect = () => {
-      if (hasRedirected) return;
-      hasRedirected = true;
-      router.replace(redirectPath);
+      const redirectPathFirstCheck = localStorage.getItem("redirectPath");
+      console.log(`redirectPathFirstCheck  ${redirectPathFirstCheck}`);
+      //  redirectPathFirstCheck will be either something from local storage "/providers/lawnandgarden/bobsgardening" or null
+      if (!redirectPathFirstCheck) {
+        // if redirectPathFirstCheck is null, this means it didn't find anything in localStorage!
+        // Wait and retry once before defaulting to "/" because certain browsers like chrome might having timing issues
+        setTimeout(() => {
+          const redirectPathSecondCheck =
+            localStorage.getItem("redirectPath") || "/";
+          console.log(`redirectPathFirstCheck  ${redirectPathFirstCheck}`);
+          localStorage.removeItem("redirectPath");
+          router.replace(redirectPathSecondCheck);
+        }, 50);
+      } else {
+        localStorage.removeItem("redirectPath");
+        router.replace(redirectPathFirstCheck);
+      }
     };
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const hasAuthCode =
+      urlParams.has("code") || urlParams.has("error_description");
+    console.log(urlParams);
+
+    console.log(`has auth code ${hasAuthCode}`);
 
     const isAuthCallbackEmpty =
       typeof window !== "undefined" &&
@@ -68,7 +82,6 @@ export default function AuthCallback() {
         // so an event like "SIGNED_IN" that would fire when the user completes signing in
         // or an "intial_session" that hydrated in time
         // session is hydrated/ available
-
         handleRedirect();
       } else {
         if (!isAuthCallbackEmpty) {
@@ -102,7 +115,6 @@ export default function AuthCallback() {
                 "There was an error when signing you in! No session was found. Returning to previous page.",
               );
             }
-
             handleRedirect();
           }
         }, 500);

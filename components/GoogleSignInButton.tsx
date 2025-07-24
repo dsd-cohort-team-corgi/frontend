@@ -13,7 +13,10 @@ export default function GoogleSignInButton() {
     // so the window object is available, avoiding hydration errors
 
     if (typeof window === "undefined") return;
-    const redirectPath = window.location.pathname;
+
+    localStorage.setItem("redirectPath", window.location.pathname);
+    console.log("Origin:", window.location.origin);
+
     // lets make sure we're entirely signed out for a fresh log in
     // this will avoid errors with supabase accidently using an invalid old session for api calls
     // auth.signOut logs out of client
@@ -24,7 +27,7 @@ export default function GoogleSignInButton() {
       provider: "google",
 
       options: {
-        redirectTo: `${process.env.NEXT_PUBLIC_URL}/auth/callback?redirectPath=${redirectPath}`,
+        redirectTo: `${process.env.NEXT_PUBLIC_URL}/auth/callback`,
         queryParams: {
           prompt: "select_account",
         },
