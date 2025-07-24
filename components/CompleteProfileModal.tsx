@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import {
   Form,
@@ -9,15 +9,12 @@ import {
   ModalContent,
   ModalHeader,
   ModalBody,
-  useDisclosure,
   Button,
 } from "@heroui/react";
 import StyledAsButton from "@/components/StyledAsButton";
 import User from "./icons/User";
 import Phone from "./icons/Phone";
 import MapPin from "./icons/MapPin";
-
-
 
 const usStates = [
   "Alabama",
@@ -88,7 +85,17 @@ interface ProfileData {
   zip: string;
 }
 
-function CompleteProfileModal() {
+interface CompleteProfileModalProps {
+  isOpen: boolean;
+  onOpen: () => void;
+  onOpenChange: (isOpen: boolean) => void;
+}
+
+function CompleteProfileModal({
+  isOpen,
+  onOpen,
+  onOpenChange,
+}: CompleteProfileModalProps) {
   const [profileData, setProfileData] = useState<ProfileData>({
     fullName: "",
     phone: "",
@@ -120,7 +127,11 @@ function CompleteProfileModal() {
     console.log(profileData);
     mutation.mutate();
   };
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  useEffect(() => {
+    if (mutation.isSuccess) {
+      onOpenChange(false);
+    }
+  }, [mutation.isSuccess, onOpenChange]);
   return (
     <>
       <Button onPress={onOpen}>Open</Button>
@@ -136,7 +147,7 @@ function CompleteProfileModal() {
         }}
       >
         <ModalContent>
-          {(onclose) => (
+          {() => (
             <>
               <ModalHeader>Complete your profile</ModalHeader>
               <hr />
