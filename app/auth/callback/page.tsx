@@ -25,8 +25,6 @@ export default function AuthCallback() {
     const isAuthCallbackEmpty =
       typeof window !== "undefined" &&
       // we're running on the browser not the server
-      !window.location.hash &&
-      // there is no # in the url
       !window.location.search;
     // there is no ? in the rul
 
