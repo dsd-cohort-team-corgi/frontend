@@ -22,9 +22,9 @@ export default function AuthCallback() {
     // edge case if someone visits the raw http://localhost:3000/auth/callback page
     // this prevents them from getting stuck forever on "Finishing signing you in..."
     // since Supabase never receives valid tokens to process.
-
+    const redirectPathFirstCheck = localStorage.getItem("redirectPath");
+    setMessageToUser(redirectPathFirstCheck || "no redirect found");
     const handleRedirect = () => {
-      const redirectPathFirstCheck = localStorage.getItem("redirectPath");
       console.log(`redirectPathFirstCheck  ${redirectPathFirstCheck}`);
       //  redirectPathFirstCheck will be either something from local storage "/providers/lawnandgarden/bobsgardening" or null
       if (!redirectPathFirstCheck) {
@@ -34,6 +34,7 @@ export default function AuthCallback() {
           const redirectPathSecondCheck =
             localStorage.getItem("redirectPath") || "/";
           console.log(`redirectPathFirstCheck  ${redirectPathFirstCheck}`);
+          setMessageToUser(redirectPathSecondCheck || "no redirect found");
           localStorage.removeItem("redirectPath");
           router.replace(redirectPathSecondCheck);
         }, 50);
@@ -131,7 +132,7 @@ export default function AuthCallback() {
   //    part 2 (often identity data, maybe even the refresh token).
   // They work together as one session.
 
-  return <p>{messageToUser} </p>;
+  return <p>{messageToUser}</p>;
 }
 
 // even though we're subscribed to auth changes in the header (aka if the session changes) we still need this because:
