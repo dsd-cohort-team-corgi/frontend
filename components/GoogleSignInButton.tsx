@@ -14,6 +14,21 @@ export default function GoogleSignInButton() {
 
     if (typeof window === "undefined") return;
 
+    // lets make sure we're entirely signed out for a fresh log in
+    // this will avoid errors with supabase accidently using an invalid old session for api calls
+    // auth.signOut logs out of client
+    await supabaseClient.auth.signOut({ scope: "global" });
+    // auth.signInWithOAuth logs out on server
+    await supabaseClient.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${process.env.NEXT_PUBLIC_URL}/auth/callback`,
+        queryParams: {
+          prompt: "select_account",
+        },
+      },
+    });
+
     const result = await supabaseClient.auth.signInWithOAuth({
       provider: "google",
 
