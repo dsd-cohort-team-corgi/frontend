@@ -292,13 +292,11 @@ function CompleteProfileModal({
                       label="Zip"
                     />
                   </div>
-                  return (
                   <StyledAsButton
                     className="m-auto w-full rounded-md"
                     type="submit"
                     label={buttonLabel}
                   />
-                  );
                   <p className="m-auto text-center text-xs text-[#62748e]">
                     This will be your default address for future bookings
                   </p>
