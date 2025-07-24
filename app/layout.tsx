@@ -1,5 +1,7 @@
 import * as React from "react";
+
 import { HeroUIProvider } from "@heroui/react";
+
 import type { Metadata } from "next";
 // import localFont from "next/font/local";
 import { DM_Sans } from "next/font/google"; // https://nextjs.org/docs/app/getting-started/fonts#google-fonts
@@ -10,6 +12,8 @@ import { DM_Sans } from "next/font/google"; // https://nextjs.org/docs/app/getti
 // 3. no layout shift, since the fonts load immediately so there is no flash of fallback text
 // improves privacy
 // 1. user's browser won't ping google's servers for the font data
+// import { UserProvider } from "../components/context-wrappers/UserInfo";
+
 import "./globals.css";
 import Header from "../components/Header";
 
@@ -28,6 +32,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      {/* <UserProvider> */}
       <body className={` ${dmSans.variable} bg-gray-50 font-sans antialiased`}>
         {/* Step 1. body className={` ${dmSans.variable...}`} === exposes (adds) the css variable "--font-dm-sans" to the DOM,
          so tailwindcss can see and use it, if its setup up within tailwindcss.config.js (the setup in the config: fontFamily: { sans: ["var(--font-dm-sans)"],},)
@@ -55,9 +60,10 @@ export default function RootLayout({
          */}
         <HeroUIProvider>
           <Header />
-          {children}
+          {children};
         </HeroUIProvider>
       </body>
+      {/* </UserProvider> */}
     </html>
   );
 }
