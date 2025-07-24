@@ -30,9 +30,6 @@ export default function AuthCallback() {
     const isAuthCallbackEmpty =
       typeof window !== "undefined" &&
       // we're running on the browser not the server
-      !window.location.search &&
-      // there is no ? in the rul
-      // example: http://localhost:3000/auth/callback?code=62c29060-3a18-4daf-a1a6-7b44449bbdee
       !hasAuthCode;
     // if it doesn't have code or error_description, supabase won't know what to do with it, and they'll be stuck on the page with a "Finishing signing you in ..." message
 
