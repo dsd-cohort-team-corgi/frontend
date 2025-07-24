@@ -16,8 +16,12 @@ export default function GoogleSignInButton() {
 
     const result = await supabaseClient.auth.signInWithOAuth({
       provider: "google",
+
       options: {
         redirectTo: `${process.env.NEXT_PUBLIC_URL}/auth/callback`,
+        queryParams: {
+          prompt: "select_account",
+        },
       },
     });
     // When a user clicks on the login to google button:
@@ -39,7 +43,7 @@ export default function GoogleSignInButton() {
     //    const {  data: { subscription },} = supabaseClient.auth.onAuthStateChange((event, session) =>
     //    to read the access token (JWT) from the end of the url and store it in local storage (automatically)
     // 6. They are now logged in! JWT is then used for all future Supabase requests, like: supabase.from("users").select("*"); // Automatically sends JWT in headers
-
+    console.log(JSON.stringify(result));
     if (result.error) console.error("Login failed:", result.error);
     // supabase handles the session, and stores it in localStorage.
   };
@@ -50,43 +54,6 @@ export default function GoogleSignInButton() {
       localStorage.setItem("redirectPath", window.location.pathname);
       console.log("Origin:", window.location.origin);
     }
-
-    // to render the google button according to google's strict specifications:
-    // the script tag is in layout, we have to wait for the window to load the google script which does the button rendering
-    // I used the javaScript version so I could pass our callback easily handleLoginWithSupabase and the styling is easier to understand and change
-    //  {theme: "outline", size: "large", ....}
-    // https://blog.designly.biz/create-a-google-login-button-with-no-dependencies-in-react-next-js
-    // https://developers.google.com/identity/gsi/web/guides/display-button#button_rendering
-    // const interval = setInterval(() => {
-    //   const googleReady =
-    //     typeof window !== "undefined" &&
-    //     window.google &&
-    //     window.google.accounts &&
-    //     window.google.accounts.id;
-
-    //   const buttonDiv = document.getElementById("google-signin-btn");
-
-    //   if (googleReady && buttonDiv) {
-    //     clearInterval(interval);
-    //     // now that window.google is loaded, stop checking
-    //     window.google.accounts.id.initialize({
-    //       client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
-    //       callback: handleLoginWithSupabase, // Function to pass the token to supabase
-    //     });
-
-    //     window.google.accounts.id.renderButton(
-    //       document.getElementById("google-signin-btn"),
-    //       {
-    //         theme: "outline",
-    //         size: "large",
-    //         type: "standard",
-    //         shape: "pill",
-    //         text: "continue_with",
-    //         width: "480px",
-    //       },
-    //     );
-    //   }
-    // }, 300);
   }, []); // Empty dependency array ensures this runs once after mount
 
   return (

@@ -3,7 +3,6 @@ import * as React from "react";
 import { HeroUIProvider } from "@heroui/react";
 
 import type { Metadata } from "next";
-import Script from "next/script";
 // import localFont from "next/font/local";
 import { DM_Sans } from "next/font/google"; // https://nextjs.org/docs/app/getting-started/fonts#google-fonts
 // "Next/font/google Fonts are included stored as static assets and served from the same domain as the deployment, meaning no requests are sent to Google by the browser when the user visits your site"
@@ -33,14 +32,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <head>
-        {/* Load Google Identity Services globally, so it is available in the navbar */}
-        <Script
-          src="https://accounts.google.com/gsi/client"
-          strategy="beforeInteractive"
-          //   strategy="beforeInteractive"=  load the script before any interactive components mount, like the navbar/Header and google login button
-        />
-      </head>
       {/* <UserProvider> */}
       <body className={` ${dmSans.variable} bg-gray-50 font-sans antialiased`}>
         {/* Step 1. body className={` ${dmSans.variable...}`} === exposes (adds) the css variable "--font-dm-sans" to the DOM,
