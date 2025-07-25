@@ -139,10 +139,11 @@ export default function Page() {
   }, [selectedServiceId, serviceOptions]);
 
   useEffect(() => {
-    const { cookie } = document;
-    if (cookie) {
-      completeProfileOnOpen();
-    }
+    // const { cookie } = document;
+    // if (cookie) {
+    //   completeProfileOnOpen();
+    // }
+    bookingOnOpen()
   }, []);
 
   return (
