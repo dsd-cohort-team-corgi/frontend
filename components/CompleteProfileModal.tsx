@@ -15,6 +15,7 @@ import StyledAsButton from "@/components/StyledAsButton";
 import User from "./icons/User";
 import Phone from "./icons/Phone";
 import MapPin from "./icons/MapPin";
+import { useRouter } from "next/navigation";
 
 const usStates = [
   "Alabama",
@@ -90,7 +91,6 @@ interface CompleteProfileModalProps {
   onOpen: () => void;
   onOpenChange: (isOpen: boolean) => void;
   onClose: () => void;
-  bookingOnOpen: () => void;
 }
 
 function CompleteProfileModal({
@@ -98,7 +98,6 @@ function CompleteProfileModal({
   onOpen,
   onOpenChange,
   onClose,
-  bookingOnOpen
 }: CompleteProfileModalProps) {
   const [profileData, setProfileData] = useState<ProfileData>({
     fullName: "",
@@ -124,15 +123,16 @@ function CompleteProfileModal({
       });
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message);
+        // throw new Error(errorData.message);
       }
       return response.json();
     },
   });
+  const router = useRouter();
+
   const handleSubmit = () => {
-    console.log(profileData);
     mutation.mutate();
-    bookingOnOpen()
+    router.push("/booking-confirmation/1");
   };
   useEffect(() => {
     if (mutation.isSuccess) {
@@ -165,7 +165,7 @@ function CompleteProfileModal({
         }}
       >
         <ModalContent>
-          {(onClose) => (
+          {() => (
             <>
               <ModalHeader>Complete your profile</ModalHeader>
               <hr />
@@ -180,7 +180,6 @@ function CompleteProfileModal({
                     e.preventDefault();
                     console.log("asdf");
                     handleSubmit();
-                    onClose()
                   }}
                 >
                   <Input

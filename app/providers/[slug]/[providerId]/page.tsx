@@ -35,12 +35,7 @@ export default function Page() {
     isOpen: completeProfileIsOpen,
     onOpen: completeProfileOnOpen,
     onOpenChange: completeProfileOnOpenChange,
-    onClose: completeProfileOnClose
-  } = useDisclosure();
-  const {
-    isOpen: bookingIsOpen,
-    onOpen: bookingOnOpen,
-    onOpenChange: bookingOnOpenChange,
+    onClose: completeProfileOnClose,
   } = useDisclosure();
 
   const [selectedServiceId, setSelectedServiceId] = useState<
@@ -139,11 +134,10 @@ export default function Page() {
   }, [selectedServiceId, serviceOptions]);
 
   useEffect(() => {
-    // const { cookie } = document;
-    // if (cookie) {
-    //   completeProfileOnOpen();
-    // }
-    // bookingOnOpen()
+    const { cookie } = document;
+    if (cookie) {
+      completeProfileOnOpen();
+    }
   }, []);
 
   return (
@@ -156,9 +150,7 @@ export default function Page() {
         onOpen={completeProfileOnOpen}
         onOpenChange={completeProfileOnOpenChange}
         onClose={completeProfileOnClose}
-        bookingOnOpen={bookingOnOpen}
       />
-      <BookingConfirmedModal isOpen={bookingIsOpen} />
       {/* ################# PROVIDER INFO ################ */}
 
       <section className="order-1 mb-6 h-fit w-full rounded-3xl border-1 border-light-accent bg-white px-4 py-5 xl:w-[calc(50%-1.5rem)]">

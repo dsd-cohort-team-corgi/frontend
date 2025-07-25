@@ -6,15 +6,18 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
+  useDisclosure,
 } from "@heroui/react";
 import Check from "@/components/icons/Check";
 
 interface BookingModalProps {
   isOpen: boolean;
 }
-
-function BookingConfirmedModal({ isOpen }: BookingModalProps) {
+export default function page() {
+  const { isOpen } = useDisclosure();
   return (
+    <>
+    <p>fasd</p>
     <Modal
       isOpen={isOpen}
       placement="top-center"
@@ -24,7 +27,7 @@ function BookingConfirmedModal({ isOpen }: BookingModalProps) {
         // the X defaults to the top right corner, moved it with top and right
         base: "max-w-[500px]",
         // default version was too small and had a max-w-m
-      }}
+    }}
     >
       <ModalContent>
         <ModalHeader className="text-center">
@@ -32,11 +35,10 @@ function BookingConfirmedModal({ isOpen }: BookingModalProps) {
             <Check color="#187a24" />
           </div>
           Booking Confirmed
-          <p className="text-sm text-light-font-color">ID: BK-001234</p>
+          <p className="text-light-font-color text-sm">ID: BK-001234</p>
         </ModalHeader>
       </ModalContent>
     </Modal>
+    </>
   );
 }
-
-export default BookingConfirmedModal;
