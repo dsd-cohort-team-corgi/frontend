@@ -149,7 +149,6 @@ function CompleteProfileModal({
 
   return (
     <>
-      <Button onPress={onOpen}>Open</Button>
       <Modal
         isOpen={isOpen}
         placement="top-center"

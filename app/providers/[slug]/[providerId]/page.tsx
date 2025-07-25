@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { Mail, Phone } from "lucide-react";
 import { useDisclosure } from "@heroui/react";
 import StarRatingReview from "@/components/ProviderOverallRatingInfo";
@@ -10,6 +10,7 @@ import StyledAsButton from "@/components/StyledAsButton";
 import convertDateToTimeFromNow from "@/utils/convertDateToTimeFromNow";
 import SignInModal from "@/components/SignInModal";
 import Calendar from "@/components/Calendar/Calendar";
+import CompleteProfileModal from "@/components/CompleteProfileModal";
 
 // https://nextjs.org/docs/app/api-reference/file-conventions/dynamic-routes#convention
 // the docs are showing the Next.JS 15 behavior where params is a promise
@@ -24,7 +25,21 @@ export default function Page() {
   // const { slug, providerId } = params;
   // params must match dynamic folder names,providerid !== providerId
 
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const {
+    isOpen: signInIsOpen,
+    onOpen: signInOnOpen,
+    onOpenChange: signInOnOpenChange,
+  } = useDisclosure();
+  const {
+    isOpen: completeProfileIsOpen,
+    onOpen: completeProfileOnOpen,
+    onOpenChange: completeProfileOnOpenChange,
+  } = useDisclosure();
+  const {
+    isOpen: bookingIsOpen,
+    onOpen: bookingOnOpen,
+    onOpenChange: bookingOnOpenChange,
+  } = useDisclosure();
 
   const [selectedServiceId, setSelectedServiceId] = useState<
     string | undefined
@@ -121,12 +136,23 @@ export default function Page() {
     return serviceOptions.find((service) => service.id === selectedServiceId);
   }, [selectedServiceId, serviceOptions]);
 
+  useEffect(() => {
+    const { cookie } = document;
+    if (cookie) {
+      completeProfileOnOpen();
+    }
+  }, []);
+
   return (
     <div className="xl:cols-2 m-4 flex columns-2 flex-col flex-wrap gap-6 sm:flex-row">
       {/* Have to use flex, since we have to reorder some elements on different screen sizes, which grid does not support */}
       {/* if the gap-6's value is changed xl:w-[calc(50%-1.5rem)] will have to be adjusted in the following sections */}
-      <SignInModal isOpen={isOpen} onOpenChange={onOpenChange} />
-
+      <SignInModal isOpen={signInIsOpen} onOpenChange={signInOnOpen} />
+      <CompleteProfileModal
+        isOpen={completeProfileIsOpen}
+        onOpen={completeProfileOnOpen}
+        onOpenChange={completeProfileOnOpenChange}
+      />
       {/* ################# PROVIDER INFO ################ */}
 
       <section className="order-1 mb-6 h-fit w-full rounded-3xl border-1 border-light-accent bg-white px-4 py-5 xl:w-[calc(50%-1.5rem)]">
@@ -235,7 +261,7 @@ export default function Page() {
         <StyledAsButton
           className="mb-4 mt-6 block w-11/12 px-0 disabled:bg-gray-500"
           label="Continue to Booking"
-          onPress={onOpen}
+          onPress={signInOnOpen}
           disabled={!selectedServiceId || !selectedTimeSlot}
         />
       </section>
