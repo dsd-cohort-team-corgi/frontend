@@ -23,6 +23,16 @@ export default function AuthCallback() {
     // this prevents them from getting stuck forever on "Finishing signing you in..."
     // since Supabase never receives valid tokens to process.
 
+    let hasRedirected = false;
+    const handleRedirect = () => {
+      if (hasRedirected) return;
+      hasRedirected = true;
+      const match = document.cookie.match(/redirectPath=([^;]+)/);
+      const path = match ? decodeURIComponent(match[1]) : "/";
+      document.cookie = "redirectPath=; Max-Age=0; path=/"; // deleting redirect cookie
+      router.replace(path);
+    };
+
     const urlParams = new URLSearchParams(window.location.search);
     const hasAuthCode =
       urlParams.has("code") || urlParams.has("error_description");
@@ -38,27 +48,9 @@ export default function AuthCallback() {
         "signin failed, recheck your url. No valid authentication info was found. Redirecting...",
       );
       setTimeout(() => {
-        router.replace("/");
+        handleRedirect();
       }, 1000);
     }
-
-    const handleRedirect = () => {
-      const redirectPathFirstCheck = localStorage.getItem("redirectPath");
-      //  redirectPathFirstCheck will be either something from local storage "/providers/lawnandgarden/bobsgardening" or null
-      if (!redirectPathFirstCheck) {
-        // if redirectPathFirstCheck is null, this means it didn't find anything in localStorage!
-        // Wait and retry once before defaulting to "/" because certain browsers like chrome might having timing issues
-        setTimeout(() => {
-          const redirectPathSecondCheck =
-            localStorage.getItem("redirectPath") || "/";
-          localStorage.removeItem("redirectPath");
-          router.replace(redirectPathSecondCheck);
-        }, 50);
-      } else {
-        localStorage.removeItem("redirectPath");
-        router.replace(redirectPathFirstCheck);
-      }
-    };
 
     const {
       data: { subscription },
