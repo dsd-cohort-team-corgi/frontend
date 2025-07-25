@@ -89,12 +89,16 @@ interface CompleteProfileModalProps {
   isOpen: boolean;
   onOpen: () => void;
   onOpenChange: (isOpen: boolean) => void;
+  onClose: () => void;
+  bookingOnOpen: () => void;
 }
 
 function CompleteProfileModal({
   isOpen,
   onOpen,
   onOpenChange,
+  onClose,
+  bookingOnOpen
 }: CompleteProfileModalProps) {
   const [profileData, setProfileData] = useState<ProfileData>({
     fullName: "",
@@ -128,6 +132,7 @@ function CompleteProfileModal({
   const handleSubmit = () => {
     console.log(profileData);
     mutation.mutate();
+    bookingOnOpen()
   };
   useEffect(() => {
     if (mutation.isSuccess) {
@@ -146,7 +151,6 @@ function CompleteProfileModal({
   } else {
     buttonLabel = "Complete Profile"; // Default case
   }
-
   return (
     <>
       <Modal
@@ -161,7 +165,7 @@ function CompleteProfileModal({
         }}
       >
         <ModalContent>
-          {() => (
+          {(onClose) => (
             <>
               <ModalHeader>Complete your profile</ModalHeader>
               <hr />
@@ -176,6 +180,7 @@ function CompleteProfileModal({
                     e.preventDefault();
                     console.log("asdf");
                     handleSubmit();
+                    onClose()
                   }}
                 >
                   <Input

@@ -11,6 +11,7 @@ import convertDateToTimeFromNow from "@/utils/convertDateToTimeFromNow";
 import SignInModal from "@/components/SignInModal";
 import Calendar from "@/components/Calendar/Calendar";
 import CompleteProfileModal from "@/components/CompleteProfileModal";
+import BookingConfirmedModal from "@/components/BookingConfirmedModal";
 
 // https://nextjs.org/docs/app/api-reference/file-conventions/dynamic-routes#convention
 // the docs are showing the Next.JS 15 behavior where params is a promise
@@ -34,6 +35,7 @@ export default function Page() {
     isOpen: completeProfileIsOpen,
     onOpen: completeProfileOnOpen,
     onOpenChange: completeProfileOnOpenChange,
+    onClose: completeProfileOnClose
   } = useDisclosure();
   const {
     isOpen: bookingIsOpen,
@@ -152,7 +154,10 @@ export default function Page() {
         isOpen={completeProfileIsOpen}
         onOpen={completeProfileOnOpen}
         onOpenChange={completeProfileOnOpenChange}
+        onClose={completeProfileOnClose}
+        bookingOnOpen={bookingOnOpen}
       />
+      <BookingConfirmedModal isOpen={bookingIsOpen} />
       {/* ################# PROVIDER INFO ################ */}
 
       <section className="order-1 mb-6 h-fit w-full rounded-3xl border-1 border-light-accent bg-white px-4 py-5 xl:w-[calc(50%-1.5rem)]">
