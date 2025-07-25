@@ -20,7 +20,7 @@ function BookingConfirmedModal({ isOpen }: BookingModalProps) {
       placement="top-center"
       classNames={{
         closeButton: "invisible",
-        header: "flex-col justify-center items-center",
+        header: "flex-col justify-center items-center gap-4",
         // the X defaults to the top right corner, moved it with top and right
         base: "max-w-[500px]",
         // default version was too small and had a max-w-m
@@ -32,6 +32,7 @@ function BookingConfirmedModal({ isOpen }: BookingModalProps) {
             <Check color="#187a24" />
           </div>
           Booking Confirmed
+          <p className="text-sm text-light-accent">ID: BK-001234</p>
         </ModalHeader>
       </ModalContent>
     </Modal>

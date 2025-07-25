@@ -143,7 +143,7 @@ export default function Page() {
     // if (cookie) {
     //   completeProfileOnOpen();
     // }
-    bookingOnOpen()
+    // bookingOnOpen()
   }, []);
 
   return (
