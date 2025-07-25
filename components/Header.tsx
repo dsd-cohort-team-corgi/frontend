@@ -1,5 +1,7 @@
 "use client";
 
+import { Session } from "@supabase/supabase-js";
+// this also imports supabase's Session type
 import Link from "next/link";
 // Link is a wrapper component that allows for client side navigation, which improves next.js performance
 // Why? Since it will not reload the page & it prefetches the page in the background
@@ -7,7 +9,7 @@ import Link from "next/link";
 // it doesn't render anything by default, instead it wraps the content
 // ex <Link href="/about"> <a> Click here to go to the about page </a> </Link>
 
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Navbar,
   NavbarBrand,
@@ -24,22 +26,46 @@ import {
   Dropdown,
   DropdownMenu,
 } from "@heroui/react";
-
 // NavBarMenuToggle == toggles mobile nav bar
 // NavBarMenu == mobile nav bar
-
+import supabaseClient from "@/lib/supabase";
 import StyledAsButton from "./StyledAsButton";
 
 import listOfServices from "@/data/services";
 
 export default function App() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
-  const userIsSignedIn = true;
+  const [userSession, setUserSession] = React.useState<Session | null>(null);
 
-  const handleLogOut = () => {
+  // It creates a Supabase client that works correctly in a Client Component
+  // this knows to look at the Supabase cookie, and sync the auth state accordingly
+  // saves us from re-implementing a bunch of cookie/session handling logic
+
+  const handleLogOut = async () => {
+    await supabaseClient.auth.signOut();
     console.log("logged out :)");
     // logout Logic
   };
+
+  // on render, check for a session cookie from supabase, if
+  useEffect(() => {
+    // On initial mount, you grab the current session
+    supabaseClient.auth.getSession().then(({ data: { session } }) => {
+      setUserSession(session);
+    });
+
+    // subscribe to auth changes to auto-update
+    // On auth changes (login/logout), you update the session accordingly
+    // on logout, session will be null. So userSession will be updated to null
+    const {
+      data: { subscription },
+    } = supabaseClient.auth.onAuthStateChange((_event, session) => {
+      console.log("auth changed:", _event);
+      setUserSession(session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   type LoggedInMenuType =
     | { label: string; href: string; onClick?: never }
@@ -60,7 +86,7 @@ export default function App() {
   ];
 
   const mobileNavMenuItems = [
-    ...(userIsSignedIn ? loggedInMenuItems : guestMenuItems),
+    ...(userSession ? loggedInMenuItems : guestMenuItems),
     ...Object.values(listOfServices),
   ];
 
@@ -129,7 +155,7 @@ export default function App() {
 
       {/* #### Right Section ###### */}
       <NavbarContent justify="end">
-        {!userIsSignedIn && (
+        {!userSession && (
           <>
             <NavbarItem className="hidden md:flex">
               {/* only shows up on medium and larger screens, when there is more room */}
@@ -153,7 +179,7 @@ export default function App() {
           </>
         )}
 
-        {userIsSignedIn && (
+        {userSession && (
           <>
             <NavbarItem className="hidden md:flex">
               <HeroUiLink

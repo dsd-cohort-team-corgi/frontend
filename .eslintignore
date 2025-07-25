@@ -13,6 +13,7 @@ yarn.lock
 .env.local
 .prettierignore
 .eslintignore
+next.config.mjs
 
 # Don't format images and icons
 public/**/*.@(svg|png|jpg|jpeg|gif|webp)

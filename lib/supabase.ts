@@ -7,3 +7,7 @@ const supabase = createBrowserClient(
 );
 
 export default supabase;
+
+// made it return an object rather than it being a function call so we'' only have one supabase client object active in the app. So its a stable reference, react won't recreate it per render
+// 1. client is stateful (it tracks the current session, listeners, etc.)
+// 2. if we had multiple supbase clients, there could be multiple event subscriptions/ duplicate auth states
