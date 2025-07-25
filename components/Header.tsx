@@ -105,15 +105,17 @@ export default function App() {
           aria-label={isMenuOpen ? "Close menu" : "Open menu"}
           className="sm:hidden"
         />
-        <NavbarBrand>
-          <img
-            src="/logo.png"
-            alt="A corgi which is used as a logo"
-            width={40}
-            height={50}
-          />
-          <p className="text-medium font-bold">Maid You Look</p>
-        </NavbarBrand>
+        <Link href={"/"}>
+          <NavbarBrand>
+            <img
+              src="/logo.png"
+              alt="A corgi which is used as a logo"
+              width={40}
+              height={50}
+            />
+            <p className="text-medium font-bold">Maid You Look</p>
+          </NavbarBrand>
+        </Link>
       </NavbarContent>
 
       {/* #### Middle Section ###### */}
