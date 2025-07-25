@@ -1,11 +1,25 @@
+"use client";
+
+import { useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useDisclosure } from "@heroui/react";
 import Card from "@/components/CardWithImage";
 import HomePageHeroImage from "../public/HomePageHeroImage.png";
 import StyledAsButton from "@/components/StyledAsButton";
 import listOfServices from "@/data/services";
+import CompleteProfileModal from "@/components/CompleteProfileModal";
 
 export default function Home() {
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  // temporary useEffect. Once we have a user object to interact with in db we can check if the user has completed profile
+  // doing this check for a cookie after booking flow to show complete user profile modal
+  useEffect(() => {
+    const { cookie } = document;
+    if (cookie) {
+      onOpen();
+    }
+  }, []);
   return (
     <div>
       <div className="flex justify-center">
@@ -55,6 +69,12 @@ export default function Home() {
           ))}
         </section>
       </section>
+      {/* Temp home for modal, just for review */}
+      <CompleteProfileModal
+        isOpen={isOpen}
+        onOpen={onOpen}
+        onOpenChange={onOpenChange}
+      />
     </div>
   );
 }

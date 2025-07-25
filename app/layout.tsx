@@ -16,6 +16,7 @@ import { DM_Sans } from "next/font/google"; // https://nextjs.org/docs/app/getti
 
 import "./globals.css";
 import Header from "../components/Header";
+import TanstackQueryProvider from "@/components/TanstackQueryProvider";
 
 const dmSans = DM_Sans({ subsets: ["latin"], variable: "--font-dm-sans" });
 // variable "--font-dm-sans" =  a custom css property we created so we can setup this font in Tailwindcss's config
@@ -59,8 +60,10 @@ export default function RootLayout({
           Special note: if we make another layout, we'd have to import DM_Sans and pass it to that layouts body as well like we did with this root layout, so tailwindCSS can "see" it for that other layout's pages
          */}
         <HeroUIProvider>
-          <Header />
-          {children};
+          <TanstackQueryProvider>
+            <Header />
+            {children}
+          </TanstackQueryProvider>
         </HeroUIProvider>
       </body>
       {/* </UserProvider> */}
