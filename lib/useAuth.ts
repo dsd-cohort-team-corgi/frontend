@@ -1,8 +1,13 @@
 import { useEffect, useState } from "react";
 import supabase from "./supabase";
 
-export function useAuth() {
-  const [userSession, setUserSession] = useState<any>(null);
+interface UserSession {
+  id: string;
+  email: string;
+}
+
+export default function useAuth() {
+  const [userSession, setUserSession] = useState<UserSession | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -26,7 +31,15 @@ export function useAuth() {
       const {
         data: { session },
       } = await supabase.auth.getSession();
-      setUserSession(session?.user || null);
+
+      if (session?.user) {
+        setUserSession({
+          id: session.user.id,
+          email: session.user.email || "",
+        });
+      } else {
+        setUserSession(null);
+      }
       setLoading(false);
     };
 
@@ -36,7 +49,14 @@ export function useAuth() {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUserSession(session?.user || null);
+      if (session?.user) {
+        setUserSession({
+          id: session.user.id,
+          email: session.user.email || "",
+        });
+      } else {
+        setUserSession(null);
+      }
     });
 
     return () => subscription.unsubscribe();

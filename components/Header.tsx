@@ -7,7 +7,7 @@ import Link from "next/link";
 // it doesn't render anything by default, instead it wraps the content
 // ex <Link href="/about"> <a> Click here to go to the about page </a> </Link>
 
-import React, { useEffect } from "react";
+import React from "react";
 import {
   Navbar,
   NavbarBrand,
@@ -28,7 +28,7 @@ import {
 // NavBarMenu == mobile nav bar
 import supabaseClient from "@/lib/supabase";
 import StyledAsButton from "./StyledAsButton";
-import { useAuth } from "@/lib/useAuth";
+import useAuth from "@/lib/useAuth";
 import listOfServices from "@/data/services";
 
 export default function App() {
