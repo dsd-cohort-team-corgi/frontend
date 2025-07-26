@@ -1,6 +1,7 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import Link from "next/link";
 import {
   Modal,
   ModalContent,
@@ -32,11 +33,10 @@ interface BookingQueryProps {
   updated_at: string;
 }
 
-interface BookingModalProps {
-  isOpen: boolean;
-}
-export default function page() {
+export default function page({ params }: { params: { slug: string } }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const pathName = usePathname();
+  const bookingId = pathName.split("/")[2];
   const router = useRouter();
   const {
     data: bookingData,
@@ -44,7 +44,7 @@ export default function page() {
     isLoading: bookingIsLoading,
   } = useApiQuery<BookingQueryProps>(
     ["bookings", "bookingId"],
-    "/bookings/19eb6a08-5e86-4420-ae28-b6c4435f6238",
+    `/bookings/${bookingId}`,
   );
 
   const {
@@ -56,8 +56,6 @@ export default function page() {
     `/providers/${bookingData?.provider_id}`,
   );
 
-  console.log("booking", bookingData);
-  console.log("provider", providerData);
   // const {
   //   data: serviceData,
   //   error: serviceError,
@@ -71,13 +69,24 @@ export default function page() {
     // opens modal after data has been fetched
     onOpen();
   }, [providerData, onOpen]);
-
+  // need to add provider check
   if (bookingIsLoading) {
-    return <LoadingSkeleton />;
+    return (
+      <div className="m-auto w-4/5 max-w-[500px]">
+        <LoadingSkeleton />
+      </div>
+    );
   }
-  // if (providerError) {
-  //   return <h1>Something went wrong: {providerError.message}</h1>;
-  // }
+  // need to add provider check
+  if (bookingError) {
+    let errorMessage;
+    if (providerError) {
+      errorMessage = providerError.message;
+    } else {
+      errorMessage = bookingError?.message;
+    }
+    return <h1>Something went wrong: {errorMessage}</h1>;
+  }
 
   return (
     <>
@@ -124,10 +133,13 @@ export default function page() {
                     <p>{formatDateTimeString(bookingData?.start_time ?? "")}</p>
                   </CardBody>
                 </Card>
-                <StyledAsButton
-                  label="Add To Calandar"
-                  startContent={<Calendar size={18} />}
-                />
+                <Link href={`/api/generate-ics/${bookingId}`}>
+                  <StyledAsButton
+                    className="w-full"
+                    label="Add To Calandar"
+                    startContent={<Calendar size={18} />}
+                  />
+                </Link>
                 <StyledAsButton
                   endContent={<ArrowRight size={16} />}
                   label="View My Bookings"

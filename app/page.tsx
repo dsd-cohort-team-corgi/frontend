@@ -7,7 +7,6 @@ import HomePageHeroImage from "../public/HomePageHeroImage.png";
 import StyledAsButton from "@/components/StyledAsButton";
 import listOfServices from "@/data/services";
 import useAuth from "@/lib/useAuth";
-import CompleteProfileModal from "@/components/CompleteProfileModal";
 
 interface UserSession {
   id: string;
@@ -90,27 +89,11 @@ const renderHero = (userSession: UserSession | null) => {
 
 export default function Home() {
   const { userSession } = useAuth();
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
-
-  // temporary useEffect. Once we have a user object to interact with in db we can check if the user has completed profile
-  // doing this check for a cookie after booking flow to show complete user profile modal
-  useEffect(() => {
-    const { cookie } = document;
-    if (cookie) {
-      onOpen();
-    }
-  }, []);
 
   return (
     <div>
       {renderHero(userSession)}
       <ServicesSection />
-      {/* Temp home for modal, just for review */}
-      <CompleteProfileModal
-        isOpen={isOpen}
-        onOpen={onOpen}
-        onOpenChange={onOpenChange}
-      />
     </div>
   );
 }
