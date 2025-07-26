@@ -1,7 +1,5 @@
 "use client";
 
-import { Session } from "@supabase/supabase-js";
-// this also imports supabase's Session type
 import Link from "next/link";
 // Link is a wrapper component that allows for client side navigation, which improves next.js performance
 // Why? Since it will not reload the page & it prefetches the page in the background
@@ -30,42 +28,18 @@ import {
 // NavBarMenu == mobile nav bar
 import supabaseClient from "@/lib/supabase";
 import StyledAsButton from "./StyledAsButton";
-
+import { useAuth } from "@/lib/useAuth";
 import listOfServices from "@/data/services";
 
 export default function App() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
-  const [userSession, setUserSession] = React.useState<Session | null>(null);
-
-  // It creates a Supabase client that works correctly in a Client Component
-  // this knows to look at the Supabase cookie, and sync the auth state accordingly
-  // saves us from re-implementing a bunch of cookie/session handling logic
+  const { userSession } = useAuth();
 
   const handleLogOut = async () => {
     await supabaseClient.auth.signOut();
     console.log("logged out :)");
     // logout Logic
   };
-
-  // on render, check for a session cookie from supabase, if
-  useEffect(() => {
-    // On initial mount, you grab the current session
-    supabaseClient.auth.getSession().then(({ data: { session } }) => {
-      setUserSession(session);
-    });
-
-    // subscribe to auth changes to auto-update
-    // On auth changes (login/logout), you update the session accordingly
-    // on logout, session will be null. So userSession will be updated to null
-    const {
-      data: { subscription },
-    } = supabaseClient.auth.onAuthStateChange((_event, session) => {
-      console.log("auth changed:", _event);
-      setUserSession(session);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
 
   type LoggedInMenuType =
     | { label: string; href: string; onClick?: never }
