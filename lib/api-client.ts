@@ -2,7 +2,6 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import supabase from "./supabase";
 
 const API_BASE_URL = "https://maidyoulook-backend.onrender.com";
-// CONST API_BASE_URL = "http://localhost:3000"; // for local development
 
 const getAuthHeaders = async () => {
   const headers: Record<string, string> = {
