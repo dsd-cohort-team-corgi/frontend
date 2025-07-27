@@ -33,6 +33,44 @@ interface BookingQueryProps {
   updated_at: string;
 }
 
+interface Service {
+  service_title: string;
+  service_description: string;
+  pricing: number;
+  duration: number;
+  category: string;
+  services_subcategories: string;
+  id: string;
+}
+
+interface Review {
+  rating: number;
+  description: string;
+  created_at: string;
+  customer_name: string;
+}
+
+interface ProviderProps {
+  id: string;
+  phone_number: string;
+  company_name: string;
+  services: Service[];
+  reviews: Review[];
+  review_count: number;
+  average_rating: number;
+}
+interface Address {
+  street_address_1: string;
+  street_address_2: string;
+  city: string;
+  state: string;
+  zip: string;
+  id: string;
+  customer_id: string;
+  created_at: string;
+  updated_at: string;
+}
+
 export default function page({ params }: { params: { slug: string } }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const pathName = usePathname();
@@ -51,34 +89,38 @@ export default function page({ params }: { params: { slug: string } }) {
     data: providerData,
     error: providerError,
     isLoading: providerIsLoading,
-  } = useApiQuery<unknown>(
+  } = useApiQuery<ProviderProps>(
     ["providers", "providerId"],
     `/providers/${bookingData?.provider_id}`,
   );
 
-  // const {
-  //   data: serviceData,
-  //   error: serviceError,
-  //   isLoading: serviceIsLoading,
-  // } = useApiQuery<unknown>(
-  //   ["bookings", "bookingId"],
-  //   "/bookings/19eb6a08-5e86-4420-ae28-b6c4435f6238",
-  // );
+  const {
+    data: addressData,
+    error: addressError,
+    isLoading: addressIsLoading,
+  } = useApiQuery<Address[]>(["address"], `/addresses`);
+  console.log(addressData)
+  const address = addressData?.find(
+    (address) => address.customer_id === bookingData?.customer_id,
+  );
+  const serviceId = bookingData?.service_id;
+  const service = providerData?.services.find(
+    (service) => service.id === serviceId,
+  );
 
   useEffect(() => {
     // opens modal after data has been fetched
     onOpen();
   }, [providerData, onOpen]);
-  // need to add provider check
-  if (bookingIsLoading) {
+
+  if (bookingIsLoading || providerIsLoading) {
     return (
       <div className="m-auto w-4/5 max-w-[500px]">
         <LoadingSkeleton />
       </div>
     );
   }
-  // need to add provider check
-  if (bookingError) {
+  if (bookingError || providerError) {
     let errorMessage;
     if (providerError) {
       errorMessage = providerError.message;
@@ -115,18 +157,28 @@ export default function page({ params }: { params: { slug: string } }) {
                 </p>
               </ModalHeader>
               <ModalBody>
+                {/* Appointment Card */}
                 <Card>
                   <CardBody className="flex flex-row gap-4">
                     <Calendar color="#2563eb" />
                     <p>{formatDateTimeString(bookingData?.start_time ?? "")}</p>
                   </CardBody>
                 </Card>
+                {/* Service and Address Card */}
                 <Card>
                   <CardBody className="flex flex-row gap-4">
                     <Calendar color="#2563eb" />
-                    <p>{formatDateTimeString(bookingData?.start_time ?? "")}</p>
+                    <p>
+                      {service ? service.service_title : "Service not found"}
+                    </p>
+                    <p>
+                      {address
+                        ? `${address.street_address_1}${address.street_address_2 ? ", " + address.street_address_2 : ""}, ${address.city}, ${address.state} ${address.zip}`
+                        : "Address not found"}
+                    </p>
                   </CardBody>
                 </Card>
+                {/* Provider Card */}
                 <Card>
                   <CardBody className="flex flex-row gap-4">
                     <Calendar color="#2563eb" />
