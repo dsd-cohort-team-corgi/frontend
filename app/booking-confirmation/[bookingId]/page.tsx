@@ -7,7 +7,6 @@ import {
   ModalContent,
   ModalHeader,
   ModalBody,
-  ModalFooter,
   useDisclosure,
   Card,
   CardBody,
@@ -20,6 +19,8 @@ import { formatDateTimeString } from "@/utils/formatDateTimeString";
 import Calendar from "@/components/icons/Calendar";
 import StyledAsButton from "@/components/StyledAsButton";
 import ArrowRight from "@/components/icons/ArrowRight";
+import Phone from "@/components/icons/Phone";
+import MapPin from "@/components/icons/MapPin";
 
 interface BookingQueryProps {
   special_instructions: string;
@@ -99,7 +100,6 @@ export default function page({ params }: { params: { slug: string } }) {
     error: addressError,
     isLoading: addressIsLoading,
   } = useApiQuery<Address[]>(["address"], `/addresses`);
-  console.log(addressData)
   const address = addressData?.find(
     (address) => address.customer_id === bookingData?.customer_id,
   );
@@ -107,6 +107,10 @@ export default function page({ params }: { params: { slug: string } }) {
   const service = providerData?.services.find(
     (service) => service.id === serviceId,
   );
+  let serviceDateAndTime: { datePart: string; timePart: string };
+  if (bookingData) {
+    serviceDateAndTime = formatDateTimeString(bookingData?.start_time ?? "");
+  }
 
   useEffect(() => {
     // opens modal after data has been fetched
@@ -152,37 +156,56 @@ export default function page({ params }: { params: { slug: string } }) {
                   <Check color="#187a24" />
                 </div>
                 Booking Confirmed
-                <p className="text-light-font-color text-sm">
+                <p className="text-xs lg:text-sm text-light-font-color">
                   ID: {bookingData?.id}
                 </p>
               </ModalHeader>
               <ModalBody>
                 {/* Appointment Card */}
                 <Card>
-                  <CardBody className="flex flex-row gap-4">
-                    <Calendar color="#2563eb" />
-                    <p>{formatDateTimeString(bookingData?.start_time ?? "")}</p>
+                  <CardBody className="flex flex-row items-center gap-4">
+                    <Calendar color="#2563eb" size={18} />
+                    <div className="flex flex-col">
+                      <p>{serviceDateAndTime.datePart}</p>
+                      <p className="text-sm text-light-font-color">
+                        {serviceDateAndTime.timePart}
+                      </p>
+                    </div>
                   </CardBody>
                 </Card>
                 {/* Service and Address Card */}
                 <Card>
-                  <CardBody className="flex flex-row gap-4">
-                    <Calendar color="#2563eb" />
-                    <p>
-                      {service ? service.service_title : "Service not found"}
-                    </p>
-                    <p>
-                      {address
-                        ? `${address.street_address_1}${address.street_address_2 ? ", " + address.street_address_2 : ""}, ${address.city}, ${address.state} ${address.zip}`
-                        : "Address not found"}
-                    </p>
+                  <CardBody className="flex flex-row items-center gap-4">
+                    <MapPin color="#2563eb" size={20} />
+                    <div>
+                      <p>
+                        {service ? service.service_title : "Service not found"}
+                      </p>
+                      <p className="text-small text-light-font-color">
+                        {address
+                          ? `${address.street_address_1}${address.street_address_2 ? ", " + address.street_address_2 : ""}, ${address.city}, ${address.state} ${address.zip}`
+                          : "Address not found"}
+                      </p>
+                    </div>
                   </CardBody>
                 </Card>
                 {/* Provider Card */}
                 <Card>
-                  <CardBody className="flex flex-row gap-4">
-                    <Calendar color="#2563eb" />
-                    <p>{formatDateTimeString(bookingData?.start_time ?? "")}</p>
+                  <CardBody className="flex flex-row items-center justify-between gap-4">
+                    <div className="flex flex-row items-center justify-around gap-4">
+                      <Phone color="#2563eb" size={20} />
+                      <div>
+                        <p>
+                          {providerData?.company_name || "Green Thumb Services"}
+                        </p>
+                        <p className="text-sm text-light-font-color">
+                          {providerData?.phone_number}
+                        </p>
+                      </div>
+                    </div>
+                    <div>
+                      <p className="font-black">${service?.pricing}</p>
+                    </div>
                   </CardBody>
                 </Card>
                 <Link href={`/api/generate-ics/${bookingId}`}>

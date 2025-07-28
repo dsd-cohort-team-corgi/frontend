@@ -1,4 +1,4 @@
-export const formatDateTimeString = (dateTimeString: string): string => {
+export const formatDateTimeString = (dateTimeString: string): { datePart: string, timePart: string } => {
     const standardizedString = dateTimeString
         .replace(" ", "T")
         .replace("+00", "Z");
@@ -26,5 +26,5 @@ export const formatDateTimeString = (dateTimeString: string): string => {
 
     const timePart = new Intl.DateTimeFormat(undefined, timeOptions).format(date);
 
-    return `${datePart}\n${timePart}`;
+    return { datePart, timePart };
 }
