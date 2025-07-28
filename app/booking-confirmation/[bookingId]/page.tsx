@@ -156,7 +156,7 @@ export default function page({ params }: { params: { slug: string } }) {
                   <Check color="#187a24" />
                 </div>
                 Booking Confirmed
-                <p className="text-xs lg:text-sm text-light-font-color">
+                <p className="text-xs text-light-font-color lg:text-sm">
                   ID: {bookingData?.id}
                 </p>
               </ModalHeader>
