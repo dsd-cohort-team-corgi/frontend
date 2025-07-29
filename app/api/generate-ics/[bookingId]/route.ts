@@ -1,46 +1,87 @@
-import { NextResponse } from 'next/server';
-import ical from 'ical-generator';
+import { NextResponse } from "next/server";
+import ical from "ical-generator";
 
-export async function GET(request, { params }) {
-    const { bookingId } = params
+interface BookingData {
+  start_time: string;
+  service_id: number;
+  customer_id: number;
+}
 
-    try {
+interface ServiceData {
+  service_title: string;
+  service_description?: string;
+  duration?: number;
+}
 
-        const bookingResponse = await fetch(`http://127.0.0.1:8000/bookings/${bookingId}`)
-        const bookingData = await bookingResponse.json()
-        const serviceResponse = await fetch(`http://127.0.0.1:8000/services/${bookingData.service_id}`)
-        const serviceData = await serviceResponse.json()
-        const addressResponse = await fetch(`http://127.0.0.1:8000/addresses`)
-        const addressData = await addressResponse.json()
+interface AddressData {
+  customer_id: number;
+  street_address_1: string;
+  city: string;
+  state: string;
+  zip: string;
+}
 
-        const address = addressData.find((address) => address.customer_id === bookingData.customer_id)
+interface Params {
+  bookingId: string;
+}
+// disabled this rule as I was getting build errors
+/* eslint-disable import/prefer-default-export */
+export async function GET(
+  request: Request,
+  { params }: { params: Params },
+): Promise<NextResponse | undefined> {
+  const { bookingId } = params;
 
+  try {
+    const bookingResponse = await fetch(
+      `http://127.0.0.1:8000/bookings/${bookingId}`,
+    );
+    const bookingData: BookingData = await bookingResponse.json();
+    const serviceResponse = await fetch(
+      `http://127.0.0.1:8000/services/${bookingData.service_id}`,
+    );
+    const serviceData: ServiceData = await serviceResponse.json();
+    const addressResponse = await fetch(`http://127.0.0.1:8000/addresses`);
+    const addressData: AddressData[] = await addressResponse.json();
+    // having to pull in all address data. There is no way to find an address using an address ID
+    const address = addressData.find(
+      (a) => a.customer_id === bookingData.customer_id,
+    );
 
-        const cal = ical({ name: serviceData.service_title });
+    // brought in an npm package to handle ics
+    const cal = ical({ name: serviceData.service_title });
 
-        cal.createEvent({
-            start: bookingData?.start_time ? new Date(bookingData.start_time) : new Date(),
-            end: serviceData?.duration
-                ? new Date(
-                    new Date(bookingData.start_time).getTime() +
-                    serviceData.duration * 60 * 1000
-                )
-                : new Date(Date.now() + 3600 * 1000),
-            summary: serviceData?.service_description ? serviceData?.service_description : 'Wipe Right Service Provider',
-            description: serviceData?.service_description ? serviceData?.service_description : 'Wipe Right Service Provider',
-            location: address ? `${address.street_address_1} ${address.city}, ${address.state}, ${address.zip}` : 'virtual',
-            url: `http:localhost:3000/booking-confirmation/${bookingId}`,
-        });
+    cal.createEvent({
+      start: bookingData?.start_time
+        ? new Date(bookingData.start_time)
+        : new Date(),
+      end: serviceData?.duration
+        ? new Date(
+            new Date(bookingData.start_time).getTime() +
+              serviceData.duration * 60 * 1000,
+          )
+        : new Date(Date.now() + 3600 * 1000),
+      summary: serviceData?.service_description
+        ? serviceData?.service_description
+        : "Wipe Right Service Provider",
+      description: serviceData?.service_description
+        ? serviceData?.service_description
+        : "Wipe Right Service Provider",
+      location: address
+        ? `${address.street_address_1} ${address.city}, ${address.state}, ${address.zip}`
+        : "virtual",
+      url: `http:localhost:3000/booking-confirmation/${bookingId}`,
+    });
 
-        // Set headers for ICS file download
-        return new NextResponse(cal.toString(), {
-            status: 200,
-            headers: {
-                'Content-Type': 'text/calendar',
-                'Content-Disposition': 'attachment; filename="event.ics"',
-            },
-        });
-    } catch (err) {
-        console.error(err)
-    }
+    // Set headers for ICS file download
+    return new NextResponse(cal.toString(), {
+      status: 200,
+      headers: {
+        "Content-Type": "text/calendar",
+        "Content-Disposition": 'attachment; filename="event.ics"',
+      },
+    });
+  } catch (err) {
+    console.error(err);
+  }
 }
