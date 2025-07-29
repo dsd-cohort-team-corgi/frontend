@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
+import useAuth from "@/lib/useAuth";
 import Link from "next/link";
 import {
   Modal,
@@ -74,9 +75,11 @@ interface Address {
 
 export default function page({ params }: { params: { slug: string } }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { userSession, loading: authLoading } = useAuth();
   const pathName = usePathname();
   const bookingId = pathName.split("/")[2];
   const router = useRouter();
+
   const {
     data: bookingData,
     error: bookingError,
@@ -117,17 +120,23 @@ export default function page({ params }: { params: { slug: string } }) {
     onOpen();
   }, [providerData, onOpen]);
 
-  if (bookingIsLoading || providerIsLoading) {
+  if (bookingIsLoading || providerIsLoading || authLoading) {
     return (
       <div className="m-auto w-4/5 max-w-[500px]">
         <LoadingSkeleton />
       </div>
     );
   }
-  if (bookingError || providerError) {
+  if (!userSession) {
+    alert("You must be signed in");
+    router.push("/");
+  }
+  if (bookingError || providerError || addressError) {
     let errorMessage;
     if (providerError) {
       errorMessage = providerError.message;
+    } else if (addressError) {
+      errorMessage = addressError.message;
     } else {
       errorMessage = bookingError?.message;
     }
@@ -166,10 +175,16 @@ export default function page({ params }: { params: { slug: string } }) {
                   <CardBody className="flex flex-row items-center gap-4">
                     <Calendar color="#2563eb" size={18} />
                     <div className="flex flex-col">
-                      <p>{serviceDateAndTime.datePart}</p>
-                      <p className="text-sm text-light-font-color">
-                        {serviceDateAndTime.timePart}
-                      </p>
+                      {serviceDateAndTime ? (
+                        <>
+                          <p>{serviceDateAndTime.datePart}</p>
+                          <p className="text-sm text-light-font-color">
+                            {serviceDateAndTime.timePart}
+                          </p>
+                        </>
+                      ) : (
+                        <p>There was an error getting the booking date</p>
+                      )}
                     </div>
                   </CardBody>
                 </Card>
@@ -196,7 +211,7 @@ export default function page({ params }: { params: { slug: string } }) {
                       <Phone color="#2563eb" size={20} />
                       <div>
                         <p>
-                          {providerData?.company_name || "Green Thumb Services"}
+                          {providerData?.company_name || "Company Name Not Found"}
                         </p>
                         <p className="text-sm text-light-font-color">
                           {providerData?.phone_number}
