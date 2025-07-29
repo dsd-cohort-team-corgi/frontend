@@ -3,27 +3,52 @@
 import { useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useDisclosure } from "@heroui/react";
+import { Card as HeroCard, CardBody } from "@heroui/react";
 import Card from "@/components/CardWithImage";
 import HomePageHeroImage from "../public/HomePageHeroImage.png";
 import StyledAsButton from "@/components/StyledAsButton";
 import listOfServices from "@/data/services";
 import useAuth from "@/lib/useAuth";
 import CompleteProfileModal from "@/components/CompleteProfileModal";
+import { useApiQuery } from "@/lib/api-client";
 
 interface UserSession {
   id: string;
   email: string;
 }
+interface BookingQueryProps {
+  special_instructions: string;
+  service_notes: string;
+  start_time: string;
+  id: string;
+  customer_id: string;
+  provider_id: string;
+  service_id: string;
+  created_at: string;
+  updated_at: string;
+}
 
 function AuthenticatedHero({ userSession }: { userSession: UserSession }) {
+  const { data, error, isLoading } = useApiQuery<BookingQueryProps[]>(
+    ["bookings"],
+    "/bookings",
+  );
+  const TEMP_CUSTOMER_ID = "09761bda-e98b-46f0-b976-89658eb70148";
+  const bookingsFromId = data?.filter(
+    (booking) => booking.customer_id === TEMP_CUSTOMER_ID,
+  );
+  console.log(bookingsFromId);
   return (
-    <div className="flex justify-center">
+    <div className="m-auto flex w-4/5 justify-center border-1 border-black">
       <div className="text-center">
-        <h1 className="text-4xl font-bold">
-          Welcome back, {userSession.email}!
+        <h1 className="">
+          👋 Welcome back,{" "}
+          <span className="font-bold">{userSession.email}</span>
         </h1>
-        <p className="mt-4 text-lg">Ready to book your next service?</p>
+        <p>Book a service or manage your bookings</p>
+        <div>
+          <h2>Your Upcoming Services {bookingsFromId?.length}</h2>
+        </div>
       </div>
     </div>
   );
@@ -92,27 +117,11 @@ const renderHero = (userSession: UserSession | null) => {
 
 export default function Home() {
   const { userSession } = useAuth();
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
-
-  // temporary useEffect. Once we have a user object to interact with in db we can check if the user has completed profile
-  // doing this check for a cookie after booking flow to show complete user profile modal
-  useEffect(() => {
-    const { cookie } = document;
-    if (cookie) {
-      onOpen();
-    }
-  }, []);
 
   return (
     <div>
       {renderHero(userSession)}
       <ServicesSection />
-      {/* Temp home for modal, just for review */}
-      <CompleteProfileModal
-        isOpen={isOpen}
-        onOpen={onOpen}
-        onOpenChange={onOpenChange}
-      />
     </div>
   );
 }
