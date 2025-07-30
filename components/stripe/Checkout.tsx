@@ -130,7 +130,7 @@ const CheckoutPage = function ({ amount }: { amount: number }) {
       <StyledAsButton
         type="submit"
         disabled={!stripe || loading}
-        className="mx-auto my-10 flex w-full max-w-lg rounded-3xl bg-blue-500 p-4 font-bold text-white disabled:cursor-not-allowed disabled:opacity-50"
+        className="mx-auto my-20 flex w-full max-w-lg rounded-3xl bg-blue-500 p-4 font-bold text-white disabled:cursor-not-allowed disabled:opacity-50"
         label={!loading ? `Confirm and Pay Bill` : "Processing..."}
         // flex because it automatically comes with an inline-flex button, changing it to flex will allow it to be centered
       />
