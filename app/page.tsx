@@ -2,53 +2,86 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Card as HeroCard, CardBody } from "@heroui/react";
+import {
+  Card as UpcomingServicesCard,
+  CardBody,
+  CardHeader,
+} from "@heroui/react";
 import Card from "@/components/CardWithImage";
 import HomePageHeroImage from "../public/HomePageHeroImage.png";
 import StyledAsButton from "@/components/StyledAsButton";
 import listOfServices from "@/data/services";
 import useAuth from "@/lib/useAuth";
-import CompleteProfileModal from "@/components/CompleteProfileModal";
 import { useApiQuery } from "@/lib/api-client";
+import UpcomingService from "@/components/UpcomingService";
 
 interface UserSession {
   id: string;
   email: string;
 }
-interface BookingQueryProps {
-  special_instructions: string;
-  service_notes: string;
+export interface BookingItem {
+  provider_first_name: string;
+  provider_last_name: string;
+  provider_company_name: string;
+  status: "confirmed" | "pending" | "cancelled" | "completed";
   start_time: string;
-  id: string;
-  customer_id: string;
-  provider_id: string;
-  service_id: string;
-  created_at: string;
-  updated_at: string;
+  service_title: string;
 }
 
+export interface BookingsData {
+  upcoming_bookings: BookingItem[];
+  completed_needs_review: BookingItem[];
+}
+const TEMP_CUSTOMER_ID = "09761bda-e98b-46f0-b976-89658eb70148";
+
 function AuthenticatedHero({ userSession }: { userSession: UserSession }) {
-  const { data, error, isLoading } = useApiQuery<BookingQueryProps[]>(
-    ["bookings"],
-    "/bookings",
+  const { data, error, isLoading } = useApiQuery<BookingsData>(
+    ["customers", "customerId", "dashboard"],
+    `/customers/${TEMP_CUSTOMER_ID}/dashboard`,
   );
-  const TEMP_CUSTOMER_ID = "09761bda-e98b-46f0-b976-89658eb70148";
-  const bookingsFromId = data?.filter(
-    (booking) => booking.customer_id === TEMP_CUSTOMER_ID,
-  );
-  console.log(bookingsFromId);
+  if (error) {
+    return <h1>Something went wrong {error.message}</h1>;
+  }
   return (
-    <div className="m-auto flex w-4/5 justify-center border-1 border-black">
-      <div className="text-center">
+    <div className="m-auto w-4/5">
+      <div className="text-left">
         <h1 className="">
           👋 Welcome back,{" "}
           <span className="font-bold">{userSession.email}</span>
         </h1>
         <p>Book a service or manage your bookings</p>
-        <div>
-          <h2>Your Upcoming Services {bookingsFromId?.length}</h2>
-        </div>
       </div>
+      <UpcomingServicesCard>
+        <CardHeader className="flex flex-row justify-between">
+          <h2>Your Upcoming Services {data?.upcoming_bookings.length ?? 0}</h2>
+          <p className="text-nowrap">View All</p>
+        </CardHeader>
+        <CardBody>
+          {data?.upcoming_bookings.map(
+            (
+              {
+                provider_company_name,
+                provider_first_name,
+                provider_last_name,
+                status,
+                start_time,
+                service_title,
+              },
+              idx,
+            ) => (
+              <UpcomingService
+                key={idx}
+                provider_company_name={provider_company_name}
+                provider_first_name={provider_first_name}
+                provider_last_name={provider_last_name}
+                status={status}
+                start_time={start_time}
+                service_title={service_title}
+              />
+            ),
+          )}
+        </CardBody>
+      </UpcomingServicesCard>
     </div>
   );
 }
