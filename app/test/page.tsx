@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import supabase from "@/lib/supabase";
 
 export default function ShowBearerToken() {
+  const [stateToken, setStateToken] = useState(null);
   useEffect(() => {
     const fetchToken = async () => {
       try {
@@ -18,6 +19,7 @@ export default function ShowBearerToken() {
         }
 
         const token = session?.access_token;
+        setStateToken(token);
 
         if (token) {
           console.log(" Bearer Token:", token);
@@ -31,5 +33,10 @@ export default function ShowBearerToken() {
     fetchToken();
   }, []);
 
-  return <p>Check the console for the Bearer token </p>;
+  return (
+    <p>
+      Check the console for the Bearer token or view here:{" "}
+      {stateToken || "No token found. User may not be signed in."}
+    </p>
+  );
 }
