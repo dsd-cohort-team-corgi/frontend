@@ -14,6 +14,7 @@ import listOfServices from "@/data/services";
 import useAuth from "@/lib/useAuth";
 import { useApiQuery } from "@/lib/api-client";
 import UpcomingService from "@/components/UpcomingService";
+import LeaveReview from "@/components/LeaveReview";
 
 interface UserSession {
   id: string;
@@ -56,6 +57,16 @@ function AuthenticatedHero({ userSession }: { userSession: UserSession }) {
         </h1>
         <p>Book a service or manage your bookings</p>
       </div>
+      {/* {data?.completed_needs_review && <LeaveReview />} */}
+      {data?.completed_needs_review.map(
+        ({ service_title, provider_company_name, start_time }) => (
+          <LeaveReview
+            service_title={service_title}
+            company_name={provider_company_name}
+            start_time={start_time}
+          />
+        ),
+      )}
       <UpcomingServicesCard className="lg:px-6">
         <CardHeader className="flex flex-row items-start justify-between text-pretty p-4 md:text-lg lg:pt-8">
           <h2 className="font-black lg:text-xl">
