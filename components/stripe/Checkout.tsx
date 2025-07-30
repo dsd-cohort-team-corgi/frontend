@@ -1,11 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import {
-  useStripe,
-  useElements,
-  PaymentElement,
-} from "@stripe/react-stripe-js";
+import { useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
 import convertToSubcurrency from "@/utils/stripe/convertToSubcurrency";
 
 const CheckoutPage = function ({ amount }: { amount: number }) {
@@ -80,7 +76,7 @@ const CheckoutPage = function ({ amount }: { amount: number }) {
 
   return (
     <form onSubmit={handleSubmit} className="rounded-md bg-white p-2">
-      {clientSecret && <PaymentElement />}
+      {clientSecret && <CardElement />}
 
       {errorMessage && <div>{errorMessage}</div>}
 
