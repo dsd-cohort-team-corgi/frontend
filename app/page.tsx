@@ -39,6 +39,11 @@ function AuthenticatedHero({ userSession }: { userSession: UserSession }) {
     ["customers", "customerId", "dashboard"],
     `/customers/${TEMP_CUSTOMER_ID}/dashboard`,
   );
+
+  if (isLoading) {
+    return <h1>Grabbing Booking Details...</h1>;
+  }
+
   if (error) {
     return <h1>Something went wrong {error.message}</h1>;
   }
@@ -60,22 +65,10 @@ function AuthenticatedHero({ userSession }: { userSession: UserSession }) {
         </CardHeader>
         <CardBody>
           {data?.upcoming_bookings.map(
-            (
-              {
-                provider_company_name,
-                provider_first_name,
-                provider_last_name,
-                status,
-                start_time,
-                service_title,
-              },
-              idx,
-            ) => (
+            ({ provider_company_name, status, start_time, service_title }) => (
               <UpcomingService
-                key={idx}
+                key={provider_company_name}
                 provider_company_name={provider_company_name}
-                provider_first_name={provider_first_name}
-                provider_last_name={provider_last_name}
                 status={status}
                 start_time={start_time}
                 service_title={service_title}
@@ -94,7 +87,7 @@ function UnauthenticatedHero() {
       {/* Container placed around image and text to allow for positioning based off image rather than screen */}
       <div className="relative">
         <Image
-          className="h-[40dvh] rounded-lg object-cover md:h-[60dvh] 2xl:h-[30dvh]"
+          className="h-[40dvh] rounded-lg object-cover md:h-[60dvh]"
           alt="Young woman diligently cleaning a bright, modern home."
           // static import to have Next Image component decide height and width to prevent CLS
           src={HomePageHeroImage}

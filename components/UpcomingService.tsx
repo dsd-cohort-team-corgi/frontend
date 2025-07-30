@@ -1,16 +1,22 @@
 import Calendar from "./icons/Calendar";
-import { BookingItem } from "@/app/page";
 import { formatDateTimeString } from "@/utils/formatDateTimeString";
 import CircleCheck from "./icons/CircleCheck";
 import ChevronDown from "./icons/ChevronDown";
+
+interface BookingItem {
+  provider_company_name: string;
+  status: "confirmed" | "pending" | "cancelled" | "completed";
+  start_time: string;
+  service_title: string;
+}
+
 function UpcomingService({
   provider_company_name,
-  provider_first_name,
-  provider_last_name,
   status,
   start_time,
   service_title,
 }: BookingItem) {
+  /* eslint-disable no-undef-init */
   let serviceDateAndTime: { datePart: string; timePart: string } | undefined =
     undefined;
   if (start_time) {
@@ -26,7 +32,8 @@ function UpcomingService({
         <div className="text-right md:text-left">
           <h3 className="text-lg font-bold lg:text-xl">{service_title}</h3>
           <p className="lg:text-lg">{provider_company_name}</p>
-          <p className="text-light-font-color text-pretty text-xs lg:text-base">
+          {/* eslint-disable tailwindcss/no-unnecessary-arbitrary-value */}
+          <p className="text-pretty text-xs text-light-font-color lg:text-base">
             {serviceDateAndTime?.datePart} at {serviceDateAndTime?.timePart}
           </p>
         </div>
