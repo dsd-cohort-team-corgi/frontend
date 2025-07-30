@@ -43,17 +43,19 @@ function AuthenticatedHero({ userSession }: { userSession: UserSession }) {
     return <h1>Something went wrong {error.message}</h1>;
   }
   return (
-    <div className="m-auto w-4/5">
-      <div className="text-left">
-        <h1 className="">
+    <div className="m-auto w-4/5 max-w-[1200px]">
+      <div className="mb-4 text-pretty text-left text-lg md:text-2xl lg:text-3xl">
+        <h1>
           👋 Welcome back,{" "}
           <span className="font-bold">{userSession.email}</span>
         </h1>
         <p>Book a service or manage your bookings</p>
       </div>
-      <UpcomingServicesCard>
-        <CardHeader className="flex flex-row justify-between">
-          <h2>Your Upcoming Services {data?.upcoming_bookings.length ?? 0}</h2>
+      <UpcomingServicesCard className="lg:px-6">
+        <CardHeader className="flex flex-row items-start justify-between text-pretty p-4 md:text-lg lg:pt-8">
+          <h2 className="font-black lg:text-xl">
+            Your Upcoming Services ({data?.upcoming_bookings.length ?? 0})
+          </h2>
           <p className="text-nowrap">View All</p>
         </CardHeader>
         <CardBody>
@@ -88,11 +90,11 @@ function AuthenticatedHero({ userSession }: { userSession: UserSession }) {
 
 function UnauthenticatedHero() {
   return (
-    <div className="flex justify-center">
+    <div className="m-auto flex max-w-[1200px] justify-center">
       {/* Container placed around image and text to allow for positioning based off image rather than screen */}
       <div className="relative">
         <Image
-          className="h-[40dvh] rounded-lg object-cover md:h-[60dvh]"
+          className="h-[40dvh] rounded-lg object-cover md:h-[60dvh] 2xl:h-[30dvh]"
           alt="Young woman diligently cleaning a bright, modern home."
           // static import to have Next Image component decide height and width to prevent CLS
           src={HomePageHeroImage}
