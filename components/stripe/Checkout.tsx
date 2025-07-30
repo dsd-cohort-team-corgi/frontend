@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+
 import { CircleAlert, Lock } from "lucide-react";
 import {
   useStripe,
@@ -111,12 +112,19 @@ const CheckoutPage = function ({ amount }: { amount: number }) {
             </div>
           </label>
         </div>
+        {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+        <label className="block">
+          <span> Cardholder Name</span>
+          <div className="mt-1 rounded border border-gray-300 p-3">
+            <input type="text" className="w-full" />
+          </div>
+        </label>
 
         {errorMessage && (
           <div className="mb-4 font-semibold text-red-600">{errorMessage}</div>
         )}
-        <section className="mx-auto flex max-w-4xl rounded-md bg-blue-100 p-4 text-blue-800">
-          <CircleAlert color="blue" size={30} />
+        <section className="mx-auto mt-6 flex max-w-4xl rounded-md bg-blue-50 p-4 text-blue-800">
+          <CircleAlert color="#2563eb" size={30} />
           <div className="pl-3">
             <h4 className="font-semibold">Payment Protection</h4>
             <p>

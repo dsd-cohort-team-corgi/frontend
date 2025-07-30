@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useSearchParams } from "next/navigation";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import Checkout from "@/components/stripe/Checkout";
@@ -12,8 +13,18 @@ if (process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY === undefined) {
 }
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY);
 
-export default function page() {
+export default function Page() {
   const amount = 49.99;
+  const searchParams = useSearchParams();
+  const providername = searchParams.get("providername") || "Green Thumb Pros";
+  const date = searchParams.get("date") || "Monday, July 15th, 2025";
+  const time = searchParams.get("time") || "11:00 AM";
+  const location =
+    searchParams.get("location") || "123 Main St, San Francisco, CA 94102";
+  const service = searchParams.get("service") || "Lawn Mowing";
+  const serviceduration = searchParams.get("serviceduration") || "60 minutes";
+  const servicecost = searchParams.get(" servicecost") || "65";
+
   return (
     <div className="mx-auto max-w-4xl">
       <BookingCheckoutPage />
@@ -25,7 +36,7 @@ export default function page() {
           currency: "usd",
         }}
       >
-        <Checkout amount={amount} />
+        <Checkout amount={convertToSubcurrency(Number(servicecost))} />
       </Elements>
     </div>
   );
