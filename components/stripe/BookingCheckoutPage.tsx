@@ -3,38 +3,54 @@ import { Calendar, Clock, MapPin } from "lucide-react";
 import StarRatingReview from "../ProviderOverallRatingInfo";
 import IconLeftTwoTextRight from "../IconLeftTwoTextRight";
 
-export default function BookingCheckoutPage() {
+type BookingCheckoutPageType = {
+  providerName: string;
+  date: string;
+  time: string;
+  location: string;
+  service: string;
+  serviceDuration: string;
+  serviceCost: string;
+};
+export default function BookingCheckoutPage({
+  providerName,
+  date,
+  time,
+  location,
+  service,
+  serviceDuration,
+  serviceCost,
+}: BookingCheckoutPageType) {
   return (
     <section className="mb-10">
       <div className="rounded-lg border-1 border-light-accent bg-white p-4">
         <h1 className="mb-4 text-xl font-bold">Booking Details</h1>
-        <h2 className="mb-3 text-3xl font-bold"> Provider Name </h2>
+        <h2 className="mb-3 text-3xl font-bold"> {providerName} </h2>
         <StarRatingReview />
-        <div className="my-10">
+        <div className="my-8">
           <IconLeftTwoTextRight
             icon={Calendar}
             heading="Event Date"
-            text="July 30, 2025"
+            text={date}
           />
-          <IconLeftTwoTextRight icon={Clock} heading="Time" text="11:00 AM" />
+          <IconLeftTwoTextRight icon={Clock} heading="Time" text={time} />
           <IconLeftTwoTextRight
             icon={MapPin}
             heading="Location"
-            text="123 Main St, San Francisco, CA 94102"
+            text={location}
           />
         </div>
         <div className="flex items-center">
-          <div className="mx-4 h-px flex-grow bg-gray-300" />
+          <div className="mx-4 h-[2px] grow bg-light-accent" />
         </div>
         <section className="mt-5 flex justify-between">
           <div>
-            <span className="block font-semibold"> Lawn Mowing</span>
+            <span className="block font-semibold"> {service}</span>
             <span className="block text-sm text-secondary-font-color">
-              {" "}
-              60 minutes
+              {serviceDuration}
             </span>
           </div>
-          <span className="font-semibold"> $65</span>
+          <span className="font-semibold"> {`${serviceCost}`} </span>
         </section>
       </div>
 
