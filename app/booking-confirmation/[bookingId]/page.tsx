@@ -1,17 +1,8 @@
 "use client";
 
-import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
-import {
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  useDisclosure,
-  Card,
-  CardBody,
-} from "@heroui/react";
+import { Card, CardBody } from "@heroui/react";
 import useAuth from "@/lib/useAuth";
 import Check from "@/components/icons/Check";
 import { useApiQuery } from "@/lib/api-client";
@@ -74,7 +65,6 @@ interface Address {
 }
 
 export default function Page() {
-  const { isOpen, onOpen } = useDisclosure();
   const { userSession, loading: authLoading } = useAuth();
   const pathName = usePathname();
   const bookingId = pathName.split("/")[2];
@@ -110,15 +100,12 @@ export default function Page() {
   const serviceId = bookingData?.service_id;
   const service = providerData?.services.find((s) => s.id === serviceId);
   // due to waiting for info from network we have to wrap the assignment of this variable in an if statement or we get errors on page
-  let serviceDateAndTime: { datePart: string; timePart: string };
+  /* eslint-disable no-undef-init */
+  let serviceDateAndTime: { datePart: string; timePart: string } | undefined =
+    undefined;
   if (bookingData) {
     serviceDateAndTime = formatDateTimeString(bookingData?.start_time ?? "");
   }
-
-  useEffect(() => {
-    // opens modal after data has been fetched
-    onOpen();
-  }, [providerData, onOpen]);
 
   if (
     bookingIsLoading ||
@@ -155,108 +142,88 @@ export default function Page() {
   */
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={() => router.push("/")}
-      placement="top-center"
-      classNames={{
-        closeButton: "",
-        header: "flex-col justify-center items-center gap-4",
-        // the X defaults to the top right corner, moved it with top and right
-        base: "max-w-[500px] w-4/5",
-        // default version was too small and had a max-w-m
-      }}
-    >
-      <ModalContent>
-        {() => (
-          <>
-            <ModalHeader className="text-center">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-200">
-                <Check color="#187a24" />
+    <Card className="m-auto w-4/5 max-w-[500px]">
+      <CardBody className="m-auto w-[90%] text-center">
+        {/* Header */}
+        <header className="mb-4 flex flex-col items-center gap-2">
+          <div className="flex h-10 w-10 flex-row items-center justify-center rounded-full bg-green-200 text-center">
+            <Check color="#187a24" />
+          </div>
+          <h1 className="text-xl font-black lg:text-2xl">Booking Confirmed</h1>
+          <p className="xs text-light-font-color lg:text-sm">
+            ID: {bookingData?.id}
+          </p>
+        </header>
+        {/* Appointment Card */}
+        <Card className="mb-4 bg-[#ededed]">
+          <CardBody className="flex flex-row items-center gap-4">
+            <Calendar color="#2563eb" size={18} />
+            <div className="flex flex-col">
+              {serviceDateAndTime ? (
+                <>
+                  <p>{serviceDateAndTime.datePart}</p>
+                  <p className="sm text-light-font-color">
+                    {serviceDateAndTime.timePart}
+                  </p>
+                </>
+              ) : (
+                <p>There was an error getting the booking date</p>
+              )}
+            </div>
+          </CardBody>
+        </Card>
+        {/* Service and Address Card */}
+        <Card className="mb-4 bg-[#ededed]">
+          <CardBody className="flex flex-row items-center gap-4">
+            <MapPin color="#2563eb" size={20} />
+            <div>
+              <p>{service ? service.service_title : "Service not found"}</p>
+              <p className="sm text-light-font-color">
+                {address
+                  ? `${address.street_address_1}, ${address.city}, ${address.state} ${address.zip}`
+                  : "Address not found"}
+              </p>
+            </div>
+          </CardBody>
+        </Card>
+        {/* Provider Card */}
+        <Card className="mb-4 bg-[#ededed]">
+          <CardBody className="flex flex-row items-center justify-between gap-4">
+            <div className="flex flex-row items-center justify-around gap-4">
+              <Phone color="#2563eb" size={20} />
+              <div>
+                <p>{providerData?.company_name || "Company Name Not Found"}</p>
+                <p className="sm text-light-font-color">
+                  {providerData?.phone_number}
+                </p>
               </div>
-              Booking Confirmed
-              <p className="text-xs text-light-font-color lg:text-sm">
-                ID: {bookingData?.id}
-              </p>
-            </ModalHeader>
-            <ModalBody>
-              {/* Appointment Card */}
-              <Card>
-                <CardBody className="flex flex-row items-center gap-4">
-                  <Calendar color="#2563eb" size={18} />
-                  <div className="flex flex-col">
-                    {serviceDateAndTime ? (
-                      <>
-                        <p>{serviceDateAndTime.datePart}</p>
-                        <p className="text-sm text-light-font-color">
-                          {serviceDateAndTime.timePart}
-                        </p>
-                      </>
-                    ) : (
-                      <p>There was an error getting the booking date</p>
-                    )}
-                  </div>
-                </CardBody>
-              </Card>
-              {/* Service and Address Card */}
-              <Card>
-                <CardBody className="flex flex-row items-center gap-4">
-                  <MapPin color="#2563eb" size={20} />
-                  <div>
-                    <p>
-                      {service ? service.service_title : "Service not found"}
-                    </p>
-                    <p className="text-small text-light-font-color">
-                      {address
-                        ? `${address.street_address_1}, ${address.city}, ${address.state} ${address.zip}`
-                        : "Address not found"}
-                    </p>
-                  </div>
-                </CardBody>
-              </Card>
-              {/* Provider Card */}
-              <Card>
-                <CardBody className="flex flex-row items-center justify-between gap-4">
-                  <div className="flex flex-row items-center justify-around gap-4">
-                    <Phone color="#2563eb" size={20} />
-                    <div>
-                      <p>
-                        {providerData?.company_name || "Company Name Not Found"}
-                      </p>
-                      <p className="text-sm text-light-font-color">
-                        {providerData?.phone_number}
-                      </p>
-                    </div>
-                  </div>
-                  <div>
-                    <p className="font-black">${service?.pricing}</p>
-                  </div>
-                </CardBody>
-              </Card>
-              <Link href={`/api/generate-ics/${bookingId}`}>
-                <StyledAsButton
-                  className="w-full"
-                  label="Add To Calandar"
-                  startContent={<Calendar size={18} />}
-                />
-              </Link>
-              <StyledAsButton
-                endContent={<ArrowRight size={16} />}
-                label="View My Bookings"
-                className="bg-[#ededed] text-black"
-                onPress={() => router.push("/")}
-              />
-              <p className="mb-8 rounded-lg bg-blue-100 p-4">
-                {/* have to use &apos; in place of an apostrophe for linting rules */}
-                <span className="text-primary">What&apos;s next? </span>
-                <span>
-                  You&apos;ll get updates when your provider is on the way.{" "}
-                </span>
-              </p>
-            </ModalBody>
-          </>
-        )}
-      </ModalContent>
-    </Modal>
+            </div>
+            <div>
+              <p className="font-black">${service?.pricing}</p>
+            </div>
+          </CardBody>
+        </Card>
+        <Link className="mb-2" href={`/api/generate-ics/${bookingId}`}>
+          <StyledAsButton
+            className="w-full"
+            label="Add To Calandar"
+            startContent={<Calendar size={18} />}
+          />
+        </Link>
+        <StyledAsButton
+          endContent={<ArrowRight size={16} />}
+          label="View My Bookings"
+          className="mb-2 bg-[#ededed] text-black"
+          onPress={() => router.push("/")}
+        />
+        <p className="mb-8 rounded-lg bg-blue-100 p-4">
+          {/* have to use &apos; in place of an apostrophe for linting rules */}
+          <span className="text-primary">What&apos;s next? </span>
+          <span>
+            You&apos;ll get updates when your provider is on the way.{" "}
+          </span>
+        </p>
+      </CardBody>
+    </Card>
   );
 }

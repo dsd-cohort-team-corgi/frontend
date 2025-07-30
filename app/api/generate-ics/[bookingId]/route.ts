@@ -34,14 +34,16 @@ export async function GET(
 
   try {
     const bookingResponse = await fetch(
-      `http://127.0.0.1:8000/bookings/${bookingId}`,
+      `https://maidyoulook-backend.onrender.com/bookings/${bookingId}`,
     );
     const bookingData: BookingData = await bookingResponse.json();
     const serviceResponse = await fetch(
-      `http://127.0.0.1:8000/services/${bookingData.service_id}`,
+      `https://maidyoulook-backend.onrender.com/services/${bookingData.service_id}`,
     );
     const serviceData: ServiceData = await serviceResponse.json();
-    const addressResponse = await fetch(`http://127.0.0.1:8000/addresses`);
+    const addressResponse = await fetch(
+      `https://maidyoulook-backend.onrender.com/addresses`,
+    );
     const addressData: AddressData[] = await addressResponse.json();
     // having to pull in all address data. There is no way to find an address using an address ID
     const address = addressData.find(
