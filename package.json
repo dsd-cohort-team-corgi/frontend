@@ -23,7 +23,8 @@
     "next": "14.2.30",
     "react": "^18",
     "react-day-picker": "^9.8.0",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "stripe": "^18.3.0"
   },
   "devDependencies": {
     "@tanstack/react-query-devtools": "^5.83.0",
