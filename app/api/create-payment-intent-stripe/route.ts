@@ -20,9 +20,7 @@ export async function POST(request: NextRequest) {
     const paymentIntent = await stripe.paymentIntents.create({
       amount,
       currency: "usd",
-      payment_method_types: ["card"],
-      automatic_payment_methods: { enabled: false },
-      // need automatic_payment_methods: { enabled: false } or it results in a 400 error
+      // since we're only using the card element, we don't need to specify need automatic_payment_methods: { enabled: false } or payment_method_types: ["card"]
     });
 
     return NextResponse.json({ clientSecret: paymentIntent.client_secret });

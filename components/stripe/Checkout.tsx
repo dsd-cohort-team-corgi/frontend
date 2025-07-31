@@ -19,6 +19,7 @@ const CheckoutPage = function ({ amount }: { amount: number }) {
   const [errorMessage, setErrorMessage] = useState<string>();
   const [clientSecret, setClientSecret] = useState("");
   const [loading, setLoading] = useState(false);
+  const [cardholderName, setCardholderName] = useState("");
 
   useEffect(() => {
     fetch("/api/create-payment-intent-stripe", {
@@ -51,16 +52,28 @@ const CheckoutPage = function ({ amount }: { amount: number }) {
       return;
     }
 
-    const { error } = await stripe.confirmPayment({
-      elements,
-      clientSecret,
-      confirmParams: {
-        return_url: `http://www.localhost:3000/payment-success?amount=${amount}`,
+    const cardElement = elements.getElement(CardNumberElement);
+    if (!cardElement) {
+      setErrorMessage("Card element not found.");
+      setLoading(false);
+      return;
+    }
+
+    const result = await stripe.confirmCardPayment(clientSecret, {
+      payment_method: {
+        card: cardElement,
+        billing_details: {
+          name: cardholderName, // Replace with actual customer name input
+        },
       },
     });
 
-    if (error) {
-      setErrorMessage(error.message);
+    if (result.error) {
+      setErrorMessage(result.error.message);
+    }
+
+    if (result.paymentIntent?.status === "succeeded") {
+      window.location.href = `/payment-success?amount=${amount}`;
     }
 
     setLoading(false);
@@ -116,7 +129,13 @@ const CheckoutPage = function ({ amount }: { amount: number }) {
         <label className="block">
           <span> Cardholder Name</span>
           <div className="mt-1 rounded border border-gray-300 p-3">
-            <input type="text" className="w-full" />
+            <input
+              type="text"
+              className="w-full"
+              name="customername"
+              value={cardholderName}
+              onChange={(e) => setCardholderName(e.target.value)}
+            />
           </div>
         </label>
 
