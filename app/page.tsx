@@ -61,6 +61,7 @@ function AuthenticatedHero({ userSession }: { userSession: UserSession }) {
       {data?.completed_needs_review.map(
         ({ service_title, provider_company_name, start_time }) => (
           <LeaveReview
+            key={`${provider_company_name}-${start_time}`}
             service_title={service_title}
             company_name={provider_company_name}
             start_time={start_time}
