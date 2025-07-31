@@ -75,7 +75,26 @@ function CheckoutForm({ clientSecret }: CheckoutOutFormType) {
     const bookingid = "19eb6a08-5e86-4420-ae28-b6c4435f6238";
     if (result.paymentIntent?.status === "succeeded") {
       setMessage("Payment was successful!");
-      window.location.href = `/booking-confirmation/${bookingid}`;
+
+      const bookingResult = await fetch(
+        "https://maidyoulook-backend.onrender.com/api/bookings",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            payment_intent_id: result.paymentIntent.id,
+            // booking information
+          }),
+        },
+      ).then((res) => res.json());
+
+      // https://github.com/dsd-cohort-team-corgi/backend/issues/37
+      if (bookingResult) {
+        window.location.href = `/booking-confirmation/${bookingid}`;
+        setMessage("Booking successfully created!");
+      }
     }
 
     setLoading(false);
@@ -168,24 +187,27 @@ export default function StripeCheckoutPage() {
   const [loadingIntent, setLoadingIntent] = useState(true);
 
   const searchParams = useSearchParams();
-  //   const serviceCost = Number(searchParams.get("servicecost") || "65");
-  const serviceId = Number(
-    searchParams.get("serviceid") || "24afade0-1c79-4831-9bf4-7c0c5bbd0f66",
-  ); // decluttering service id for testing
-  //   const amount = convertToSubcurrency(serviceCost);
+  const serviceId =
+    searchParams.get("serviceid") || "24afade0-1c79-4831-9bf4-7c0c5bbd0f66";
+  // default backup is the service id for decluttering
 
   useEffect(() => {
     const createIntent = async () => {
+      if (!serviceId) {
+        return;
+      }
       try {
-        const res = await fetch("/api/create-payment-intent-stripe", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ serviceId }),
-          // body: JSON.stringify({ service_id: "abc123" }),
-        });
+        const res = await fetch(
+          "https://maidyoulook-backend.onrender.com/stripe/create-payment-intent",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ service_id: serviceId }),
+          },
+        );
 
         const data = await res.json();
-        setClientSecret(data.clientSecret);
+        setClientSecret(data.client_secret);
       } catch (err) {
         console.error("Failed to create payment intent:", err);
       } finally {
