@@ -16,7 +16,7 @@ import StyledAsButton from "../StyledAsButton";
 const CheckoutPage = function ({ amount }: { amount: number }) {
   const stripe = useStripe();
   const elements = useElements();
-  const [errorMessage, setErrorMessage] = useState<string>();
+  const [message, setMessage] = useState<string>();
   const [clientSecret, setClientSecret] = useState("");
   const [loading, setLoading] = useState(false);
   const [cardholderName, setCardholderName] = useState("");
@@ -36,10 +36,10 @@ const CheckoutPage = function ({ amount }: { amount: number }) {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setLoading(true);
-    setErrorMessage(undefined);
+    setMessage(undefined);
 
     if (!stripe || !elements) {
-      setErrorMessage("Stripe.js has not loaded yet.");
+      setMessage("Stripe.js has not loaded yet.");
       setLoading(false);
       return;
     }
@@ -47,14 +47,14 @@ const CheckoutPage = function ({ amount }: { amount: number }) {
     // Optional: submit elements to validate inputs before confirming
     const { error: submitError } = await elements.submit();
     if (submitError) {
-      setErrorMessage(submitError.message);
+      setMessage(submitError.message);
       setLoading(false);
       return;
     }
 
     const cardElement = elements.getElement(CardNumberElement);
     if (!cardElement) {
-      setErrorMessage("Card element not found.");
+      setMessage("Card element not found.");
       setLoading(false);
       return;
     }
@@ -69,10 +69,11 @@ const CheckoutPage = function ({ amount }: { amount: number }) {
     });
 
     if (result.error) {
-      setErrorMessage(result.error.message);
+      setMessage(result.error.message);
     }
 
     if (result.paymentIntent?.status === "succeeded") {
+      setMessage("Payment was successful!");
       window.location.href = `/payment-success?amount=${amount}`;
     }
 
@@ -139,9 +140,14 @@ const CheckoutPage = function ({ amount }: { amount: number }) {
           </div>
         </label>
 
-        {errorMessage && (
-          <div className="mb-4 font-semibold text-red-600">{errorMessage}</div>
+        {message && !message.includes("success") && (
+          <div className="mb-4 font-semibold text-red-600">{message}</div>
         )}
+
+        {message && message.includes("success") && (
+          <div className="mb-4 font-semibold text-green-600">{message}</div>
+        )}
+
         <section className="mx-auto mt-6 flex max-w-4xl rounded-md bg-blue-50 p-4 text-blue-800">
           <CircleAlert color="#2563eb" size={30} />
           <div className="pl-3">
