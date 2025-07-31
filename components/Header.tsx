@@ -30,6 +30,7 @@ import supabaseClient from "@/lib/supabase";
 import StyledAsButton from "./StyledAsButton";
 import useAuth from "@/lib/useAuth";
 import listOfServices from "@/data/services";
+import GoogleSignInButton from "./GoogleSignInButton";
 
 export default function App() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
@@ -54,13 +55,8 @@ export default function App() {
     { label: "Log Out", onClick: handleLogOut },
   ];
 
-  const guestMenuItems = [
-    { label: "Sign Up", href: "/signup" },
-    { label: "Login", href: "/login" },
-  ];
-
   const mobileNavMenuItems = [
-    ...(userSession ? loggedInMenuItems : guestMenuItems),
+    ...(userSession ? loggedInMenuItems : []),
     ...Object.values(listOfServices),
   ];
 
@@ -132,27 +128,9 @@ export default function App() {
       {/* #### Right Section ###### */}
       <NavbarContent justify="end">
         {!userSession && (
-          <>
-            <NavbarItem className="hidden md:flex">
-              {/* only shows up on medium and larger screens, when there is more room */}
-              <HeroUiLink
-                as={Link}
-                className="w-full"
-                color="foreground"
-                href={guestMenuItems[0].href}
-                size="md"
-              >
-                {guestMenuItems[0].label}
-              </HeroUiLink>
-            </NavbarItem>
-            <NavbarItem>
-              <StyledAsButton
-                as={Link}
-                href={guestMenuItems[1].href}
-                label={guestMenuItems[1].label}
-              />
-            </NavbarItem>
-          </>
+          <NavbarItem>
+            <GoogleSignInButton />
+          </NavbarItem>
         )}
 
         {userSession && (
@@ -219,6 +197,11 @@ export default function App() {
             )}
           </NavbarMenuItem>
         ))}
+        {!userSession && (
+          <NavbarMenuItem>
+            <GoogleSignInButton />
+          </NavbarMenuItem>
+        )}
       </NavbarMenu>
     </Navbar>
   );

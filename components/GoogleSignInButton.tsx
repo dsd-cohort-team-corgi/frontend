@@ -2,6 +2,7 @@
 
 import React from "react";
 import supabaseClient from "@/lib/supabase";
+import StyledAsButton from "./StyledAsButton";
 
 export default function GoogleSignInButton() {
   // Save the current path before loging so they get sent back to the right page
@@ -57,9 +58,5 @@ export default function GoogleSignInButton() {
     // supabase handles the session, and stores it in localStorage.
   };
 
-  return (
-    <button type="button" onClick={handleLoginWithSupabase}>
-      Sign in with Google
-    </button>
-  );
+  return <StyledAsButton onPress={handleLoginWithSupabase} label="Sign In" />;
 }
