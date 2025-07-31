@@ -75,15 +75,17 @@ function ReviewModal({
       classNames={{
         closeButton: "text-black top-3.5 right-2 hover:text-primary",
         // the X defaults to the top right corner, moved it with top and right
-        base: "max-w-[500px] w-4/5",
+        base: "max-w-[600px] w-4/5",
         // default version was too small and had a max-w-m
       }}
     >
       <ModalContent>
         {() => (
           <>
-            <ModalHeader>Rate Your Experience</ModalHeader>
-            <ModalBody>
+            <ModalHeader className="lg:text-2xl">
+              Rate Your Experience
+            </ModalHeader>
+            <ModalBody className="lg:text-lg">
               <p>
                 How was your {service_title} with {company_name}?
               </p>
@@ -101,7 +103,7 @@ function ReviewModal({
               <StyledAsButton
                 isDisabled={clickedStar === 0 || createReview.isPending}
                 label={labelText}
-                className="mb-8"
+                className="mb-6 lg:text-base"
                 onPress={() => {
                   createReview.mutate({
                     rating: clickedStar,

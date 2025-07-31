@@ -20,7 +20,7 @@ function ReviewStar({ clickedStar, setClickedStar }: ReviewStarProps) {
   };
 
   return (
-    <div className="flex" onMouseLeave={handleMouseLeave}>
+    <div className="flex gap-1" onMouseLeave={handleMouseLeave}>
       {starArr.map((_, idx) => {
         const isFilled =
           (hoveredStar !== 0 && idx + 1 <= hoveredStar) ||
@@ -35,7 +35,11 @@ function ReviewStar({ clickedStar, setClickedStar }: ReviewStarProps) {
             onClick={() => handleClick(idx)}
             style={{ cursor: "pointer" }}
           >
-            <Star color={starColor} fill={starColor} />
+            <Star
+              color={starColor}
+              fill={starColor}
+              size={window.innerWidth >= 1024 ? 24 : 20}
+            />
           </div>
         );
       })}
