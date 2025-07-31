@@ -25,6 +25,7 @@ function CheckoutForm({ amount, clientSecret }: CheckoutOutFormType) {
   const stripe = useStripe();
   const elements = useElements();
   const [message, setMessage] = useState<string>();
+  const [cardholderError, setCardholderError] = useState("");
   const [loading, setLoading] = useState(false);
   const [cardholderName, setCardholderName] = useState("");
   const searchParams = useSearchParams();
@@ -36,6 +37,14 @@ function CheckoutForm({ amount, clientSecret }: CheckoutOutFormType) {
     event.preventDefault();
     setLoading(true);
     setMessage(undefined);
+
+    if (!cardholderName.trim()) {
+      setCardholderError("Cardholder name is required.");
+      setLoading(false);
+      return;
+    } else {
+      setCardholderError(""); // clear cardholder error if its now valid
+    }
 
     if (!stripe || !elements) {
       setMessage("Stripe.js has not loaded yet.");
@@ -112,15 +121,22 @@ function CheckoutForm({ amount, clientSecret }: CheckoutOutFormType) {
         {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
         <label className="block">
           <span> Cardholder Name</span>
+
           <div className="mt-1 rounded border border-gray-300 p-3">
             <input
               type="text"
               className="w-full"
               name="customername"
               value={cardholderName}
-              onChange={(e) => setCardholderName(e.target.value)}
+              onChange={(e) => {
+                setCardholderName(e.target.value);
+                if (cardholderError) setCardholderError(""); // Clear error on input
+              }}
             />
           </div>
+          {cardholderError && (
+            <p className="mt-1 text-sm text-red-600">{cardholderError}</p>
+          )}
         </label>
 
         {message && !message.includes("success") && (

@@ -11,6 +11,7 @@ import convertDateToTimeFromNow from "@/utils/convertDateToTimeFromNow";
 import SignInModal from "@/components/SignInModal";
 import Calendar from "@/components/Calendar/Calendar";
 import CompleteProfileModal from "@/components/CompleteProfileModal";
+import useAuth from "@/lib/useAuth";
 
 // https://nextjs.org/docs/app/api-reference/file-conventions/dynamic-routes#convention
 // the docs are showing the Next.JS 15 behavior where params is a promise
@@ -24,7 +25,7 @@ export default function Page() {
   // { params }: { params: ProviderProps }
   // const { slug, providerId } = params;
   // params must match dynamic folder names,providerid !== providerId
-
+  const { userSession, loading } = useAuth();
   const { isOpen: signInIsOpen, onOpen: signInOnOpen } = useDisclosure();
   const {
     isOpen: completeProfileIsOpen,
