@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
+import convertToSubcurrency from "@/utils/stripe/convertToSubcurrency";
 
 const secretKey = process.env.STRIPE_SECRET_KEY;
 
@@ -15,7 +16,11 @@ const stripe = new Stripe(secretKey, {
 /* eslint-disable import/prefer-default-export */
 export async function POST(request: NextRequest) {
   try {
-    const { amount } = await request.json();
+    // const { serviceId } = await request.json();
+
+    // const amount = await (response from supabase backend. I'd pass it the service id, then wait for it to send back the price for that service)
+    const rawAmountFromServer = 25;
+    const amount = convertToSubcurrency(rawAmountFromServer);
 
     const paymentIntent = await stripe.paymentIntents.create({
       amount,

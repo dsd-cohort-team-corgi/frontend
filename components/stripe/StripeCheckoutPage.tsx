@@ -12,26 +12,20 @@ import {
 import { loadStripe } from "@stripe/stripe-js";
 import { useSearchParams } from "next/navigation";
 import { CircleAlert, Lock } from "lucide-react";
-import convertToSubcurrency from "@/utils/stripe/convertToSubcurrency";
 import StyledAsButton from "@/components/StyledAsButton";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY!);
 
 type CheckoutOutFormType = {
-  amount: number;
   clientSecret: string;
 };
-function CheckoutForm({ amount, clientSecret }: CheckoutOutFormType) {
+function CheckoutForm({ clientSecret }: CheckoutOutFormType) {
   const stripe = useStripe();
   const elements = useElements();
   const [message, setMessage] = useState<string>();
   const [cardholderError, setCardholderError] = useState("");
   const [loading, setLoading] = useState(false);
   const [cardholderName, setCardholderName] = useState("");
-  const searchParams = useSearchParams();
-  const redirect =
-    searchParams.get("redirect") ||
-    "providers/lawnandgarden/d79c848a-eab3-4368-a646-fff1bc0bd16b";
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -42,9 +36,8 @@ function CheckoutForm({ amount, clientSecret }: CheckoutOutFormType) {
       setCardholderError("Cardholder name is required.");
       setLoading(false);
       return;
-    } else {
-      setCardholderError(""); // clear cardholder error if its now valid
     }
+    setCardholderError("");
 
     if (!stripe || !elements) {
       setMessage("Stripe.js has not loaded yet.");
@@ -79,9 +72,10 @@ function CheckoutForm({ amount, clientSecret }: CheckoutOutFormType) {
       setMessage(result.error.message);
     }
 
+    const bookingid = "19eb6a08-5e86-4420-ae28-b6c4435f6238";
     if (result.paymentIntent?.status === "succeeded") {
       setMessage("Payment was successful!");
-      window.location.href = `/${redirect}?amount=${amount}`;
+      window.location.href = `/booking-confirmation/${bookingid}`;
     }
 
     setLoading(false);
@@ -139,14 +133,6 @@ function CheckoutForm({ amount, clientSecret }: CheckoutOutFormType) {
           )}
         </label>
 
-        {message && !message.includes("success") && (
-          <div className="mb-4 font-semibold text-red-600">{message}</div>
-        )}
-
-        {message && message.includes("success") && (
-          <div className="mb-4 font-semibold text-green-600">{message}</div>
-        )}
-
         <section className="mx-auto mt-6 flex max-w-4xl rounded-md bg-blue-50 p-4 text-blue-800">
           <CircleAlert color="#2563eb" size={30} />
           <div className="pl-3">
@@ -159,6 +145,14 @@ function CheckoutForm({ amount, clientSecret }: CheckoutOutFormType) {
         </section>
       </section>
 
+      {message && !message.includes("success") && (
+        <div className="mb-4 font-semibold text-red-600">{message}</div>
+      )}
+
+      {message && message.includes("success") && (
+        <div className="mb-4 font-semibold text-green-600">{message}</div>
+      )}
+
       <StyledAsButton
         type="submit"
         disabled={!stripe || loading}
@@ -170,12 +164,15 @@ function CheckoutForm({ amount, clientSecret }: CheckoutOutFormType) {
 }
 
 export default function StripeCheckoutPage() {
-  const searchParams = useSearchParams();
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [loadingIntent, setLoadingIntent] = useState(true);
 
-  const serviceCost = Number(searchParams.get("servicecost") || "65");
-  const amount = convertToSubcurrency(serviceCost);
+  const searchParams = useSearchParams();
+  //   const serviceCost = Number(searchParams.get("servicecost") || "65");
+  const serviceId = Number(
+    searchParams.get("serviceid") || "24afade0-1c79-4831-9bf4-7c0c5bbd0f66",
+  ); // decluttering service id for testing
+  //   const amount = convertToSubcurrency(serviceCost);
 
   useEffect(() => {
     const createIntent = async () => {
@@ -183,7 +180,8 @@ export default function StripeCheckoutPage() {
         const res = await fetch("/api/create-payment-intent-stripe", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ amount }),
+          body: JSON.stringify({ serviceId }),
+          // body: JSON.stringify({ service_id: "abc123" }),
         });
 
         const data = await res.json();
@@ -196,7 +194,7 @@ export default function StripeCheckoutPage() {
     };
 
     createIntent();
-  }, [amount]);
+  }, [serviceId]);
 
   if (loadingIntent || !clientSecret) {
     return <div className="p-10 text-center">Loading checkout...</div>;
@@ -204,7 +202,7 @@ export default function StripeCheckoutPage() {
 
   return (
     <Elements stripe={stripePromise} options={{ clientSecret }}>
-      <CheckoutForm amount={amount} clientSecret={clientSecret} />
+      <CheckoutForm clientSecret={clientSecret} />
     </Elements>
   );
 }
