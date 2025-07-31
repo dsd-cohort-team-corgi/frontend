@@ -6,7 +6,6 @@ import StyledAsButton from "./StyledAsButton";
 import Star from "./icons/Star";
 import ReviewModal from "./ReviewModal";
 import { formatDateTimeString } from "@/utils/formatDateTimeString";
-import { useEffect } from "react";
 
 interface BookingItem {
   company_name: string;

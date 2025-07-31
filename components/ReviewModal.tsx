@@ -3,7 +3,6 @@ import { Modal, ModalBody, ModalContent, ModalHeader } from "@heroui/react";
 import StyledAsButton from "./StyledAsButton";
 import ReviewStar from "./ReviewStar";
 import { useApiMutation } from "@/lib/api-client";
-import LoaderSpinner from "./Loader";
 
 interface ReviewModalProps {
   isOpen: boolean;
@@ -41,6 +40,7 @@ function ReviewModal({
   customer_id,
   provider_id,
 }: ReviewModalProps) {
+  // this state is stored above ReviewStar to send to db
   const [clickedStar, setClickedStar] = useState(0);
   const [reviewDescription, setReviewDescription] = useState<string>("");
   const createReview = useApiMutation<Review, CreateReviewRequest>(
@@ -58,7 +58,7 @@ function ReviewModal({
   if (createReview.isError) {
     console.error(createReview.error);
   }
-
+// had to use effect as a side effect otherwise onClose would cause too many renders
   useEffect(() => {
     if (createReview.isSuccess) {
       setClickedStar(0);
@@ -99,7 +99,7 @@ function ReviewModal({
                 className="mt-3 h-[20dvh] resize-none rounded-lg border-1 border-light-accent px-2 py-1"
                 value={reviewDescription}
                 onChange={(e) => setReviewDescription(e.target.value)}
-              ></textarea>
+              />
               <StyledAsButton
                 isDisabled={clickedStar === 0 || createReview.isPending}
                 label={labelText}
@@ -108,8 +108,8 @@ function ReviewModal({
                   createReview.mutate({
                     rating: clickedStar,
                     description: reviewDescription,
-                    customer_id: customer_id,
-                    provider_id: provider_id,
+                    customer_id,
+                    provider_id,
                   });
                 }}
               />

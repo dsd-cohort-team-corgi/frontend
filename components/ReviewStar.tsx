@@ -30,8 +30,16 @@ function ReviewStar({ clickedStar, setClickedStar }: ReviewStarProps) {
 
         return (
           <div
+            /* eslint-disable react/no-array-index-key */
             key={idx}
             onMouseEnter={() => handleMouseEnter(idx)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                handleClick(idx);
+              }
+            }}
+            role="button"
+            tabIndex={0}
             onClick={() => handleClick(idx)}
             style={{ cursor: "pointer" }}
           >
