@@ -1,24 +1,71 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Modal, ModalBody, ModalContent, ModalHeader } from "@heroui/react";
 import StyledAsButton from "./StyledAsButton";
-import Star from "./icons/Star";
 import ReviewStar from "./ReviewStar";
+import { useApiMutation } from "@/lib/api-client";
+import LoaderSpinner from "./Loader";
 
 interface ReviewModalProps {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
+  onClose: () => void;
   service_title: string;
   company_name: string;
+  customer_id: string;
+  provider_id: string;
+}
+
+export interface CreateReviewRequest {
+  rating: number;
+  description: string;
+  customer_id: string;
+  provider_id: string;
+}
+
+export interface Review {
+  rating: number;
+  description: string;
+  id: string;
+  customer_id: string;
+  provider_id: string;
+  created_at: string;
+  updated_at: string;
 }
 
 function ReviewModal({
   isOpen,
   onOpenChange,
+  onClose,
   service_title,
   company_name,
+  customer_id,
+  provider_id,
 }: ReviewModalProps) {
   const [clickedStar, setClickedStar] = useState(0);
   const [reviewDescription, setReviewDescription] = useState<string>("");
+  const createReview = useApiMutation<Review, CreateReviewRequest>(
+    "/reviews",
+    "POST",
+  );
+
+  let labelText;
+  if (createReview.isPending) {
+    labelText = "Submitting Review...";
+  } else {
+    labelText = "Submit Review";
+  }
+
+  if (createReview.isError) {
+    console.error(createReview.error);
+  }
+
+  useEffect(() => {
+    if (createReview.isSuccess) {
+      setClickedStar(0);
+      setReviewDescription("");
+      onClose();
+    }
+  }, [createReview.isSuccess]);
 
   return (
     <Modal
@@ -51,7 +98,19 @@ function ReviewModal({
                 value={reviewDescription}
                 onChange={(e) => setReviewDescription(e.target.value)}
               ></textarea>
-              <StyledAsButton label="Submit Review" className="mb-8" />
+              <StyledAsButton
+                isDisabled={clickedStar === 0 || createReview.isPending}
+                label={labelText}
+                className="mb-8"
+                onPress={() => {
+                  createReview.mutate({
+                    rating: clickedStar,
+                    description: reviewDescription,
+                    customer_id: customer_id,
+                    provider_id: provider_id,
+                  });
+                }}
+              />
             </ModalBody>
           </>
         )}

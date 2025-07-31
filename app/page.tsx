@@ -34,6 +34,7 @@ export interface BookingsData {
   completed_needs_review: BookingItem[];
 }
 const TEMP_CUSTOMER_ID = "09761bda-e98b-46f0-b976-89658eb70148";
+const TEMP_PROVIDER_ID = "1f0f15da-9de9-4c79-bd6d-a48919b988d4";
 
 function AuthenticatedHero({ userSession }: { userSession: UserSession }) {
   const { data, error, isLoading } = useApiQuery<BookingsData>(
@@ -65,6 +66,8 @@ function AuthenticatedHero({ userSession }: { userSession: UserSession }) {
             service_title={service_title}
             company_name={provider_company_name}
             start_time={start_time}
+            customer_id={TEMP_CUSTOMER_ID}
+            provider_id={TEMP_PROVIDER_ID}
           />
         ),
       )}

@@ -12,14 +12,20 @@ interface BookingItem {
   company_name: string;
   start_time: string;
   service_title: string;
+  customer_id: string;
+  provider_id: string;
 }
 
-function LeaveReview({ service_title, company_name, start_time }: BookingItem) {
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+function LeaveReview({
+  service_title,
+  company_name,
+  start_time,
+  customer_id,
+  provider_id,
+}: BookingItem) {
+  const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
   const dateFromStartTime = formatDateTimeString(start_time);
-  useEffect(() => {
-    onOpen();
-  }, []);
+
   return (
     <>
       <Card className="mb-4 bg-green-100 lg:px-4">
@@ -49,8 +55,11 @@ function LeaveReview({ service_title, company_name, start_time }: BookingItem) {
       <ReviewModal
         isOpen={isOpen}
         onOpenChange={onOpenChange}
+        onClose={onClose}
         service_title={service_title}
         company_name={company_name}
+        customer_id={customer_id}
+        provider_id={provider_id}
       />
     </>
   );
