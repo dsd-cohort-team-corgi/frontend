@@ -6,6 +6,7 @@ import StyledAsButton from "./StyledAsButton";
 import Star from "./icons/Star";
 import ReviewModal from "./ReviewModal";
 import { formatDateTimeString } from "@/utils/formatDateTimeString";
+import { useEffect } from "react";
 
 interface BookingItem {
   company_name: string;
@@ -16,6 +17,9 @@ interface BookingItem {
 function LeaveReview({ service_title, company_name, start_time }: BookingItem) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const dateFromStartTime = formatDateTimeString(start_time);
+  useEffect(() => {
+    onOpen();
+  }, []);
   return (
     <>
       <Card className="mb-4 bg-green-100 lg:px-4">
@@ -42,7 +46,12 @@ function LeaveReview({ service_title, company_name, start_time }: BookingItem) {
           />
         </CardBody>
       </Card>
-      <ReviewModal isOpen={isOpen} onOpenChange={onOpenChange} />
+      <ReviewModal
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+        service_title={service_title}
+        company_name={company_name}
+      />
     </>
   );
 }
