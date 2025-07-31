@@ -81,6 +81,7 @@ const CheckoutPage = function ({ amount }: { amount: number }) {
   };
 
   if (!clientSecret || !stripe || !elements) {
+    console.log("⏳ Waiting on:", { clientSecret, stripe, elements });
     return (
       <div className="flex items-center justify-center">
         <div

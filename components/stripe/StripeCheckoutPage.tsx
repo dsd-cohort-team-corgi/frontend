@@ -1,27 +1,194 @@
-import React from "react";
-import { Elements } from "@stripe/react-stripe-js";
+"use client";
+
+import React, { useEffect, useState } from "react";
+import {
+  useStripe,
+  useElements,
+  CardNumberElement,
+  CardExpiryElement,
+  CardCvcElement,
+  Elements,
+} from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { useSearchParams } from "next/navigation";
-import Checkout from "@/components/stripe/Checkout";
+import { CircleAlert, Lock } from "lucide-react";
 import convertToSubcurrency from "@/utils/stripe/convertToSubcurrency";
+import StyledAsButton from "@/components/StyledAsButton";
+
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY!);
+
+type CheckoutOutFormType = {
+  amount: number;
+  clientSecret: string;
+};
+function CheckoutForm({ amount, clientSecret }: CheckoutOutFormType) {
+  const stripe = useStripe();
+  const elements = useElements();
+  const [message, setMessage] = useState<string>();
+  const [loading, setLoading] = useState(false);
+  const [cardholderName, setCardholderName] = useState("");
+  const searchParams = useSearchParams();
+  const redirect =
+    searchParams.get("redirect") ||
+    "providers/lawnandgarden/d79c848a-eab3-4368-a646-fff1bc0bd16b";
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setLoading(true);
+    setMessage(undefined);
+
+    if (!stripe || !elements) {
+      setMessage("Stripe.js has not loaded yet.");
+      setLoading(false);
+      return;
+    }
+
+    const { error: submitError } = await elements.submit();
+    if (submitError) {
+      setMessage(submitError.message);
+      setLoading(false);
+      return;
+    }
+
+    const cardElement = elements.getElement(CardNumberElement);
+    if (!cardElement) {
+      setMessage("Card element not found.");
+      setLoading(false);
+      return;
+    }
+
+    const result = await stripe.confirmCardPayment(clientSecret, {
+      payment_method: {
+        card: cardElement,
+        billing_details: {
+          name: cardholderName,
+        },
+      },
+    });
+
+    if (result.error) {
+      setMessage(result.error.message);
+    }
+
+    if (result.paymentIntent?.status === "succeeded") {
+      setMessage("Payment was successful!");
+      window.location.href = `/${redirect}?amount=${amount}`;
+    }
+
+    setLoading(false);
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="mx-auto max-w-4xl rounded-md">
+      <section className="rounded-xl border-1 border-light-accent bg-white p-6">
+        <div className="my-auto flex max-w-4xl rounded-md bg-white py-4">
+          <Lock color="green" size={24} />
+          <h2 className="pl-2 text-xl font-semibold">Secure Payment </h2>
+        </div>
+        {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+        <label className="mb-4 block">
+          <span>Card Number</span>
+          <div className="mt-1 rounded border border-gray-300 p-3">
+            <CardNumberElement options={{ showIcon: true }} />
+          </div>
+        </label>
+
+        <div className="mb-4 flex gap-4">
+          {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+          <label className="flex-1">
+            <span> Expiry Date</span>
+            <div className="mt-1 rounded border border-gray-300 p-3">
+              <CardExpiryElement />
+            </div>
+          </label>
+          {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+          <label className="flex-1">
+            <span> CVC</span>
+            <div className="mt-1 rounded border border-gray-300 p-3">
+              <CardCvcElement />
+            </div>
+          </label>
+        </div>
+        {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+        <label className="block">
+          <span> Cardholder Name</span>
+          <div className="mt-1 rounded border border-gray-300 p-3">
+            <input
+              type="text"
+              className="w-full"
+              name="customername"
+              value={cardholderName}
+              onChange={(e) => setCardholderName(e.target.value)}
+            />
+          </div>
+        </label>
+
+        {message && !message.includes("success") && (
+          <div className="mb-4 font-semibold text-red-600">{message}</div>
+        )}
+
+        {message && message.includes("success") && (
+          <div className="mb-4 font-semibold text-green-600">{message}</div>
+        )}
+
+        <section className="mx-auto mt-6 flex max-w-4xl rounded-md bg-blue-50 p-4 text-blue-800">
+          <CircleAlert color="#2563eb" size={30} />
+          <div className="pl-3">
+            <h4 className="font-semibold">Payment Protection</h4>
+            <p>
+              Your payment is processed securely by Stripe. You&apos;ll be
+              charged when the service is completed.
+            </p>
+          </div>
+        </section>
+      </section>
+
+      <StyledAsButton
+        type="submit"
+        disabled={!stripe || loading}
+        className="mx-auto my-20 flex w-full max-w-lg rounded-3xl bg-blue-500 p-4 font-bold text-white disabled:cursor-not-allowed disabled:opacity-50"
+        label={!loading ? `Confirm and Pay Bill` : "Processing..."}
+      />
+    </form>
+  );
+}
 
 export default function StripeCheckoutPage() {
-  if (process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY === undefined) {
-    throw new Error("NEXT_PUBLIC_STRIPE_PUBLIC_KEY is not defined");
-  }
   const searchParams = useSearchParams();
+  const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [loadingIntent, setLoadingIntent] = useState(true);
+
   const serviceCost = Number(searchParams.get("servicecost") || "65");
-  const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY);
+  const amount = convertToSubcurrency(serviceCost);
+
+  useEffect(() => {
+    const createIntent = async () => {
+      try {
+        const res = await fetch("/api/create-payment-intent-stripe", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ amount }),
+        });
+
+        const data = await res.json();
+        setClientSecret(data.clientSecret);
+      } catch (err) {
+        console.error("Failed to create payment intent:", err);
+      } finally {
+        setLoadingIntent(false);
+      }
+    };
+
+    createIntent();
+  }, [amount]);
+
+  if (loadingIntent || !clientSecret) {
+    return <div className="p-10 text-center">Loading checkout...</div>;
+  }
+
   return (
-    <Elements
-      stripe={stripePromise}
-      options={{
-        mode: "payment",
-        amount: convertToSubcurrency(serviceCost),
-        currency: "usd",
-      }}
-    >
-      <Checkout amount={convertToSubcurrency(serviceCost)} />
+    <Elements stripe={stripePromise} options={{ clientSecret }}>
+      <CheckoutForm amount={amount} clientSecret={clientSecret} />
     </Elements>
   );
 }
