@@ -11,7 +11,7 @@ const stripe = new Stripe(secretKey, {
   apiVersion: "2025-06-30.basil",
 });
 
-// disabling because default exports don't work in api routes in next.js
+// disabling because default exports don't work in api routes in Next.js
 /* eslint-disable import/prefer-default-export */
 export async function POST(request: NextRequest) {
   try {
