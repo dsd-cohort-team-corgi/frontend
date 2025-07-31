@@ -23,7 +23,14 @@ interface CompanyListInterface {
   company_name: string;
   rating: number;
   numberOfReviews: number;
-  services: string[];
+  services: {
+    id: string;
+    service_title: string;
+    service_description: string;
+    pricing: number;
+    duration: number;
+    category: string;
+  }[];
 }
 
 export default function Page({ params }: { params: { slug: string } }) {
@@ -38,6 +45,7 @@ export default function Page({ params }: { params: { slug: string } }) {
     ["providers", "all", "category"],
     `/providers/all/${params.slug}`,
   );
+
   const serviceObject =
     listOfServices[params.slug as keyof typeof listOfServices];
 
@@ -47,8 +55,8 @@ export default function Page({ params }: { params: { slug: string } }) {
   ) => {
     const tempChipServicesSet = new Set<string>();
     companyList.forEach((company) => {
-      company.services.forEach((service: string) => {
-        tempChipServicesSet.add(service);
+      company.services.forEach((service) => {
+        tempChipServicesSet.add(service.service_title);
       });
     });
     setChipServicesArray(["All", ...Array.from(tempChipServicesSet)]);
@@ -60,13 +68,13 @@ export default function Page({ params }: { params: { slug: string } }) {
     addServicesToChipServicesSet(data ?? []);
   }, [params.slug, data]);
 
-  const handleChipFilter = (service: string) => {
-    if (service === "All") {
+  const handleChipFilter = (serviceTitle: string) => {
+    if (serviceTitle === "All") {
       setFilteredCompanyData(companyData);
       return;
     }
     const filteredCompanies = companyData.filter(({ services }) => {
-      return services.some((s: string) => s === service);
+      return services.some((service) => service.service_title === serviceTitle);
     });
     setFilteredCompanyData(filteredCompanies);
   };
@@ -89,8 +97,8 @@ export default function Page({ params }: { params: { slug: string } }) {
           .includes(lowerCasedInput);
 
         // Gets services from company from filter
-        const servicesMatch = services.some((service: string) => {
-          return service.toLowerCase().includes(lowerCasedInput);
+        const servicesMatch = services.some((service) => {
+          return service.service_title.toLowerCase().includes(lowerCasedInput);
         });
 
         return nameMatches || servicesMatch;
@@ -183,12 +191,12 @@ export default function Page({ params }: { params: { slug: string } }) {
                   </span>
                 </CardBody>
                 <CardFooter className="flex gap-1 overflow-x-scroll">
-                  {services.map((service: string) => (
+                  {services.map((service) => (
                     <Chip
-                      key={`${company_name}cardChip-${service}-${id}`}
+                      key={`${company_name}cardChip-${service.service_title}-${service.id}`}
                       className="lg:text-lg"
                     >
-                      {service}
+                      {service.service_title}
                     </Chip>
                   ))}
                 </CardFooter>
