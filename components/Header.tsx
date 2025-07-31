@@ -128,11 +128,9 @@ export default function App() {
       {/* #### Right Section ###### */}
       <NavbarContent justify="end">
         {!userSession && (
-          <>
-            <NavbarItem>
-              <GoogleSignInButton />
-            </NavbarItem>
-          </>
+          <NavbarItem>
+            <GoogleSignInButton />
+          </NavbarItem>
         )}
 
         {userSession && (
