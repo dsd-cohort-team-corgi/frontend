@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Modal, ModalBody, ModalContent, ModalHeader } from "@heroui/react";
 import StyledAsButton from "./StyledAsButton";
 import Star from "./icons/Star";
@@ -16,6 +17,9 @@ function ReviewModal({
   service_title,
   company_name,
 }: ReviewModalProps) {
+  const [clickedStar, setClickedStar] = useState(0);
+  const [reviewDescription, setReviewDescription] = useState<string>("");
+
   return (
     <Modal
       isOpen={isOpen}
@@ -36,11 +40,16 @@ function ReviewModal({
               <p>
                 How was your {service_title} with {company_name}?
               </p>
-              <ReviewStar />
+              <ReviewStar
+                clickedStar={clickedStar}
+                setClickedStar={setClickedStar}
+              />
               <textarea
                 name="description"
                 placeholder="Share your experience (optional)"
                 className="mt-3 h-[20dvh] resize-none rounded-lg border-1 border-light-accent px-2 py-1"
+                value={reviewDescription}
+                onChange={(e) => setReviewDescription(e.target.value)}
               ></textarea>
               <StyledAsButton label="Submit Review" className="mb-8" />
             </ModalBody>
