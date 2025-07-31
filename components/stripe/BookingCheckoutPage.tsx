@@ -6,7 +6,14 @@ import { Calendar, Clock, MapPin } from "lucide-react";
 import StarRatingReview from "../ProviderOverallRatingInfo";
 import IconLeftTwoTextRight from "../IconLeftTwoTextRight";
 
-export default function BookingCheckoutPage() {
+type SetServiceNotesType = {
+  setServiceNotes: React.Dispatch<React.SetStateAction<string | undefined>>;
+  serviceNotes: string | undefined;
+};
+export default function BookingCheckoutPage({
+  setServiceNotes,
+  serviceNotes,
+}: SetServiceNotesType) {
   const searchParams = useSearchParams();
   const providerName = searchParams.get("providername") || "Green Thumb Pros";
   const date = searchParams.get("date") || "Monday, July 15th, 2025";
@@ -61,6 +68,8 @@ export default function BookingCheckoutPage() {
           className="mx-auto w-[96%] resize-none rounded-lg border-1 border-light-accent p-2"
           placeholder="Any specific requests or instructions for the provider (e.g. 'Don't ring the doorbell', 'gate code is 1234',etc.)"
           rows={4}
+          value={serviceNotes}
+          onChange={(e) => setServiceNotes(e.target.value)}
         />
       </div>
     </section>

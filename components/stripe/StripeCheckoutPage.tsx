@@ -18,14 +18,29 @@ const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY!);
 
 type CheckoutOutFormType = {
   clientSecret: string;
+  serviceNotes?: string | undefined;
 };
-function CheckoutForm({ clientSecret }: CheckoutOutFormType) {
+function CheckoutForm({ clientSecret, serviceNotes }: CheckoutOutFormType) {
   const stripe = useStripe();
   const elements = useElements();
   const [message, setMessage] = useState<string>();
   const [cardholderError, setCardholderError] = useState("");
   const [loading, setLoading] = useState(false);
   const [cardholderName, setCardholderName] = useState("");
+
+  const searchParams = useSearchParams();
+  const serviceId =
+    searchParams.get("serviceid") || "24afade0-1c79-4831-9bf4-7c0c5bbd0f66";
+  const date = searchParams.get("date") || "Monday, July 15th, 2025";
+  const time = searchParams.get("time") || "11:00 AM";
+  const location =
+    searchParams.get("location") || "123 Main St, San Francisco, CA 94102";
+  const providerId =
+    searchParams.get("providerID") || "db846969-e83a-4956-b6fc-8e1e735bcd5b";
+  // Test Nurse Joy
+  const customerId =
+    searchParams.get("customerID") || "aaae3041-903f-4934-b820-2abcda916b3b";
+  // Arcanine Fireblast
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -72,11 +87,10 @@ function CheckoutForm({ clientSecret }: CheckoutOutFormType) {
       setMessage(result.error.message);
     }
 
-    const bookingid = "19eb6a08-5e86-4420-ae28-b6c4435f6238";
     if (result.paymentIntent?.status === "succeeded") {
       setMessage("Payment was successful!");
 
-      const bookingResult = await fetch(
+      const bookingResponse = await fetch(
         "https://maidyoulook-backend.onrender.com/api/bookings",
         {
           method: "POST",
@@ -85,15 +99,39 @@ function CheckoutForm({ clientSecret }: CheckoutOutFormType) {
           },
           body: JSON.stringify({
             payment_intent_id: result.paymentIntent.id,
-            // booking information
+            service_id: serviceId,
+            customer_id: customerId,
+            provider_id: providerId,
+            date,
+            time,
+            location,
+            service_notes: serviceNotes,
           }),
         },
-      ).then((res) => res.json());
+      );
+
+      if (!bookingResponse.ok) {
+        let errMessage = "Booking failed";
+
+        try {
+          const errData = await bookingResponse.json();
+          errMessage = errData.detail || errMessage;
+        } catch (jsonErr) {
+          // if the route was not found then this will be a plain text/html error. So it the 404 response can't be parsed as JSON
+          const errText = await bookingResponse.text();
+          errMessage = errText || errMessage;
+        }
+        setMessage("There was an error when creating your booking");
+        throw new Error(errMessage);
+      }
 
       // https://github.com/dsd-cohort-team-corgi/backend/issues/37
-      if (bookingResult) {
-        window.location.href = `/booking-confirmation/${bookingid}`;
+      if (bookingResponse) {
+        const bookingData = await bookingResponse.json();
+        const bookingId = bookingData.booking_id;
+        // "19eb6a08-5e86-4420-ae28-b6c4435f6238"
         setMessage("Booking successfully created!");
+        // window.location.href = `/booking-confirmation/${bookingId}`;
       }
     }
 
@@ -182,7 +220,13 @@ function CheckoutForm({ clientSecret }: CheckoutOutFormType) {
   );
 }
 
-export default function StripeCheckoutPage() {
+type StripeCheckoutPageType = {
+  serviceNotes?: string | undefined;
+};
+
+export default function StripeCheckoutPage({
+  serviceNotes,
+}: StripeCheckoutPageType) {
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [loadingIntent, setLoadingIntent] = useState(true);
 
@@ -224,7 +268,7 @@ export default function StripeCheckoutPage() {
 
   return (
     <Elements stripe={stripePromise} options={{ clientSecret }}>
-      <CheckoutForm clientSecret={clientSecret} />
+      <CheckoutForm clientSecret={clientSecret} serviceNotes={serviceNotes} />
     </Elements>
   );
 }
