@@ -5,6 +5,7 @@ import { format } from "date-fns";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import AvailableTimeSlots from "./AvailableTimeSlots";
+import { useBooking } from "@/components/context-wrappers/BookingContext";
 
 type CalendarType = {
   providersAppointments: Appointment[];
@@ -19,6 +20,7 @@ export default function Calendar({
   selectedTimeSlot,
   setSelectedTimeSlot,
 }: CalendarType) {
+  const { updateBooking } = useBooking();
   const [selectedDay, setSelectedDay] = useState<Date | undefined>();
 
   // if all slots for the day are gone, add it as an unavailable day
@@ -37,13 +39,22 @@ export default function Calendar({
   const twoWeeksLater = new Date();
   twoWeeksLater.setDate(twoWeeksLater.getDate() + 14);
 
+  function updateSelectedDay(day?: Date) {
+    if (day) {
+      setSelectedDay(day);
+      updateBooking({ date: day });
+    }
+  }
+
   return (
     <div className="max-w-md">
       <div className="flex">
         <DayPicker
           mode="single"
           selected={selectedDay}
-          onSelect={setSelectedDay}
+          onSelect={(day) => {
+            updateSelectedDay(day);
+          }}
           startMonth={today}
           endMonth={twoWeeksLater}
           disabled={[{ before: today }, { after: twoWeeksLater }]}

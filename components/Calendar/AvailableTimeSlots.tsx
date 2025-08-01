@@ -5,6 +5,7 @@ import StyledAsButton from "../StyledAsButton";
 import handleClickToggleOffOrChangeState from "@/utils/handleClickToggleOffOrChangeState";
 import generateTimeSlots from "@/utils/generateTimeSlots";
 import convertTimeFrom24To12Hours from "@/utils/convertTimeFrom24To12Hours";
+import { useBooking } from "@/components/context-wrappers/BookingContext";
 
 type AvailableTimeSlotsType = {
   serviceLength: number;
@@ -16,6 +17,7 @@ export default function AvailableTimeSlots({
   setSelectedTimeSlot,
   providersAppointments,
 }: AvailableTimeSlotsType) {
+  const { booking, updateBooking } = useBooking();
   const busySlots = calculateBusyTimeSlots(providersAppointments);
 
   const allTimeSlots = generateTimeSlots(9, 17, 30);
@@ -28,6 +30,14 @@ export default function AvailableTimeSlots({
 
   const availableTimesIn12HourFormat =
     convertTimeFrom24To12Hours(availableStartTimes);
+
+  function handleSlotChangeWithContext(slot: string) {
+    if (booking.time === slot) {
+      updateBooking({ time: "" });
+    } else {
+      updateBooking({ time: slot });
+    }
+  }
   return (
     <div className="w-full">
       <ul className="flex w-full flex-col gap-y-3">
@@ -41,12 +51,13 @@ export default function AvailableTimeSlots({
               label={slot}
               className="text-md w-full bg-transparent font-semibold text-black group-hover:text-white"
               // w-full that way if you click anywhere on the li, the special click ripple animation will be shown, since the button "fills" the li
-              onPress={() =>
+              onPress={() => {
                 handleClickToggleOffOrChangeState({
                   newId: slot,
                   setState: setSelectedTimeSlot,
-                })
-              }
+                });
+                handleSlotChangeWithContext(slot);
+              }}
             />
           </li>
         ))}

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   useStripe,
@@ -15,12 +15,12 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { CircleAlert, Lock } from "lucide-react";
 import StyledAsButton from "@/components/StyledAsButton";
 import { useApiMutation } from "@/lib/api-client";
+import { useBooking } from "@/components/context-wrappers/BookingContext";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY!);
 
 type CheckoutOutFormType = {
   clientSecret: string;
-  serviceNotes?: string | undefined;
 };
 
 type BookingResponse = {
@@ -38,10 +38,12 @@ type BookingRequestPayload = {
   service_notes?: string;
 };
 
-function CheckoutForm({ clientSecret, serviceNotes }: CheckoutOutFormType) {
+function CheckoutForm({ clientSecret }: CheckoutOutFormType) {
+  const { booking } = useBooking();
   const router = useRouter();
   const stripe = useStripe();
   const elements = useElements();
+
   const [message, setMessage] = useState<string>();
   const [cardholderError, setCardholderError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -140,13 +142,13 @@ function CheckoutForm({ clientSecret, serviceNotes }: CheckoutOutFormType) {
       createBooking(
         {
           payment_intent_id: result.paymentIntent.id,
-          service_id: serviceId,
+          service_id: booking.serviceId || "",
           customer_id: customerId,
           provider_id: providerId,
-          date,
-          time,
+          date: booking.date || "",
+          time: booking.time || "",
           location,
-          service_notes: serviceNotes,
+          service_notes: booking.serviceNotes || "",
         },
         {
           onSuccess: (data) => {
@@ -297,21 +299,14 @@ function CheckoutForm({ clientSecret, serviceNotes }: CheckoutOutFormType) {
   );
 }
 
-type StripeCheckoutPageType = {
-  serviceNotes?: string | undefined;
-};
-
-export default function StripeCheckoutPage({
-  serviceNotes,
-}: StripeCheckoutPageType) {
+export default function StripeCheckoutPage() {
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [loadingPaymentSectionMessage, setLoadingPaymentSectionMessage] =
     useState<string | null>("loading payment section ...");
 
-  const searchParams = useSearchParams();
-  const serviceId = searchParams.get("serviceid") || "1234";
-  // || "24afade0-1c79-4831-9bf4-7c0c5bbd0f66";
-  // default backup is the service id for decluttering
+  const { booking } = useBooking();
+
+  const { serviceId } = booking;
 
   const { mutate: createPaymentIntent } = useApiMutation<
     { client_secret: string },
@@ -322,6 +317,11 @@ export default function StripeCheckoutPage({
   // this outer data was not needed, so it was removed from const { mutate:createPaymentIntent ....}
 
   const handleCreatePaymentIntent = () => {
+    if (!serviceId) {
+      // return here to satisfy typescript's worry that serviceId will not be null in { service_id: serviceId }
+      // the error handling for a falsey serviceId is in the useEffect below
+      return;
+    }
     createPaymentIntent(
       { service_id: serviceId },
       {
@@ -346,13 +346,14 @@ export default function StripeCheckoutPage({
   useEffect(() => {
     // rerun the handleCreatePaymentIntent anytime the serviceId changes, which triggers the tan Query mutation via createPaymentIntent
     // for example, if the serviceId is slow to load from the queryParams
+
     if (serviceId) {
       handleCreatePaymentIntent();
+    } else {
+      setLoadingPaymentSectionMessage(
+        "There was an error with loading the stripe payment section! No service Id was found",
+      );
     }
-
-    setLoadingPaymentSectionMessage(
-      "There was an error with loading the stripe payment section! No service Id was found, please refresh the page.",
-    );
   }, [serviceId]);
 
   // useEffect(() => {
@@ -390,7 +391,7 @@ export default function StripeCheckoutPage({
 
   return (
     <Elements stripe={stripePromise} options={{ clientSecret }}>
-      <CheckoutForm clientSecret={clientSecret} serviceNotes={serviceNotes} />
+      <CheckoutForm clientSecret={clientSecret} />
     </Elements>
   );
 }

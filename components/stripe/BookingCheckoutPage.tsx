@@ -5,15 +5,9 @@ import { useSearchParams } from "next/navigation";
 import { Calendar, Clock, MapPin } from "lucide-react";
 import StarRatingReview from "../ProviderOverallRatingInfo";
 import IconLeftTwoTextRight from "../IconLeftTwoTextRight";
+import { useBooking } from "@/components/context-wrappers/BookingContext";
 
-type SetServiceNotesType = {
-  setServiceNotes: React.Dispatch<React.SetStateAction<string | undefined>>;
-  serviceNotes: string | undefined;
-};
-export default function BookingCheckoutPage({
-  setServiceNotes,
-  serviceNotes,
-}: SetServiceNotesType) {
+export default function BookingCheckoutPage() {
   const searchParams = useSearchParams();
   const providerName = searchParams.get("providername") || "Green Thumb Pros";
   const date = searchParams.get("date") || "Monday, July 15th, 2025";
@@ -23,6 +17,7 @@ export default function BookingCheckoutPage({
   const service = searchParams.get("service") || "Lawn Mowing";
   const serviceDuration = searchParams.get("serviceduration") || "60 minutes";
   const serviceCost = searchParams.get("servicecost") || "65";
+  const { booking, updateBooking } = useBooking();
 
   return (
     <section className="mb-10">
@@ -34,10 +29,14 @@ export default function BookingCheckoutPage({
           <IconLeftTwoTextRight
             icon={Calendar}
             heading="Event Date"
-            text={date}
+            text={booking.date || ""}
           />
 
-          <IconLeftTwoTextRight icon={Clock} heading="Time" text={time} />
+          <IconLeftTwoTextRight
+            icon={Clock}
+            heading="Time"
+            text={booking.time || ""}
+          />
 
           <IconLeftTwoTextRight
             icon={MapPin}
@@ -68,8 +67,8 @@ export default function BookingCheckoutPage({
           className="mx-auto w-[96%] resize-none rounded-lg border-1 border-light-accent p-2"
           placeholder="Any specific requests or instructions for the provider (e.g. 'Don't ring the doorbell', 'gate code is 1234',etc.)"
           rows={4}
-          value={serviceNotes}
-          onChange={(e) => setServiceNotes(e.target.value)}
+          value={booking.serviceNotes || ""}
+          onChange={(e) => updateBooking({ serviceNotes: e.target.value })}
         />
       </div>
     </section>

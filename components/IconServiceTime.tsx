@@ -4,6 +4,7 @@ import { Button } from "@heroui/react";
 import React, { Dispatch, SetStateAction } from "react";
 import { Leaf } from "lucide-react";
 import onClickToggleOffOrChangeState from "@/utils/handleClickToggleOffOrChangeState";
+import { useBooking } from "@/components/context-wrappers/BookingContext";
 
 type IconServiceTimeType = {
   description: string;
@@ -20,16 +21,23 @@ export default function IconServiceTime({
   id,
   setSelectedServiceId,
 }: IconServiceTimeType) {
+  const { updateBooking } = useBooking();
+
   return (
     <Button
       type="button"
       className="group my-3 flex h-fit w-full flex-col items-center rounded-lg border-1 border-light-accent bg-transparent p-4 text-[1rem] hover:border-2 hover:border-primary sm:flex-row"
-      onPress={() =>
+      onPress={() => {
         onClickToggleOffOrChangeState({
           newId: id,
           setState: setSelectedServiceId,
-        })
-      }
+        });
+        updateBooking({
+          description,
+          time: String(time),
+          price: String(price),
+        });
+      }}
     >
       {/* group is used so when the div is hovered over the leaf icon also turns blue */}
 

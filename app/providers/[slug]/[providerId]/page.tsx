@@ -13,6 +13,7 @@ import SignInModal from "@/components/SignInModal";
 import Calendar from "@/components/Calendar/Calendar";
 import CompleteProfileModal from "@/components/CompleteProfileModal";
 import useAuth from "@/lib/useAuth";
+import { useBooking } from "@/components/context-wrappers/BookingContext";
 
 // https://nextjs.org/docs/app/api-reference/file-conventions/dynamic-routes#convention
 // the docs are showing the Next.JS 15 behavior where params is a promise
@@ -24,6 +25,7 @@ import useAuth from "@/lib/useAuth";
 // };
 export default function Page() {
   const { userSession, loading } = useAuth();
+  const { booking, updateBooking } = useBooking();
   const router = useRouter();
   // { params }: { params: ProviderProps }
   // const { slug, providerId } = params;
@@ -59,11 +61,36 @@ export default function Page() {
   };
 
   const serviceOptions = [
-    { description: "Lawn Mowing", time: 60, price: 65, id: "453543" },
-    { description: "Garden Maintence", time: 90, price: 85, id: "12343424" },
-    { description: "Garden Maintence 2", time: 90, price: 85, id: "4435" },
-    { description: "Garden Maintence 3", time: 90, price: 85, id: "45353" },
-    { description: "Garden Maintence 4", time: 90, price: 85, id: "764564" },
+    {
+      description: "Decluttering",
+      time: 90,
+      price: 25,
+      id: "24afade0-1c79-4831-9bf4-7c0c5bbd0f66",
+    },
+    {
+      description: "Cleaning",
+      time: 90,
+      price: 50,
+      id: "2b9122ea-d1e3-45f9-b04c-ab4a4fdec7c6",
+    },
+    {
+      description: "Lawn",
+      time: 60,
+      price: 30,
+      id: "296d4ace-f6f9-411c-8de2-1c233976db27",
+    },
+    {
+      description: "Furniture Assembly",
+      time: 50,
+      price: 70,
+      id: "34fd3b38-3f14-468d-887c-4a9188383df3",
+    },
+    {
+      description: "Lawn Mowing & Edging",
+      time: 60,
+      price: 80,
+      id: "446471da-1e9f-4f7d-88d9-940bb0955289",
+    },
   ];
 
   const fakeReviews = [
@@ -132,6 +159,9 @@ export default function Page() {
     return serviceOptions.find((service) => service.id === selectedServiceId);
   }, [selectedServiceId, serviceOptions]);
 
+  useEffect(() => {
+    updateBooking({ serviceId: selectedServiceId });
+  }, [selectedServiceId]);
   useEffect(() => {
     const { cookie } = document;
     if (cookie) {
