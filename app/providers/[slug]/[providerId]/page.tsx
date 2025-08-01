@@ -33,14 +33,9 @@ export default function Page() {
   // const { slug, providerId } = params;
   // params must match dynamic folder names,providerid !== providerId
 
-  useEffect(() => {
-    console.log(booking);
-  }, [booking]);
-
   const { isOpen: signInIsOpen, onOpen: signInOnOpen } = useDisclosure();
   const {
     isOpen: completeProfileIsOpen,
-    onOpen: completeProfileOnOpen,
     onOpenChange: completeProfileOnOpenChange,
   } = useDisclosure();
 
@@ -155,12 +150,6 @@ export default function Page() {
       providerId: providerInfo?.id,
     });
   }, [selectedServiceId]);
-  useEffect(() => {
-    const { cookie } = document;
-    if (cookie) {
-      completeProfileOnOpen();
-    }
-  }, []);
 
   function handleContinueToBooking() {
     if (!selectedServiceId || !selectedTimeSlot) return;

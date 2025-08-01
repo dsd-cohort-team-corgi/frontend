@@ -64,7 +64,7 @@ export default function App() {
     <Navbar
       onMenuOpenChange={setIsMenuOpen}
       classNames={{
-        wrapper: "w-full max-w-none px-4", // gets rid of the default max-w-[1024px] set on the header by heroui
+        wrapper: "w-full max-w-6xl mx-auto p-4", // fixed width on desktop, centered, with padding and top padding
       }}
     >
       {/* #### Left Section (logo and mobile menu toggle button) ###### */}
@@ -82,18 +82,18 @@ export default function App() {
               alt="A corgi which is used as a logo"
               width={40}
               height={50}
+              className="mr-2"
             />
-            <p className="text-medium font-bold">Maid You Look</p>
+            <p className="text-medium font-bold">Wipe Right</p>
           </NavbarBrand>
         </Link>
       </NavbarContent>
 
-      {/* #### Middle Section ###### */}
-      <NavbarContent className="hidden gap-4 sm:flex" justify="center">
-        <Dropdown>
-          <NavbarItem isActive>
+      {/* #### Right Section ###### */}
+      <NavbarContent justify="end">
+        <NavbarItem className="hidden sm:flex">
+          <Dropdown>
             <DropdownTrigger>
-              {/* Used a regular button here since its just a non-stylized button. The stylized HeroUi button is overkill and would require workarounds like putting the services text in a span to make its sizing look the same as the other nav buttons */}
               <button
                 className="p-0 font-medium"
                 type="button"
@@ -104,29 +104,26 @@ export default function App() {
                 Services
               </button>
             </DropdownTrigger>
-          </NavbarItem>
 
-          <DropdownMenu
-            aria-label="Services"
-            itemClasses={{
-              base: "gap-4",
-            }}
-          >
-            {Object.values(listOfServices).map((service) => (
-              <DropdownItem
-                key={service.label}
-                description={service.description}
-                href={service.href}
-              >
-                {service.label}
-              </DropdownItem>
-            ))}
-          </DropdownMenu>
-        </Dropdown>
-      </NavbarContent>
+            <DropdownMenu
+              aria-label="Services"
+              itemClasses={{
+                base: "gap-4",
+              }}
+            >
+              {Object.values(listOfServices).map((service) => (
+                <DropdownItem
+                  key={service.label}
+                  description={service.description}
+                  href={service.href}
+                >
+                  {service.label}
+                </DropdownItem>
+              ))}
+            </DropdownMenu>
+          </Dropdown>
+        </NavbarItem>
 
-      {/* #### Right Section ###### */}
-      <NavbarContent justify="end">
         {!userSession && (
           <NavbarItem>
             <GoogleSignInButton />
