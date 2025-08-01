@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   useStripe,
   useElements,
@@ -10,9 +11,10 @@ import {
   Elements,
 } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { CircleAlert, Lock } from "lucide-react";
 import StyledAsButton from "@/components/StyledAsButton";
+import { useApiMutation } from "@/lib/api-client";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY!);
 
@@ -20,13 +22,44 @@ type CheckoutOutFormType = {
   clientSecret: string;
   serviceNotes?: string | undefined;
 };
+
+type BookingResponse = {
+  booking_id: string;
+};
+
+type BookingRequestPayload = {
+  payment_intent_id: string;
+  service_id: string;
+  customer_id: string;
+  provider_id: string;
+  date: string;
+  time: string;
+  location: string;
+  service_notes?: string;
+};
+
 function CheckoutForm({ clientSecret, serviceNotes }: CheckoutOutFormType) {
+  const router = useRouter();
   const stripe = useStripe();
   const elements = useElements();
   const [message, setMessage] = useState<string>();
   const [cardholderError, setCardholderError] = useState("");
   const [loading, setLoading] = useState(false);
   const [cardholderName, setCardholderName] = useState("");
+
+  const queryClient = useQueryClient();
+
+  // plus to using reactQuery versus a normal fetch
+  // 1. If the fetch fails due to a flaky network, React Query can automatically retry a few times before showing the error
+  // 2. Automatic Caching, avoids duplicate networking calls, allows refetching, improves performance
+  // 3. access to a more robust error state
+  // 4. if the hook was modified slightly, we could also access the isloading state
+  const { mutate: createBooking, error } = useApiMutation<
+    BookingResponse,
+    BookingRequestPayload
+  >("/bookings", "POST");
+
+  // ########################      SEARCH PARAMS  ##########################################
 
   const searchParams = useSearchParams();
   const serviceId =
@@ -42,9 +75,10 @@ function CheckoutForm({ clientSecret, serviceNotes }: CheckoutOutFormType) {
     searchParams.get("customerID") || "aaae3041-903f-4934-b820-2abcda916b3b";
   // Arcanine Fireblast
 
+  // ############################ HANDLE SUBMIT FOR PAYMENTS #####################################
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setLoading(true);
     setMessage(undefined);
 
     if (!cardholderName.trim()) {
@@ -59,6 +93,16 @@ function CheckoutForm({ clientSecret, serviceNotes }: CheckoutOutFormType) {
       setLoading(false);
       return;
     }
+
+    if (error) {
+      setLoading(false);
+      setMessage(
+        "An error occured when processing your payment! The useApiMutation hook failed",
+      );
+    }
+
+    setLoading(true);
+    setMessage("processing your payment");
 
     const { error: submitError } = await elements.submit();
     if (submitError) {
@@ -90,49 +134,80 @@ function CheckoutForm({ clientSecret, serviceNotes }: CheckoutOutFormType) {
     if (result.paymentIntent?.status === "succeeded") {
       setMessage("Payment was successful!");
 
-      const bookingResponse = await fetch(
-        "https://maidyoulook-backend.onrender.com/api/bookings",
+      // ########################## CREATE BOOKING ###################
+      // createBooking() will call useAPIMutation's mutation function const { mutate: createBooking, error } ....
+
+      createBooking(
         {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
+          payment_intent_id: result.paymentIntent.id,
+          service_id: serviceId,
+          customer_id: customerId,
+          provider_id: providerId,
+          date,
+          time,
+          location,
+          service_notes: serviceNotes,
+        },
+        {
+          onSuccess: (data) => {
+            const bookingId = data.booking_id;
+            // since next.js 14 has persistant layouts and react query's cache persists, we want to invalidate the query so we don't have old information if we revist it laer
+            setMessage("Booking successfully created!");
+            router.push(`/booking-confirmation/${bookingId}`);
           },
-          body: JSON.stringify({
-            payment_intent_id: result.paymentIntent.id,
-            service_id: serviceId,
-            customer_id: customerId,
-            provider_id: providerId,
-            date,
-            time,
-            location,
-            service_notes: serviceNotes,
-          }),
+          onError: (err) => {
+            setMessage("There was an error creating your booking");
+            console.error("Booking failed:", err.message);
+          },
+          onSettled: () => {
+            setLoading(false);
+          },
         },
       );
 
-      if (!bookingResponse.ok) {
-        let errMessage = "Booking failed";
+      // const bookingResponse = await fetch(
+      //   "https://maidyoulook-backend.onrender.com/api/bookings",
+      //   {
+      //     method: "POST",
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //     },
+      //     body: JSON.stringify({
+      //       payment_intent_id: result.paymentIntent.id,
+      //       service_id: serviceId,
+      //       customer_id: customerId,
+      //       provider_id: providerId,
+      //       date,
+      //       time,
+      //       location,
+      //       service_notes: serviceNotes,
+      //     }),
+      //   },
+      // );
 
-        try {
-          const errData = await bookingResponse.json();
-          errMessage = errData.detail || errMessage;
-        } catch (jsonErr) {
-          // if the route was not found then this will be a plain text/html error. So it the 404 response can't be parsed as JSON
-          const errText = await bookingResponse.text();
-          errMessage = errText || errMessage;
-        }
-        setMessage("There was an error when creating your booking");
-        throw new Error(errMessage);
-      }
+      // if (!bookingResponse.ok) {
+      //   let errMessage = "Booking failed";
 
-      // https://github.com/dsd-cohort-team-corgi/backend/issues/37
-      if (bookingResponse) {
-        const bookingData = await bookingResponse.json();
-        const bookingId = bookingData.booking_id;
-        // "19eb6a08-5e86-4420-ae28-b6c4435f6238"
-        setMessage("Booking successfully created!");
-        // window.location.href = `/booking-confirmation/${bookingId}`;
-      }
+      //   try {
+      //     const errData = await bookingResponse.json();
+      //     errMessage = errData.detail || errMessage;
+      //   } catch (jsonErr) {
+      //     // if the route was not found then this will be a plain text/html error. So it the 404 response can't be parsed as JSON
+      //     const errText = await bookingResponse.text();
+      //     errMessage = errText || errMessage;
+      //   }
+      //   setMessage("There was an error when creating your booking");
+      //   throw new Error(errMessage);
+      // }
+
+      // // https://github.com/dsd-cohort-team-corgi/backend/issues/37
+      // if (bookingResponse) {
+      //   const bookingData = await bookingResponse.json();
+      //   const bookingId = bookingData.booking_id;
+      //   // "19eb6a08-5e86-4420-ae28-b6c4435f6238"
+      //   setMessage("Booking successfully created!");
+      //   // window.location.href = `/booking-confirmation/${bookingId}`;
+      // }
     }
 
     setLoading(false);
@@ -228,42 +303,81 @@ export default function StripeCheckoutPage({
   serviceNotes,
 }: StripeCheckoutPageType) {
   const [clientSecret, setClientSecret] = useState<string | null>(null);
-  const [loadingIntent, setLoadingIntent] = useState(true);
+  const [loadingPaymentSectionMessage, setLoadingPaymentSectionMessage] =
+    useState<string | null>("loading payment section ...");
 
   const searchParams = useSearchParams();
   const serviceId =
     searchParams.get("serviceid") || "24afade0-1c79-4831-9bf4-7c0c5bbd0f66";
   // default backup is the service id for decluttering
 
+  const { mutate: createPaymentIntent } = useApiMutation<
+    { client_secret: string },
+    { service_id: string }
+  >("/stripe/create-payment-intent", "POST");
+
+  // this outer data = This represents the current cached mutation result React Query stores for this mutation
+  // this outer data was not needed, so it was removed from const { mutate: ....}
+
+  const handleCreatePaymentIntent = () => {
+    createPaymentIntent(
+      { service_id: serviceId },
+      {
+        onSuccess: (responseData) => {
+          //  This inner data is the data returned from this specific mutation call
+          setClientSecret(responseData.client_secret);
+          // since next.js 14 has persistant layouts and react query's cache persists, we want to invalidate the query so we don't have old information if we revist it laer
+          setLoadingPaymentSectionMessage(null);
+        },
+        onError: (err) => {
+          setLoadingPaymentSectionMessage(
+            "There was an error with loading the stripe payment section! Please refresh the page",
+          );
+          console.error("Booking failed:", err.message);
+        },
+        onSettled: () => {},
+        // Runs on both success or error
+      },
+    );
+  };
+
   useEffect(() => {
-    const createIntent = async () => {
-      if (!serviceId) {
-        return;
-      }
-      try {
-        const res = await fetch(
-          "https://maidyoulook-backend.onrender.com/stripe/create-payment-intent",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ service_id: serviceId }),
-          },
-        );
-
-        const data = await res.json();
-        setClientSecret(data.client_secret);
-      } catch (err) {
-        console.error("Failed to create payment intent:", err);
-      } finally {
-        setLoadingIntent(false);
-      }
-    };
-
-    createIntent();
+    if (serviceId) {
+      handleCreatePaymentIntent();
+    }
   }, [serviceId]);
 
-  if (loadingIntent || !clientSecret) {
-    return <div className="p-10 text-center">Loading checkout...</div>;
+  // useEffect(() => {
+  //   const createIntent = async () => {
+  //     if (!serviceId) {
+  //       return;
+  //     }
+  //     try {
+  //       const res = await fetch(
+  //         "https://maidyoulook-backend.onrender.com/stripe/create-payment-intent",
+  //         {
+  //           method: "POST",
+  //           headers: { "Content-Type": "application/json" },
+  //           body: JSON.stringify({ service_id: serviceId }),
+  //         },
+  //       );
+
+  //       const data = await res.json();
+  //       setClientSecret(data.client_secret);
+  //     } catch (err) {
+  //       console.error("Failed to create payment intent:", err);
+  //     } finally {
+  //       setLoadingIntent(false);
+  //     }
+  //   };
+
+  //   createIntent();
+  // }, [serviceId]);
+
+  if (loadingPaymentSectionMessage || !clientSecret) {
+    return (
+      <div className="p-10 text-center">{loadingPaymentSectionMessage}</div>
+    );
   }
 
   return (
