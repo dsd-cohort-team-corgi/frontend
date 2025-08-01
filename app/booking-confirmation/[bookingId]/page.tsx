@@ -88,15 +88,6 @@ export default function Page() {
     `/providers/${bookingData?.provider_id}`,
   );
 
-  const {
-    data: addressData,
-    error: addressError,
-    isLoading: addressIsLoading,
-  } = useApiQuery<Address[]>(["address"], `/addresses`);
-  // having to pull in all address data. There is no way to find an address using an address ID
-  const address = addressData?.find(
-    (a) => a.customer_id === bookingData?.customer_id,
-  );
   const serviceId = bookingData?.service_id;
   const service = providerData?.services.find((s) => s.id === serviceId);
   // due to waiting for info from network we have to wrap the assignment of this variable in an if statement or we get errors on page
@@ -107,12 +98,7 @@ export default function Page() {
     serviceDateAndTime = formatDateTimeString(bookingData?.start_time ?? "");
   }
 
-  if (
-    bookingIsLoading ||
-    providerIsLoading ||
-    authLoading ||
-    addressIsLoading
-  ) {
+  if (bookingIsLoading || providerIsLoading || authLoading) {
     return (
       <div className="m-auto w-4/5 max-w-[500px]">
         <LoadingSkeleton />
@@ -123,12 +109,10 @@ export default function Page() {
     alert("You must be signed in");
     router.push("/");
   }
-  if (bookingError || providerError || addressError) {
+  if (bookingError || providerError) {
     let errorMessage;
     if (providerError) {
       errorMessage = providerError.message;
-    } else if (addressError) {
-      errorMessage = addressError.message;
     } else {
       errorMessage = bookingError?.message;
     }
@@ -178,11 +162,6 @@ export default function Page() {
             <MapPin color="#2563eb" size={20} />
             <div>
               <p>{service ? service.service_title : "Service not found"}</p>
-              <p className="sm text-light-font-color">
-                {address
-                  ? `${address.street_address_1}, ${address.city}, ${address.state} ${address.zip}`
-                  : "Address not found"}
-              </p>
             </div>
           </CardBody>
         </Card>
