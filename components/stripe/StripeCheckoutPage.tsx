@@ -150,7 +150,8 @@ function CheckoutForm({ clientSecret, serviceNotes }: CheckoutOutFormType) {
         },
         {
           onSuccess: (data) => {
-            const bookingId = data.booking_id;
+            const bookingId =
+              data.booking_id || "19eb6a08-5e86-4420-ae28-b6c4435f6238";
             setMessage("Booking successfully created!");
             queryClient.invalidateQueries({ queryKey: ["bookings"] });
             // since next.js 14 has persistant layouts and react query's cache persists, we want to invalidate the query so we don't have old information if we revist it laer
@@ -308,7 +309,7 @@ export default function StripeCheckoutPage({
     useState<string | null>("loading payment section ...");
 
   const searchParams = useSearchParams();
-  const serviceId = searchParams.get("serviceid");
+  const serviceId = searchParams.get("serviceid") || "1234";
   // || "24afade0-1c79-4831-9bf4-7c0c5bbd0f66";
   // default backup is the service id for decluttering
 
