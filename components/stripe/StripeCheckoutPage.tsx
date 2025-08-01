@@ -11,11 +11,12 @@ import {
   Elements,
 } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { CircleAlert, Lock } from "lucide-react";
 import StyledAsButton from "@/components/StyledAsButton";
 import { useApiMutation } from "@/lib/api-client";
 import { useBooking } from "@/components/context-wrappers/BookingContext";
+import combineDateAndTimeToISOString from "@/utils/combineDataAndTimeToIsoString";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY!);
 
@@ -29,13 +30,14 @@ type BookingResponse = {
 
 type BookingRequestPayload = {
   payment_intent_id: string;
+  service_notes?: string;
   service_id: string;
   customer_id: string;
   provider_id: string;
-  date: string;
-  time: string;
-  location: string;
-  service_notes?: string;
+  address_id: string;
+  start_time: string;
+  special_instructions: string;
+  // location: string;
 };
 
 function CheckoutForm({ clientSecret }: CheckoutOutFormType) {
@@ -60,18 +62,6 @@ function CheckoutForm({ clientSecret }: CheckoutOutFormType) {
     BookingResponse,
     BookingRequestPayload
   >("/bookings", "POST");
-
-  // ########################      SEARCH PARAMS  ##########################################
-
-  const searchParams = useSearchParams();
-  const location =
-    searchParams.get("location") || "123 Main St, San Francisco, CA 94102";
-  const providerId =
-    searchParams.get("providerID") || "db846969-e83a-4956-b6fc-8e1e735bcd5b";
-  // Test Nurse Joy
-  const customerId =
-    searchParams.get("customerID") || "aaae3041-903f-4934-b820-2abcda916b3b";
-  // Arcanine Fireblast
 
   // ############################ HANDLE SUBMIT FOR PAYMENTS #####################################
 
@@ -135,16 +125,28 @@ function CheckoutForm({ clientSecret }: CheckoutOutFormType) {
       // ########################## CREATE BOOKING ###################
       // createBooking() will call useAPIMutation's mutation function const { mutate: createBooking, error } ....
 
+      if (
+        !result.paymentIntent.id ||
+        !booking.serviceId ||
+        !booking.customerId ||
+        !booking.providerId ||
+        !booking.date ||
+        !booking.time
+      ) {
+        console.log("missing required data to create booking");
+        return;
+      }
+
       createBooking(
         {
           payment_intent_id: result.paymentIntent.id,
-          service_id: booking.serviceId || "",
-          customer_id: customerId,
-          provider_id: providerId,
-          date: booking.date || "",
-          time: booking.time || "",
-          location,
-          service_notes: booking.serviceNotes || "",
+          service_id: booking.serviceId,
+          customer_id: booking.customerId,
+          provider_id: booking.providerId,
+          start_time: combineDateAndTimeToISOString(booking.date, booking.time),
+          service_notes: "",
+          special_instructions: booking.serviceNotes || "",
+          address_id: "697a971f-3f1d-4014-8093-5e4cb0156f77",
         },
         {
           onSuccess: (data) => {
@@ -164,50 +166,6 @@ function CheckoutForm({ clientSecret }: CheckoutOutFormType) {
           },
         },
       );
-
-      // const bookingResponse = await fetch(
-      //   "https://maidyoulook-backend.onrender.com/api/bookings",
-      //   {
-      //     method: "POST",
-      //     headers: {
-      //       "Content-Type": "application/json",
-      //     },
-      //     body: JSON.stringify({
-      //       payment_intent_id: result.paymentIntent.id,
-      //       service_id: serviceId,
-      //       customer_id: customerId,
-      //       provider_id: providerId,
-      //       date,
-      //       time,
-      //       location,
-      //       service_notes: serviceNotes,
-      //     }),
-      //   },
-      // );
-
-      // if (!bookingResponse.ok) {
-      //   let errMessage = "Booking failed";
-
-      //   try {
-      //     const errData = await bookingResponse.json();
-      //     errMessage = errData.detail || errMessage;
-      //   } catch (jsonErr) {
-      //     // if the route was not found then this will be a plain text/html error. So it the 404 response can't be parsed as JSON
-      //     const errText = await bookingResponse.text();
-      //     errMessage = errText || errMessage;
-      //   }
-      //   setMessage("There was an error when creating your booking");
-      //   throw new Error(errMessage);
-      // }
-
-      // // https://github.com/dsd-cohort-team-corgi/backend/issues/37
-      // if (bookingResponse) {
-      //   const bookingData = await bookingResponse.json();
-      //   const bookingId = bookingData.booking_id;
-      //   // "19eb6a08-5e86-4420-ae28-b6c4435f6238"
-      //   setMessage("Booking successfully created!");
-      //   // window.location.href = `/booking-confirmation/${bookingId}`;
-      // }
     }
 
     setLoading(false);
@@ -351,33 +309,6 @@ export default function StripeCheckoutPage() {
       );
     }
   }, [serviceId]);
-
-  // useEffect(() => {
-  //   const createIntent = async () => {
-  //     if (!serviceId) {
-  //       return;
-  //     }
-  //     try {
-  //       const res = await fetch(
-  //         "https://maidyoulook-backend.onrender.com/stripe/create-payment-intent",
-  //         {
-  //           method: "POST",
-  //           headers: { "Content-Type": "application/json" },
-  //           body: JSON.stringify({ service_id: serviceId }),
-  //         },
-  //       );
-
-  //       const data = await res.json();
-  //       setClientSecret(data.client_secret);
-  //     } catch (err) {
-  //       console.error("Failed to create payment intent:", err);
-  //     } finally {
-  //       setLoadingIntent(false);
-  //     }
-  //   };
-
-  //   createIntent();
-  // }, [serviceId]);
 
   if (loadingPaymentSectionMessage || !clientSecret) {
     return (

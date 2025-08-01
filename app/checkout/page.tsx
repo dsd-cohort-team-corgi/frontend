@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Suspense, useState } from "react";
+import React, { Suspense } from "react";
 
 import BookingCheckoutPage from "@/components/stripe/BookingCheckoutPage";
 import StripeCheckoutPage from "@/components/stripe/StripeCheckoutPage";

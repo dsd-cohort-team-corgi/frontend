@@ -1,35 +1,56 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { Calendar, Clock, MapPin } from "lucide-react";
 import { format } from "date-fns";
 import StarRatingReview from "../ProviderOverallRatingInfo";
 import IconLeftTwoTextRight from "../IconLeftTwoTextRight";
 import { useBooking } from "@/components/context-wrappers/BookingContext";
+import { getAuthHeaders } from "@/lib/api-client";
 
 export default function BookingCheckoutPage() {
   const searchParams = useSearchParams();
-  const providerName = searchParams.get("providername") || "Green Thumb Pros";
   const location =
     searchParams.get("location") || "123 Main St, San Francisco, CA 94102";
 
   const { booking, updateBooking } = useBooking();
 
+  useEffect(() => {
+    async function fetchCustomerId() {
+      const headers = await getAuthHeaders();
+
+      const res = await fetch(
+        `https://maidyoulook-backend.onrender.com/customers/me`,
+        { headers },
+      );
+      if (!res.ok) {
+        console.error("failed to fetch users data");
+        return;
+      }
+      const data = await res.json();
+      const userId = data.id;
+      updateBooking({ customerId: userId });
+    }
+    fetchCustomerId();
+  }, []);
+
   return (
     <section className="mb-10">
       <div className="rounded-lg border-1 border-light-accent bg-white p-4">
         <h1 className="mb-4 text-xl font-bold">Booking Details</h1>
-        <h2 className="mb-3 text-3xl font-bold"> {providerName} </h2>
+        <h2 className="mb-3 text-3xl font-bold">
+          {booking.companyName
+            ? booking.companyName
+            : `${booking.firstName} ${booking.lastName}`}
+        </h2>
         <StarRatingReview />
         <div className="my-8">
           <IconLeftTwoTextRight
             icon={Calendar}
             heading="Event Date"
             text={
-              booking.date instanceof Date
-                ? format(booking.date, "EEEE, MMMM d, yyyy")
-                : ""
+              booking.date ? format(booking?.date, "EEEE, MMMM d, yyyy") : ""
             }
           />
           <IconLeftTwoTextRight

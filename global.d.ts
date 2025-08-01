@@ -16,6 +16,9 @@ declare global {
     customerId?: string;
     providerId?: string;
 
+    companyName?: string;
+    firstName?: string;
+    lastName?: string;
     description?: string;
     price?: string;
     serviceDuration?: number;
