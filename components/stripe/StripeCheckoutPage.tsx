@@ -29,7 +29,7 @@ type BookingResponse = {
 };
 
 type BookingRequestPayload = {
-  payment_intent_id: string;
+  stripe_payment_id: string;
   service_notes?: string;
   service_id: string;
   customer_id: string;
@@ -139,7 +139,7 @@ function CheckoutForm({ clientSecret }: CheckoutOutFormType) {
 
       createBooking(
         {
-          payment_intent_id: result.paymentIntent.id,
+          stripe_payment_id: result.paymentIntent.id,
           service_id: booking.serviceId,
           customer_id: booking.customerId,
           provider_id: booking.providerId,
