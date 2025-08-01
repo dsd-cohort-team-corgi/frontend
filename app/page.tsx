@@ -6,6 +6,8 @@ import {
   Card as UpcomingServicesCard,
   CardBody,
   CardHeader,
+  addToast,
+  cn,
 } from "@heroui/react";
 import Card from "@/components/CardWithImage";
 import HomePageHeroImage from "../public/HomePageHeroImage.png";
@@ -16,6 +18,7 @@ import { useApiQuery } from "@/lib/api-client";
 import UpcomingService from "@/components/UpcomingService";
 import LeaveReview from "@/components/LeaveReview";
 import { useEffect, useState } from "react";
+import Truck from "@/components/icons/Truck";
 
 interface UserSession {
   id: string;
@@ -38,6 +41,7 @@ const TEMP_CUSTOMER_ID = "09761bda-e98b-46f0-b976-89658eb70148";
 const TEMP_PROVIDER_ID = "1f0f15da-9de9-4c79-bd6d-a48919b988d4";
 
 function AuthenticatedHero({ userSession }: { userSession: UserSession }) {
+  const [isStatusUpdated, setIsStatusUpdated] = useState<boolean>(false);
   const [bookingStatuses, setBookingStatuses] = useState<
     BookingItem[] | undefined
   >([]);
@@ -49,6 +53,19 @@ function AuthenticatedHero({ userSession }: { userSession: UserSession }) {
 
   useEffect(() => {
     if (bookingStatuses?.length === 0 && data?.upcoming_bookings) {
+      setBookingStatuses(data?.upcoming_bookings);
+    }
+    if (bookingStatuses && bookingStatuses?.length > 0) {
+      data?.upcoming_bookings.forEach(
+        ({ provider_company_name, status }, idx) => {
+          if (bookingStatuses && bookingStatuses[idx].status !== status) {
+            addToast({
+              title: `${provider_company_name} is now ${status} to your location`,
+              icon: <Truck color="#fff" />,
+            });
+          }
+        },
+      );
       setBookingStatuses(data?.upcoming_bookings);
     }
   }, [dataUpdatedAt]);
@@ -103,6 +120,7 @@ function AuthenticatedHero({ userSession }: { userSession: UserSession }) {
           )}
         </CardBody>
       </UpcomingServicesCard>
+      {isStatusUpdated && <StatusUpdateToast />}
     </div>
   );
 }
