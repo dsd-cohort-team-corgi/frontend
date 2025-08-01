@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Mail, Phone } from "lucide-react";
 import { useDisclosure } from "@heroui/react";
 import StarRatingReview from "@/components/ProviderOverallRatingInfo";
@@ -11,6 +12,7 @@ import convertDateToTimeFromNow from "@/utils/convertDateToTimeFromNow";
 import SignInModal from "@/components/SignInModal";
 import Calendar from "@/components/Calendar/Calendar";
 import CompleteProfileModal from "@/components/CompleteProfileModal";
+import useAuth from "@/lib/useAuth";
 
 // https://nextjs.org/docs/app/api-reference/file-conventions/dynamic-routes#convention
 // the docs are showing the Next.JS 15 behavior where params is a promise
@@ -21,6 +23,8 @@ import CompleteProfileModal from "@/components/CompleteProfileModal";
 //   providerId: string;
 // };
 export default function Page() {
+  const { userSession, loading } = useAuth();
+  const router = useRouter();
   // { params }: { params: ProviderProps }
   // const { slug, providerId } = params;
   // params must match dynamic folder names,providerid !== providerId
@@ -41,6 +45,7 @@ export default function Page() {
   >();
 
   const providerInfo = {
+    id: "1233424234",
     description: "this is the providers description from the database",
     name: "GreenThumb Pros",
     email: "provider@gmail.com",
@@ -133,6 +138,21 @@ export default function Page() {
       completeProfileOnOpen();
     }
   }, []);
+
+  function handleContinueToBooking() {
+    console.log(`this is user session ${userSession}`);
+    if (!selectedServiceId || !selectedTimeSlot) return;
+
+    if (!userSession) {
+      signInOnOpen(); // show sign-in modal
+      return;
+    }
+    if (userSession) {
+      router.push(
+        `/checkout?serviceid=${selectedServiceId}&time=${selectedTimeSlot}&providerid=${providerInfo.id}`,
+      );
+    }
+  }
 
   return (
     <div className="xl:cols-2 m-4 flex columns-2 flex-col flex-wrap gap-6 sm:flex-row">
@@ -251,7 +271,7 @@ export default function Page() {
         <StyledAsButton
           className="mb-4 mt-6 block w-11/12 px-0 disabled:bg-gray-500"
           label="Continue to Booking"
-          onPress={signInOnOpen}
+          onPress={() => handleContinueToBooking()}
           disabled={!selectedServiceId || !selectedTimeSlot}
         />
       </section>
