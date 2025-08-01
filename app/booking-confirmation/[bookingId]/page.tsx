@@ -52,17 +52,6 @@ interface ProviderProps {
   review_count: number;
   average_rating: number;
 }
-interface Address {
-  street_address_1: string;
-  street_address_2: string;
-  city: string;
-  state: string;
-  zip: string;
-  id: string;
-  customer_id: string;
-  created_at: string;
-  updated_at: string;
-}
 
 export default function Page() {
   const { userSession, loading: authLoading } = useAuth();
