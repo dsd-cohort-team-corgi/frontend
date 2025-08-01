@@ -132,7 +132,7 @@ function UnauthenticatedHero() {
       {/* Container placed around image and text to allow for positioning based off image rather than screen */}
       <div className="relative">
         <Image
-          className="h-[40dvh] rounded-lg object-cover md:h-[60dvh]"
+          className="h-[40dvh] rounded-lg object-cover md:h-[40dvh]"
           alt="Young woman diligently cleaning a bright, modern home."
           // static import to have Next Image component decide height and width to prevent CLS
           src={HomePageHeroImage}
