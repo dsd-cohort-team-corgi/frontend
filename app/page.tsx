@@ -15,6 +15,7 @@ import useAuth from "@/lib/useAuth";
 import { useApiQuery } from "@/lib/api-client";
 import UpcomingService from "@/components/UpcomingService";
 import LeaveReview from "@/components/LeaveReview";
+import { useEffect, useState } from "react";
 
 interface UserSession {
   id: string;
@@ -37,10 +38,20 @@ const TEMP_CUSTOMER_ID = "09761bda-e98b-46f0-b976-89658eb70148";
 const TEMP_PROVIDER_ID = "1f0f15da-9de9-4c79-bd6d-a48919b988d4";
 
 function AuthenticatedHero({ userSession }: { userSession: UserSession }) {
-  const { data, error, isLoading } = useApiQuery<BookingsData>(
+  const [bookingStatuses, setBookingStatuses] = useState<
+    BookingItem[] | undefined
+  >([]);
+  const { data, dataUpdatedAt, error, isLoading } = useApiQuery<BookingsData>(
     ["customers", "customerId", "dashboard"],
     `/customers/${TEMP_CUSTOMER_ID}/dashboard`,
+    { refetchInterval: 500, refetchIntervalInBackGround: true },
   );
+
+  useEffect(() => {
+    if (bookingStatuses?.length === 0 && data?.upcoming_bookings) {
+      setBookingStatuses(data?.upcoming_bookings);
+    }
+  }, [dataUpdatedAt]);
 
   if (isLoading) {
     return <h1>Grabbing Booking Details...</h1>;
