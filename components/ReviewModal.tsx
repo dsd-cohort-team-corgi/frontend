@@ -58,7 +58,7 @@ function ReviewModal({
   if (createReview.isError) {
     console.error(createReview.error);
   }
-// had to use effect as a side effect otherwise onClose would cause too many renders
+  // had to use effect as a side effect otherwise onClose would cause too many renders
   useEffect(() => {
     if (createReview.isSuccess) {
       setClickedStar(0);

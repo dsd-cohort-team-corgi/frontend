@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { HeroUIProvider } from "@heroui/react";
+import { HeroUIProvider, ToastProvider } from "@heroui/react";
 
 import type { Metadata } from "next";
 // import localFont from "next/font/local";
@@ -62,6 +62,19 @@ export default function RootLayout({
         <HeroUIProvider>
           <TanstackQueryProvider>
             <Header />
+            {/* Toast provider needed for HeroUI toasts. Set defaults for project */}
+            <ToastProvider
+              toastProps={{
+                timeout: 5000,
+                radius: "md",
+                hideCloseButton: false,
+                classNames: {
+                  title: "text-white",
+                  base: "bg-[#1c1c1c]",
+                  closeButton: "opacity-100 absolute right-4 top-2",
+                },
+              }}
+            />
             {children}
           </TanstackQueryProvider>
         </HeroUIProvider>

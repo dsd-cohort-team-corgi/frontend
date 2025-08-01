@@ -19,7 +19,11 @@ const getAuthHeaders = async () => {
   return headers;
 };
 
-export const useApiQuery = <T>(queryKey: string[], endpoint: string) => {
+export const useApiQuery = <T>(
+  queryKey: string[],
+  endpoint: string,
+  options?: { refetchInterval: number; refetchIntervalInBackGround: boolean },
+) => {
   return useQuery({
     queryKey,
     queryFn: async () => {
@@ -31,6 +35,8 @@ export const useApiQuery = <T>(queryKey: string[], endpoint: string) => {
       }
       return response.json() as T;
     },
+    refetchInterval: options?.refetchInterval || false,
+    refetchIntervalInBackground: options?.refetchIntervalInBackGround || false,
   });
 };
 
