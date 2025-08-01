@@ -14,6 +14,7 @@ import listOfServices from "@/data/services";
 import useAuth from "@/lib/useAuth";
 import { useApiQuery } from "@/lib/api-client";
 import UpcomingService from "@/components/UpcomingService";
+import LeaveReview from "@/components/LeaveReview";
 
 interface UserSession {
   id: string;
@@ -33,6 +34,7 @@ export interface BookingsData {
   completed_needs_review: BookingItem[];
 }
 const TEMP_CUSTOMER_ID = "09761bda-e98b-46f0-b976-89658eb70148";
+const TEMP_PROVIDER_ID = "1f0f15da-9de9-4c79-bd6d-a48919b988d4";
 
 function AuthenticatedHero({ userSession }: { userSession: UserSession }) {
   const { data, error, isLoading } = useApiQuery<BookingsData>(
@@ -56,6 +58,19 @@ function AuthenticatedHero({ userSession }: { userSession: UserSession }) {
         </h1>
         <p>Book a service or manage your bookings</p>
       </div>
+      {/* {data?.completed_needs_review && <LeaveReview />} */}
+      {data?.completed_needs_review.map(
+        ({ service_title, provider_company_name, start_time }) => (
+          <LeaveReview
+            key={`${provider_company_name}-${start_time}`}
+            service_title={service_title}
+            company_name={provider_company_name}
+            start_time={start_time}
+            customer_id={TEMP_CUSTOMER_ID}
+            provider_id={TEMP_PROVIDER_ID}
+          />
+        ),
+      )}
       <UpcomingServicesCard className="lg:px-6">
         <CardHeader className="flex flex-row items-start justify-between text-pretty p-4 md:text-lg lg:pt-8">
           <h2 className="font-black lg:text-xl">
