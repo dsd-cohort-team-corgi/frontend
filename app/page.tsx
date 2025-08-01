@@ -10,6 +10,7 @@ import {
   addToast,
 } from "@heroui/react";
 import Card from "@/components/CardWithImage";
+import Container from "@/components/Container";
 import HomePageHeroImage from "../public/HomePageHeroImage.png";
 import StyledAsButton from "@/components/StyledAsButton";
 import listOfServices from "@/data/services";
@@ -79,7 +80,7 @@ function AuthenticatedHero({ userSession }: { userSession: UserSession }) {
     return <h1>Something went wrong {error.message}</h1>;
   }
   return (
-    <div className="m-auto w-4/5 max-w-[1200px]">
+    <Container>
       <div className="mb-4 text-pretty text-left text-lg md:text-2xl lg:text-3xl">
         <h1>
           👋 Welcome back,{" "}
@@ -121,13 +122,13 @@ function AuthenticatedHero({ userSession }: { userSession: UserSession }) {
           )}
         </CardBody>
       </UpcomingServicesCard>
-    </div>
+    </Container>
   );
 }
 
 function UnauthenticatedHero() {
   return (
-    <div className="m-auto flex max-w-[1200px] justify-center">
+    <Container className="flex justify-center">
       {/* Container placed around image and text to allow for positioning based off image rather than screen */}
       <div className="relative">
         <Image
@@ -153,31 +154,31 @@ function UnauthenticatedHero() {
           />
         </div>
       </div>
-    </div>
+    </Container>
   );
 }
 
 function ServicesSection() {
   return (
-    <section className="mx-auto mt-20 max-w-[1200px] px-5 text-center sm:text-left">
+    <Container className="mt-20 text-center sm:text-left">
       <h3 className="text-4xl font-bold text-primary-font-color">
-        What service do you need?
+        What service would you like?
       </h3>
       <p className="mb-8 mt-4 text-lg tracking-wider text-secondary-font-color">
         Choose from our most popular home services
       </p>
-      <section className="grid-row-1 sm:grid-row-2 grid grid-cols-1 gap-7 sm:grid-cols-2 md:grid-cols-3">
+      <section className="grid grid-cols-3 gap-4">
         {Object.values(listOfServices).map((service) => (
           <Card
             key={service.label}
             service={service}
-            className="group relative shadow-none"
+            className="group relative max-w-xs bg-transparent pb-2 shadow-none"
             // group relative allows for the blue hover effect, it will trigger the group div inside this component to activate
             // heroui has a shadow by default, turned off with shadow-none
           />
         ))}
       </section>
-    </section>
+    </Container>
   );
 }
 
