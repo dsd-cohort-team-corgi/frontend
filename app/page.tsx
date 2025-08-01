@@ -1,11 +1,13 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
   Card as UpcomingServicesCard,
   CardBody,
   CardHeader,
+  addToast,
 } from "@heroui/react";
 import Card from "@/components/CardWithImage";
 import HomePageHeroImage from "../public/HomePageHeroImage.png";
@@ -14,6 +16,8 @@ import listOfServices from "@/data/services";
 import useAuth from "@/lib/useAuth";
 import { useApiQuery } from "@/lib/api-client";
 import UpcomingService from "@/components/UpcomingService";
+import LeaveReview from "@/components/LeaveReview";
+import Truck from "@/components/icons/Truck";
 
 interface UserSession {
   id: string;
@@ -33,12 +37,39 @@ export interface BookingsData {
   completed_needs_review: BookingItem[];
 }
 const TEMP_CUSTOMER_ID = "09761bda-e98b-46f0-b976-89658eb70148";
+const TEMP_PROVIDER_ID = "1f0f15da-9de9-4c79-bd6d-a48919b988d4";
 
 function AuthenticatedHero({ userSession }: { userSession: UserSession }) {
-  const { data, error, isLoading } = useApiQuery<BookingsData>(
+  const [bookingStatuses, setBookingStatuses] = useState<
+    BookingItem[] | undefined
+  >([]);
+  const { data, dataUpdatedAt, error, isLoading } = useApiQuery<BookingsData>(
     ["customers", "customerId", "dashboard"],
     `/customers/${TEMP_CUSTOMER_ID}/dashboard`,
+    { refetchInterval: 500, refetchIntervalInBackGround: true },
   );
+
+  // sets booking statuses to initial data for comparisons
+  // loops through incoming data and booking statuses and checks for any changes
+  // if there is a change toast fires and booking statues is updated for new comparison point
+  useEffect(() => {
+    if (bookingStatuses?.length === 0 && data?.upcoming_bookings) {
+      setBookingStatuses(data?.upcoming_bookings);
+    }
+    if (bookingStatuses && bookingStatuses?.length > 0) {
+      data?.upcoming_bookings.forEach(
+        ({ provider_company_name, status }, idx) => {
+          if (bookingStatuses && bookingStatuses[idx].status !== status) {
+            addToast({
+              title: `${provider_company_name} is now ${status} to your location`,
+              icon: <Truck color="#fff" />,
+            });
+          }
+        },
+      );
+      setBookingStatuses(data?.upcoming_bookings);
+    }
+  }, [dataUpdatedAt]);
 
   if (isLoading) {
     return <h1>Grabbing Booking Details...</h1>;
@@ -56,6 +87,19 @@ function AuthenticatedHero({ userSession }: { userSession: UserSession }) {
         </h1>
         <p>Book a service or manage your bookings</p>
       </div>
+      {/* {data?.completed_needs_review && <LeaveReview />} */}
+      {data?.completed_needs_review.map(
+        ({ service_title, provider_company_name, start_time }) => (
+          <LeaveReview
+            key={`${provider_company_name}-${start_time}`}
+            service_title={service_title}
+            company_name={provider_company_name}
+            start_time={start_time}
+            customer_id={TEMP_CUSTOMER_ID}
+            provider_id={TEMP_PROVIDER_ID}
+          />
+        ),
+      )}
       <UpcomingServicesCard className="lg:px-6">
         <CardHeader className="flex flex-row items-start justify-between text-pretty p-4 md:text-lg lg:pt-8">
           <h2 className="font-black lg:text-xl">
