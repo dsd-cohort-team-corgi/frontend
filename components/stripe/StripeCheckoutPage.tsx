@@ -151,8 +151,9 @@ function CheckoutForm({ clientSecret, serviceNotes }: CheckoutOutFormType) {
         {
           onSuccess: (data) => {
             const bookingId = data.booking_id;
-            // since next.js 14 has persistant layouts and react query's cache persists, we want to invalidate the query so we don't have old information if we revist it laer
             setMessage("Booking successfully created!");
+            queryClient.invalidateQueries({ queryKey: ["bookings"] });
+            // since next.js 14 has persistant layouts and react query's cache persists, we want to invalidate the query so we don't have old information if we revist it laer
             router.push(`/booking-confirmation/${bookingId}`);
           },
           onError: (err) => {
@@ -307,8 +308,8 @@ export default function StripeCheckoutPage({
     useState<string | null>("loading payment section ...");
 
   const searchParams = useSearchParams();
-  const serviceId =
-    searchParams.get("serviceid") || "24afade0-1c79-4831-9bf4-7c0c5bbd0f66";
+  const serviceId = searchParams.get("serviceid");
+  // || "24afade0-1c79-4831-9bf4-7c0c5bbd0f66";
   // default backup is the service id for decluttering
 
   const { mutate: createPaymentIntent } = useApiMutation<
@@ -317,21 +318,21 @@ export default function StripeCheckoutPage({
   >("/stripe/create-payment-intent", "POST");
 
   // this outer data = This represents the current cached mutation result React Query stores for this mutation
-  // this outer data was not needed, so it was removed from const { mutate: ....}
+  // this outer data was not needed, so it was removed from const { mutate:createPaymentIntent ....}
 
   const handleCreatePaymentIntent = () => {
     createPaymentIntent(
       { service_id: serviceId },
       {
         onSuccess: (responseData) => {
-          //  This inner data is the data returned from this specific mutation call
+          // This inner data is the data returned from this specific mutation call
           setClientSecret(responseData.client_secret);
-          // since next.js 14 has persistant layouts and react query's cache persists, we want to invalidate the query so we don't have old information if we revist it laer
+          // no need to invalidate since this since we don't use a query fetching the client secret anywhere else, and the useEffect ensures we always get fresh data on page load or if theres a new serviceId
           setLoadingPaymentSectionMessage(null);
         },
         onError: (err) => {
           setLoadingPaymentSectionMessage(
-            "There was an error with loading the stripe payment section! Please refresh the page",
+            "There was an error with loading the stripe payment section! Payment intent creation failed. Please refresh the page",
           );
           console.error("Booking failed:", err.message);
         },
@@ -342,9 +343,15 @@ export default function StripeCheckoutPage({
   };
 
   useEffect(() => {
+    // rerun the handleCreatePaymentIntent anytime the serviceId changes, which triggers the tan Query mutation via createPaymentIntent
+    // for example, if the serviceId is slow to load from the queryParams
     if (serviceId) {
       handleCreatePaymentIntent();
     }
+
+    setLoadingPaymentSectionMessage(
+      "There was an error with loading the stripe payment section! No service Id was found, please refresh the page.",
+    );
   }, [serviceId]);
 
   // useEffect(() => {
