@@ -17,7 +17,6 @@ import { DM_Sans } from "next/font/google"; // https://nextjs.org/docs/app/getti
 import "./globals.css";
 import Header from "../components/Header";
 import TanstackQueryProvider from "@/components/TanstackQueryProvider";
-import { title } from "process";
 
 const dmSans = DM_Sans({ subsets: ["latin"], variable: "--font-dm-sans" });
 // variable "--font-dm-sans" =  a custom css property we created so we can setup this font in Tailwindcss's config
@@ -63,6 +62,7 @@ export default function RootLayout({
         <HeroUIProvider>
           <TanstackQueryProvider>
             <Header />
+            {/* Toast provider needed for HeroUI toasts. Set defaults for project */}
             <ToastProvider
               toastProps={{
                 timeout: 5000,
