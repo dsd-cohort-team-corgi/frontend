@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useMemo, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import React, { use, useState, useMemo, useEffect } from "react";
+import { useRouter, useParams } from "next/navigation";
 import { Mail, Phone } from "lucide-react";
 import { useDisclosure } from "@heroui/react";
 import StarRatingReview from "@/components/ProviderOverallRatingInfo";
@@ -27,6 +27,8 @@ export default function Page() {
   const { userSession, loading } = useAuth();
   const { booking, updateBooking } = useBooking();
   const router = useRouter();
+  const params = useParams();
+  const { providerId } = params;
   // { params }: { params: ProviderProps }
   // const { slug, providerId } = params;
   // params must match dynamic folder names,providerid !== providerId
@@ -42,23 +44,32 @@ export default function Page() {
     string | undefined
   >();
 
+  const [providerInfo, setProviderInfo] = useState<ProviderInfo | null>(null);
+
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<
     string | undefined
   >();
 
-  const providerInfo = {
-    id: "1233424234",
-    description: "this is the providers description from the database",
-    name: "GreenThumb Pros",
-    email: "provider@gmail.com",
-    phone_number: "999-111-1111",
-    appointments: [
-      // UTC time string not PST
-      { start_time: "2025-07-28T17:30:00Z", duration: 60 },
-      { start_time: "2025-07-28T18:00:00Z", duration: 60 },
-      { start_time: "2025-07-28T20:00:00Z", duration: 60 },
-    ],
-  };
+  useEffect(() => {
+    async function fetchProvider() {
+      const res = await fetch(
+        `https://maidyoulook-backend.onrender.com/providers/${providerId}`,
+      );
+      const data = await res.json();
+      setProviderInfo(data);
+    }
+
+    if (providerId) {
+      fetchProvider();
+    }
+  }, [providerId]);
+
+  const appointments = [
+    // UTC time string not PST
+    { start_time: "2025-07-28T17:30:00Z", duration: 60 },
+    { start_time: "2025-07-28T18:00:00Z", duration: 60 },
+    { start_time: "2025-07-28T20:00:00Z", duration: 60 },
+  ];
 
   const serviceOptions = [
     {
@@ -142,7 +153,8 @@ export default function Page() {
 
   // why won't style={{}} work? because we need this to only apply on xl screens, which would require a media query to work, which would result in a flash of unflash content because we'd have to wait until everythings rendered to access window.matchMedia(query)
 
-  const offset = Math.max(0, 70 * (serviceOptions.length - 1));
+  const serviceCount = providerInfo?.services?.length ?? 0;
+  const offset = Math.max(0, 70 * (serviceCount - 1));
 
   const marginMap: Record<number, string> = {
     0: "xl:mt-0",
@@ -179,10 +191,12 @@ export default function Page() {
     }
     if (userSession) {
       router.push(
-        `/checkout?serviceid=${selectedServiceId}&time=${selectedTimeSlot}&providerid=${providerInfo.id}`,
+        `/checkout?serviceid=${selectedServiceId}&time=${selectedTimeSlot}&providerid=${providerInfo?.id}`,
       );
     }
   }
+
+  if (!providerInfo) return <div>Loading...</div>;
 
   return (
     <div className="xl:cols-2 m-4 flex columns-2 flex-col flex-wrap gap-6 sm:flex-row">
@@ -199,7 +213,9 @@ export default function Page() {
         {/* //  ${serviceOptions.length > 2 ? "max-h-[calc(100%-400px)]" : ""} */}
         <div className="mb-4 justify-between sm:flex">
           <h2 className="mb-3 text-3xl font-bold sm:mb-0">
-            {providerInfo.name}
+            {providerInfo.company_name
+              ? providerInfo.company_name
+              : `${providerInfo.first_name} ${providerInfo.last_name}`}
           </h2>
 
           <div className="flex space-x-6 px-2">
@@ -230,7 +246,7 @@ export default function Page() {
               as="a"
               className="text-md group items-center border-1 border-light-accent text-black hover:text-white data-[hover=true]:!bg-primary"
               variant="ghost"
-              href={`mailto:${providerInfo.email}`}
+              href={`mailto:${"test@gmail.com"}`}
             />
           </div>
         </div>
@@ -241,14 +257,14 @@ export default function Page() {
           </span>
           <span className="ml-4">
             <span className="font-semibold sm:inline"> Email: </span>
-            {providerInfo.email}
+            test@gmail.com
           </span>
         </div>
 
         {/* Added string versions the phone number and email since the mailto and tel links can be problematic for some users. For example, they might not use the email client that mailto tries to open. However, putting these under the actual call and email links looked strange and a long email would affect the layout
         placed here to long emails don't wrap strangely (like it would in the flexed provider name box) */}
         <StarRatingReview />
-        <p className="my-3"> {providerInfo.description} </p>
+        {/* <p className="my-3"> {providerInfo?.description} </p> */}
       </section>
 
       {/* ################# SELECT SERVICE ################ */}
@@ -260,12 +276,12 @@ export default function Page() {
         {/* the index is just there for development, in production the services will always be unique */}
         {/* eslint-disable react/no-array-index-key */}
 
-        {serviceOptions.map((service, index) => (
+        {providerInfo.services.map((service, index) => (
           <IconServiceTime
-            key={`${service.description} ${service.time} ${index}`}
-            description={service.description}
-            time={service.time}
-            price={service.price}
+            key={`${service.service_description} ${service.duration} ${index}`}
+            description={service.service_title}
+            time={service.duration}
+            price={service.pricing}
             id={service.id}
             setSelectedServiceId={setSelectedServiceId}
           />
@@ -284,7 +300,7 @@ export default function Page() {
         We're putting a default of 60 to keep typescript happy (otherwise it worries that it could be undefined)
         The calendar will only be interactive after they click a service object, so in reality serviceLength will always be defined */}
         <Calendar
-          providersAppointments={providerInfo.appointments}
+          providersAppointments={appointments}
           selectedTimeSlot={selectedTimeSlot}
           setSelectedTimeSlot={setSelectedTimeSlot}
           serviceLength={selectedServiceObject?.time ?? 60}
@@ -294,7 +310,7 @@ export default function Page() {
           <span className="block font-bold"> Please select a service</span>
         ) : (
           <span className="block font-bold">
-            {`${selectedServiceObject?.description} (${selectedServiceObject?.time} mins) - $${selectedServiceObject?.price}`}
+            {`${booking?.description} (${booking.serviceDuration} mins) - $${booking?.price}`}
           </span>
         )}
 

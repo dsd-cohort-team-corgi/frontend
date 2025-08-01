@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   useStripe,
@@ -64,10 +64,6 @@ function CheckoutForm({ clientSecret }: CheckoutOutFormType) {
   // ########################      SEARCH PARAMS  ##########################################
 
   const searchParams = useSearchParams();
-  const serviceId =
-    searchParams.get("serviceid") || "24afade0-1c79-4831-9bf4-7c0c5bbd0f66";
-  const date = searchParams.get("date") || "Monday, July 15th, 2025";
-  const time = searchParams.get("time") || "11:00 AM";
   const location =
     searchParams.get("location") || "123 Main St, San Francisco, CA 94102";
   const providerId =

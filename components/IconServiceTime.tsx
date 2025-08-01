@@ -34,7 +34,7 @@ export default function IconServiceTime({
         });
         updateBooking({
           description,
-          time: String(time),
+          serviceDuration: time,
           price: String(price),
         });
       }}

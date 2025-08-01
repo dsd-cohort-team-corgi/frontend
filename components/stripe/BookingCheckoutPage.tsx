@@ -3,6 +3,7 @@
 import React from "react";
 import { useSearchParams } from "next/navigation";
 import { Calendar, Clock, MapPin } from "lucide-react";
+import { format } from "date-fns";
 import StarRatingReview from "../ProviderOverallRatingInfo";
 import IconLeftTwoTextRight from "../IconLeftTwoTextRight";
 import { useBooking } from "@/components/context-wrappers/BookingContext";
@@ -10,13 +11,9 @@ import { useBooking } from "@/components/context-wrappers/BookingContext";
 export default function BookingCheckoutPage() {
   const searchParams = useSearchParams();
   const providerName = searchParams.get("providername") || "Green Thumb Pros";
-  const date = searchParams.get("date") || "Monday, July 15th, 2025";
-  const time = searchParams.get("time") || "11:00 AM";
   const location =
     searchParams.get("location") || "123 Main St, San Francisco, CA 94102";
-  const service = searchParams.get("service") || "Lawn Mowing";
-  const serviceDuration = searchParams.get("serviceduration") || "60 minutes";
-  const serviceCost = searchParams.get("servicecost") || "65";
+
   const { booking, updateBooking } = useBooking();
 
   return (
@@ -29,9 +26,12 @@ export default function BookingCheckoutPage() {
           <IconLeftTwoTextRight
             icon={Calendar}
             heading="Event Date"
-            text={booking.date || ""}
+            text={
+              booking.date instanceof Date
+                ? format(booking.date, "EEEE, MMMM d, yyyy")
+                : ""
+            }
           />
-
           <IconLeftTwoTextRight
             icon={Clock}
             heading="Time"
@@ -50,13 +50,13 @@ export default function BookingCheckoutPage() {
 
         <section className="mt-5 flex justify-between">
           <div>
-            <span className="block font-semibold"> {service}</span>
+            <span className="block font-semibold"> {booking.description}</span>
 
             <span className="block text-sm text-secondary-font-color">
-              {serviceDuration}
+              {`${booking.serviceDuration || ""} mins`}
             </span>
           </div>
-          <span className="font-semibold"> {`${serviceCost}`} </span>
+          <span className="font-semibold">{booking.price || ""}</span>
         </section>
       </div>
       <div className="mt-6 flex flex-col justify-center rounded-lg border-1 border-light-accent bg-white px-2 py-8">
