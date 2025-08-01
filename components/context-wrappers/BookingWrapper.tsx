@@ -1,3 +1,15 @@
+"use client";
+
+import { BookingProvider } from "@/components/context-wrappers/BookingContext";
+
+export default function ClientProviders({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return <BookingProvider>{children}</BookingProvider>;
+}
+
 // "use client";
 
 // // https://www.youtube.com/watch?v=ebOgXUPG3_k

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo, useEffect } from "react";
+import { useRouter, useParams } from "next/navigation";
 import { Mail, Phone } from "lucide-react";
 import { useDisclosure } from "@heroui/react";
 import StarRatingReview from "@/components/ProviderOverallRatingInfo";
@@ -11,6 +12,8 @@ import convertDateToTimeFromNow from "@/utils/convertDateToTimeFromNow";
 import SignInModal from "@/components/SignInModal";
 import Calendar from "@/components/Calendar/Calendar";
 import CompleteProfileModal from "@/components/CompleteProfileModal";
+import useAuth from "@/lib/useAuth";
+import { useBooking } from "@/components/context-wrappers/BookingContext";
 
 // https://nextjs.org/docs/app/api-reference/file-conventions/dynamic-routes#convention
 // the docs are showing the Next.JS 15 behavior where params is a promise
@@ -21,9 +24,18 @@ import CompleteProfileModal from "@/components/CompleteProfileModal";
 //   providerId: string;
 // };
 export default function Page() {
+  const { userSession } = useAuth();
+  const { booking, updateBooking, resetBooking } = useBooking();
+  const router = useRouter();
+  const params = useParams();
+  const { providerId } = params;
   // { params }: { params: ProviderProps }
   // const { slug, providerId } = params;
   // params must match dynamic folder names,providerid !== providerId
+
+  useEffect(() => {
+    console.log(booking);
+  }, [booking]);
 
   const { isOpen: signInIsOpen, onOpen: signInOnOpen } = useDisclosure();
   const {
@@ -36,29 +48,33 @@ export default function Page() {
     string | undefined
   >();
 
+  const [providerInfo, setProviderInfo] = useState<ProviderInfo | null>(null);
+
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<
     string | undefined
   >();
 
-  const providerInfo = {
-    description: "this is the providers description from the database",
-    name: "GreenThumb Pros",
-    email: "provider@gmail.com",
-    phone_number: "999-111-1111",
-    appointments: [
-      // UTC time string not PST
-      { start_time: "2025-07-28T17:30:00Z", duration: 60 },
-      { start_time: "2025-07-28T18:00:00Z", duration: 60 },
-      { start_time: "2025-07-28T20:00:00Z", duration: 60 },
-    ],
-  };
+  useEffect(() => resetBooking(), []);
 
-  const serviceOptions = [
-    { description: "Lawn Mowing", time: 60, price: 65, id: "453543" },
-    { description: "Garden Maintence", time: 90, price: 85, id: "12343424" },
-    { description: "Garden Maintence 2", time: 90, price: 85, id: "4435" },
-    { description: "Garden Maintence 3", time: 90, price: 85, id: "45353" },
-    { description: "Garden Maintence 4", time: 90, price: 85, id: "764564" },
+  useEffect(() => {
+    async function fetchProvider() {
+      const res = await fetch(
+        `https://maidyoulook-backend.onrender.com/providers/${providerId}`,
+      );
+      const data = await res.json();
+      setProviderInfo(data);
+    }
+
+    if (providerId) {
+      fetchProvider();
+    }
+  }, [providerId]);
+
+  const appointments = [
+    // UTC time string not PST
+    { start_time: "2025-07-28T17:30:00Z", duration: 60 },
+    { start_time: "2025-07-28T18:00:00Z", duration: 60 },
+    { start_time: "2025-07-28T20:00:00Z", duration: 60 },
   ];
 
   const fakeReviews = [
@@ -110,7 +126,8 @@ export default function Page() {
 
   // why won't style={{}} work? because we need this to only apply on xl screens, which would require a media query to work, which would result in a flash of unflash content because we'd have to wait until everythings rendered to access window.matchMedia(query)
 
-  const offset = Math.max(0, 70 * (serviceOptions.length - 1));
+  const serviceCount = providerInfo?.services?.length ?? 0;
+  const offset = Math.max(0, 70 * (serviceCount - 1));
 
   const marginMap: Record<number, string> = {
     0: "xl:mt-0",
@@ -124,15 +141,42 @@ export default function Page() {
   const marginClass = marginMap[offset] || "";
 
   const selectedServiceObject = useMemo(() => {
-    return serviceOptions.find((service) => service.id === selectedServiceId);
-  }, [selectedServiceId, serviceOptions]);
+    return providerInfo?.services.find(
+      (service) => service.id === selectedServiceId,
+    );
+  }, [selectedServiceId, providerInfo?.services]);
 
+  useEffect(() => {
+    updateBooking({
+      serviceId: selectedServiceId,
+      companyName: providerInfo?.company_name,
+      firstName: providerInfo?.first_name,
+      lastName: providerInfo?.last_name,
+      providerId: providerInfo?.id,
+    });
+  }, [selectedServiceId]);
   useEffect(() => {
     const { cookie } = document;
     if (cookie) {
       completeProfileOnOpen();
     }
   }, []);
+
+  function handleContinueToBooking() {
+    if (!selectedServiceId || !selectedTimeSlot) return;
+
+    if (!userSession) {
+      signInOnOpen(); // show sign-in modal
+      return;
+    }
+    if (userSession) {
+      router.push(
+        `/checkout?serviceid=${selectedServiceId}&time=${selectedTimeSlot}&providerid=${providerInfo?.id}`,
+      );
+    }
+  }
+
+  if (!providerInfo) return <div>Loading...</div>;
 
   return (
     <div className="xl:cols-2 m-4 flex columns-2 flex-col flex-wrap gap-6 sm:flex-row">
@@ -149,7 +193,9 @@ export default function Page() {
         {/* //  ${serviceOptions.length > 2 ? "max-h-[calc(100%-400px)]" : ""} */}
         <div className="mb-4 justify-between sm:flex">
           <h2 className="mb-3 text-3xl font-bold sm:mb-0">
-            {providerInfo.name}
+            {providerInfo.company_name
+              ? providerInfo.company_name
+              : `${providerInfo.first_name} ${providerInfo.last_name}`}
           </h2>
 
           <div className="flex space-x-6 px-2">
@@ -180,7 +226,7 @@ export default function Page() {
               as="a"
               className="text-md group items-center border-1 border-light-accent text-black hover:text-white data-[hover=true]:!bg-primary"
               variant="ghost"
-              href={`mailto:${providerInfo.email}`}
+              href={`mailto:${"test@gmail.com"}`}
             />
           </div>
         </div>
@@ -191,14 +237,14 @@ export default function Page() {
           </span>
           <span className="ml-4">
             <span className="font-semibold sm:inline"> Email: </span>
-            {providerInfo.email}
+            test@gmail.com
           </span>
         </div>
 
         {/* Added string versions the phone number and email since the mailto and tel links can be problematic for some users. For example, they might not use the email client that mailto tries to open. However, putting these under the actual call and email links looked strange and a long email would affect the layout
         placed here to long emails don't wrap strangely (like it would in the flexed provider name box) */}
         <StarRatingReview />
-        <p className="my-3"> {providerInfo.description} </p>
+        {/* <p className="my-3"> {providerInfo?.description} </p> */}
       </section>
 
       {/* ################# SELECT SERVICE ################ */}
@@ -210,12 +256,12 @@ export default function Page() {
         {/* the index is just there for development, in production the services will always be unique */}
         {/* eslint-disable react/no-array-index-key */}
 
-        {serviceOptions.map((service, index) => (
+        {providerInfo.services.map((service, index) => (
           <IconServiceTime
-            key={`${service.description} ${service.time} ${index}`}
-            description={service.description}
-            time={service.time}
-            price={service.price}
+            key={`${service.service_description} ${service.duration} ${index}`}
+            description={service.service_title}
+            time={service.duration}
+            price={service.pricing}
             id={service.id}
             setSelectedServiceId={setSelectedServiceId}
           />
@@ -234,24 +280,24 @@ export default function Page() {
         We're putting a default of 60 to keep typescript happy (otherwise it worries that it could be undefined)
         The calendar will only be interactive after they click a service object, so in reality serviceLength will always be defined */}
         <Calendar
-          providersAppointments={providerInfo.appointments}
+          providersAppointments={appointments}
           selectedTimeSlot={selectedTimeSlot}
           setSelectedTimeSlot={setSelectedTimeSlot}
-          serviceLength={selectedServiceObject?.time ?? 60}
+          serviceLength={selectedServiceObject?.duration ?? 60}
         />
 
         {selectedServiceId === undefined ? (
           <span className="block font-bold"> Please select a service</span>
         ) : (
           <span className="block font-bold">
-            {`${selectedServiceObject?.description} (${selectedServiceObject?.time} mins) - $${selectedServiceObject?.price}`}
+            {`${booking?.description} (${booking.serviceDuration} mins) - $${booking?.price}`}
           </span>
         )}
 
         <StyledAsButton
           className="mb-4 mt-6 block w-11/12 px-0 disabled:bg-gray-500"
           label="Continue to Booking"
-          onPress={signInOnOpen}
+          onPress={() => handleContinueToBooking()}
           disabled={!selectedServiceId || !selectedTimeSlot}
         />
       </section>

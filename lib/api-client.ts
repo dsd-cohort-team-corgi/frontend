@@ -3,7 +3,7 @@ import supabase from "./supabase";
 
 const API_BASE_URL = "https://maidyoulook-backend.onrender.com";
 
-const getAuthHeaders = async () => {
+export const getAuthHeaders = async () => {
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
   };
