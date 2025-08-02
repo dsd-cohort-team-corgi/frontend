@@ -11,10 +11,7 @@ import React, {
 
 interface BookingContextType {
   booking: BookingDetailsType;
-  updateBooking: (
-    updates: Partial<BookingDetailsType>,
-    shouldReset?: boolean,
-  ) => void;
+  updateBooking: (updates: Partial<BookingDetailsType>) => void;
   resetBooking: () => void;
 }
 
