@@ -163,7 +163,6 @@ function CheckoutForm({ clientSecret }: CheckoutOutFormType) {
         },
         {
           onSuccess: (data) => {
-            console.log(data);
             const bookingId = data.id;
             setMessage("Booking successfully created!");
             queryClient.invalidateQueries({ queryKey: ["bookings"] });
