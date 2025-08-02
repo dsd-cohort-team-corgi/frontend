@@ -38,7 +38,7 @@ export default function Calendar({
         <DayPicker
           mode="single"
           selected={booking.date}
-          onSelect={(day) => updateBooking({ date: day })}
+          onSelect={(day) => updateBooking({ date: day, time: undefined })}
           startMonth={today}
           endMonth={twoWeeksLater}
           disabled={[
