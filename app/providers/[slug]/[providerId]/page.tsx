@@ -25,7 +25,7 @@ import { useBooking } from "@/components/context-wrappers/BookingContext";
 // };
 export default function Page() {
   const { userSession } = useAuth();
-  const { booking, updateBooking, resetBooking } = useBooking();
+  const { booking, updateBooking } = useBooking();
   const router = useRouter();
   const params = useParams();
   const { providerId } = params;
@@ -40,8 +40,6 @@ export default function Page() {
   } = useDisclosure();
 
   const [providerInfo, setProviderInfo] = useState<ProviderInfo | null>(null);
-
-  useEffect(() => resetBooking(), []);
 
   useEffect(() => {
     async function fetchProvider() {
@@ -140,7 +138,7 @@ export default function Page() {
       lastName: providerInfo?.last_name,
       providerId: providerInfo?.id,
     });
-  }, [booking.serviceId]);
+  }, [providerInfo]);
 
   function handleContinueToBooking() {
     if (!booking.serviceId || !booking.time) return;

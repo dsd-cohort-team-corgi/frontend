@@ -18,11 +18,27 @@ export default function IconServiceTime({
   price,
   id,
 }: IconServiceTimeType) {
-  const { booking, updateBooking, resetBooking } = useBooking();
+  const { booking, updateBooking } = useBooking();
 
   function handlePress() {
     if (booking.serviceId === id) {
-      resetBooking();
+      updateBooking({
+        paymentIntentId: undefined,
+        serviceId: undefined,
+        description: undefined,
+        serviceDuration: undefined,
+        price: undefined,
+        location: undefined,
+        time: undefined,
+        date: undefined,
+        serviceNotes: undefined,
+        // we want to reset everything except:
+        //  companyName: providerInfo?.company_name,
+        //   firstName: providerInfo?.first_name,
+        //   lastName: providerInfo?.last_name,
+        //   providerId: providerInfo?.id,
+        //    customerId?: string;
+      });
       return;
     }
     updateBooking(
@@ -33,6 +49,7 @@ export default function IconServiceTime({
         price: String(price),
       },
       true,
+      // true means set the context to a fresh blank slate, and then add the new values to the booking context
     );
   }
 
