@@ -25,7 +25,17 @@ type CheckoutOutFormType = {
 };
 
 type BookingResponse = {
-  booking_id: string;
+  special_instructions: string;
+  start_time: string;
+  customer_id: string;
+  address_id: string;
+  created_at: string;
+  updated_at: string;
+  service_notes: string;
+  status: string;
+  id: string;
+  provider_id: string;
+  service_id: string;
 };
 
 type BookingRequestPayload = {
@@ -153,8 +163,8 @@ function CheckoutForm({ clientSecret }: CheckoutOutFormType) {
         },
         {
           onSuccess: (data) => {
-            const bookingId =
-              data.booking_id || "19eb6a08-5e86-4420-ae28-b6c4435f6238";
+            console.log(data);
+            const bookingId = data.id;
             setMessage("Booking successfully created!");
             queryClient.invalidateQueries({ queryKey: ["bookings"] });
             // since next.js 14 has persistant layouts and react query's cache persists, we want to invalidate the query so we don't have old information if we revist it laer
