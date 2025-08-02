@@ -32,25 +32,27 @@ export default function IconServiceTime({
         time: undefined,
         date: undefined,
         serviceNotes: undefined,
-        // we want to reset everything except:
-        //  companyName: providerInfo?.company_name,
-        //   firstName: providerInfo?.first_name,
-        //   lastName: providerInfo?.last_name,
-        //   providerId: providerInfo?.id,
-        //    customerId?: string;
       });
-      return;
-    }
-    updateBooking(
-      {
+      // we want to reset everything except:
+      //  companyName: providerInfo?.company_name,
+      //   firstName: providerInfo?.first_name,
+      //   lastName: providerInfo?.last_name,
+      //   providerId: providerInfo?.id,
+      //    customerId?: string;
+    } else {
+      updateBooking({
         serviceId: id,
         description,
         serviceDuration: time,
         price: String(price),
-      },
-      true,
-      // true means set the context to a fresh blank slate, and then add the new values to the booking context
-    );
+        paymentIntentId: undefined,
+        location: undefined,
+        time: undefined,
+        date: undefined,
+        serviceNotes: undefined,
+        // we want to reset any ghost values from earlier, keep the basic provider information, and update it with the current service selection
+      });
+    }
   }
 
   return (

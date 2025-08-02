@@ -16,6 +16,8 @@ export default function BookingCheckoutPage() {
 
   const { booking, updateBooking } = useBooking();
 
+  console.log(booking);
+
   useEffect(() => {
     async function fetchCustomerId() {
       const headers = await getAuthHeaders();

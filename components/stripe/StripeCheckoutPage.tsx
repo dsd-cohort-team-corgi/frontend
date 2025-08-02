@@ -133,7 +133,10 @@ function CheckoutForm({ clientSecret }: CheckoutOutFormType) {
         !booking.date ||
         !booking.time
       ) {
-        console.log("missing required data to create booking");
+        console.log(
+          `missing required data to create booking booking.serviceId ${booking.serviceId} booking.serviceId ${booking.serviceId} booking.customerId ${booking.customerId} booking.providerId ${booking.providerId} booking.date ${booking.date} booking.time
+     ${booking.time}`,
+        );
         return;
       }
 
