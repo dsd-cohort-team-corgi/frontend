@@ -137,6 +137,8 @@ export default function Page() {
       firstName: providerInfo?.first_name,
       lastName: providerInfo?.last_name,
       providerId: providerInfo?.id,
+      paymentIntentId: undefined,
+      // if they go from /checkout back to this page, perhaps to change the time or day we want them to keep all their selected information except for paymentIntentId
     });
   }, [providerInfo]);
 
