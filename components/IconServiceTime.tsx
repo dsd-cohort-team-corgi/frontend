@@ -72,7 +72,7 @@ export default function IconServiceTime({
       </span>
 
       <div className="flex min-w-0 flex-1 flex-col flex-wrap sm:flex-row lg:flex-col xl:flex-row">
-        <p className="text-left font-bold">{description}</p>
+        <p className="font-bold">{description}</p>
         <span
           className={`min-w-0 text-secondary-font-color sm:ml-2 ${booking.serviceId === id && "text-white"}`}
         >
