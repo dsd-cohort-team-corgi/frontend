@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
+import { useEffect } from "react";
 import Link from "next/link";
 import { Card, CardBody } from "@heroui/react";
 import useAuth from "@/lib/useAuth";
@@ -13,6 +14,7 @@ import StyledAsButton from "@/components/StyledAsButton";
 import ArrowRight from "@/components/icons/ArrowRight";
 import Phone from "@/components/icons/Phone";
 import MapPin from "@/components/icons/MapPin";
+import { useBooking } from "@/components/context-wrappers/BookingContext";
 
 interface BookingQueryProps {
   special_instructions: string;
@@ -58,6 +60,11 @@ export default function Page() {
   const pathName = usePathname();
   const bookingId = pathName.split("/")[2];
   const router = useRouter();
+  const { resetBooking } = useBooking();
+
+  useEffect(() => resetBooking(), []);
+  // if they have reached this page, their booking was successful. Empty the booking context
+  // If they backtrack to the providers page to check out another service, the useEffect will fire and refill the booking context with the basic provider information
 
   const {
     data: bookingData,
