@@ -1,10 +1,12 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { BreadcrumbItem, Breadcrumbs } from "@heroui/react";
 import leftArrow from "@/public/leftArrow.svg";
 import listOfServices from "@/data/services";
+import { useBooking } from "@/components/context-wrappers/BookingContext";
 
 export default function ProvderListLayout({
   children,
@@ -16,6 +18,10 @@ export default function ProvderListLayout({
   const serviceObject =
     listOfServices[params.slug as keyof typeof listOfServices];
   const paramsArray = params.slug.split("/");
+  const { resetBooking } = useBooking();
+  // if the user has moved away from the individual providers page, delete all the booking context, so they start fresh when they click on another providers page
+  useEffect(() => resetBooking(), []);
+
   return (
     <section className="mx-auto w-[90%] max-w-5xl">
       <Breadcrumbs>

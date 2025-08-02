@@ -1,9 +1,8 @@
 "use client";
 
 import { Button } from "@heroui/react";
-import React, { Dispatch, SetStateAction } from "react";
+import React from "react";
 import { Leaf } from "lucide-react";
-import onClickToggleOffOrChangeState from "@/utils/handleClickToggleOffOrChangeState";
 import { useBooking } from "@/components/context-wrappers/BookingContext";
 
 type IconServiceTimeType = {
@@ -11,7 +10,6 @@ type IconServiceTimeType = {
   time: number;
   price: number;
   id: string;
-  setSelectedServiceId: Dispatch<SetStateAction<string | undefined>>;
 };
 
 export default function IconServiceTime({
@@ -19,35 +17,69 @@ export default function IconServiceTime({
   time,
   price,
   id,
-  setSelectedServiceId,
 }: IconServiceTimeType) {
-  const { updateBooking } = useBooking();
+  const { booking, updateBooking } = useBooking();
+
+  function handlePress() {
+    if (booking.serviceId === id) {
+      updateBooking({
+        paymentIntentId: undefined,
+        serviceId: undefined,
+        description: undefined,
+        serviceDuration: undefined,
+        price: undefined,
+        location: undefined,
+        time: undefined,
+        date: undefined,
+        serviceNotes: undefined,
+      });
+      // we want to reset everything except:
+      //  companyName: providerInfo?.company_name,
+      //   firstName: providerInfo?.first_name,
+      //   lastName: providerInfo?.last_name,
+      //   providerId: providerInfo?.id,
+      //    customerId?: string;
+    } else {
+      updateBooking({
+        serviceId: id,
+        description,
+        serviceDuration: time,
+        price: String(price),
+        paymentIntentId: undefined,
+        location: undefined,
+        time: undefined,
+        date: undefined,
+        serviceNotes: undefined,
+        // we want to reset any ghost values from earlier, keep the basic provider information, and update it with the current service selection
+      });
+    }
+  }
 
   return (
     <Button
       type="button"
-      className="group my-3 flex h-fit w-full flex-col items-center rounded-lg border-1 border-light-accent bg-transparent p-4 text-[1rem] hover:border-2 hover:border-primary sm:flex-row"
-      onPress={() => {
-        onClickToggleOffOrChangeState({
-          newId: id,
-          setState: setSelectedServiceId,
-        });
-        updateBooking({
-          description,
-          serviceDuration: time,
-          price: String(price),
-        });
-      }}
+      className={`group my-3 flex h-fit w-full flex-col flex-wrap justify-center rounded-lg border-1 border-light-accent bg-transparent p-4 text-center text-[1rem] hover:border-2 hover:border-primary sm:flex-row md:items-start lg:flex-col lg:items-center xl:flex-row xl:items-start ${booking.serviceId === id && "bg-primary text-white"}`}
+      onPress={() => handlePress()}
     >
       {/* group is used so when the div is hovered over the leaf icon also turns blue */}
 
-      <span className="inline-block bg-slate-200 p-2 group-hover:bg-slate-300">
-        <Leaf className="group-hover:stroke-primary" />
+      <span
+        className={`bg-slate-200p-2 group-hover:bg-slate-300 md:mr-4 md:shrink-0 lg:mr-0 xl:mr-4 ${booking.serviceId === id && "bg-primary text-white group-hover:bg-transparent"} `}
+      >
+        <Leaf
+          className={`group-hover:stroke-primary ${booking.serviceId === id && "group-hover:stroke-white"}`}
+        />
       </span>
-      <p className="inline-block pl-4 pr-2 font-bold"> {description} </p>
 
-      <span className="text-secondary-font-color"> {`(${time} mins)`}</span>
-      <span className="pl-2 font-bold sm:ml-auto"> {`$${price}`} </span>
+      <div className="flex min-w-0 flex-1 flex-col flex-wrap sm:flex-row lg:flex-col xl:flex-row">
+        <p className="font-bold">{description}</p>
+        <span
+          className={`min-w-0 text-secondary-font-color sm:ml-2 ${booking.serviceId === id && "text-white"}`}
+        >
+          ({time} mins)
+        </span>
+        <span className="min-w-0 pl-2 font-bold sm:ml-auto lg:ml-0 xl:ml-auto">{`$${price}`}</span>
+      </div>
       {/* ml-auto works because its basically telling the last item, hey I want you to put as much margin on your left as you possibly can
        So it gets shoved to the right
        with flexbox and grid layouts, auto margins will take over the leftover space. Since everything else is staying to the left, theres a ton of space to the right

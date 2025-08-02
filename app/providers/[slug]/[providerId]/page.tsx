@@ -25,7 +25,7 @@ import { useBooking } from "@/components/context-wrappers/BookingContext";
 // };
 export default function Page() {
   const { userSession } = useAuth();
-  const { booking, updateBooking, resetBooking } = useBooking();
+  const { booking, updateBooking } = useBooking();
   const router = useRouter();
   const params = useParams();
   const { providerId } = params;
@@ -39,17 +39,7 @@ export default function Page() {
     onOpenChange: completeProfileOnOpenChange,
   } = useDisclosure();
 
-  const [selectedServiceId, setSelectedServiceId] = useState<
-    string | undefined
-  >();
-
   const [providerInfo, setProviderInfo] = useState<ProviderInfo | null>(null);
-
-  const [selectedTimeSlot, setSelectedTimeSlot] = useState<
-    string | undefined
-  >();
-
-  useEffect(() => resetBooking(), []);
 
   useEffect(() => {
     async function fetchProvider() {
@@ -137,31 +127,30 @@ export default function Page() {
 
   const selectedServiceObject = useMemo(() => {
     return providerInfo?.services.find(
-      (service) => service.id === selectedServiceId,
+      (service) => service.id === booking.serviceId,
     );
-  }, [selectedServiceId, providerInfo?.services]);
+  }, [booking.serviceId, providerInfo?.services]);
 
   useEffect(() => {
     updateBooking({
-      serviceId: selectedServiceId,
       companyName: providerInfo?.company_name,
       firstName: providerInfo?.first_name,
       lastName: providerInfo?.last_name,
       providerId: providerInfo?.id,
+      paymentIntentId: undefined,
+      // if they go from /checkout back to this page, perhaps to change the time or day we want them to keep all their selected information except for paymentIntentId
     });
-  }, [selectedServiceId]);
+  }, [providerInfo]);
 
   function handleContinueToBooking() {
-    if (!selectedServiceId || !selectedTimeSlot) return;
+    if (!booking.serviceId || !booking.time) return;
 
     if (!userSession) {
       signInOnOpen(); // show sign-in modal
       return;
     }
     if (userSession) {
-      router.push(
-        `/checkout?serviceid=${selectedServiceId}&time=${selectedTimeSlot}&providerid=${providerInfo?.id}`,
-      );
+      router.push(`/checkout`);
     }
   }
 
@@ -238,7 +227,7 @@ export default function Page() {
 
       {/* ################# SELECT SERVICE ################ */}
 
-      <section className="order-2 mb-6 w-full rounded-3xl border-1 border-light-accent bg-white p-4 md:w-[calc(50%-1.5rem)]">
+      <section className="order-2 mb-6 w-full rounded-3xl border-1 border-light-accent bg-white p-4 lg:w-[calc(50%-12px)]">
         <h4 className="my-4 pl-2 text-2xl text-secondary-font-color">
           Select Service
         </h4>
@@ -252,14 +241,13 @@ export default function Page() {
             time={service.duration}
             price={service.pricing}
             id={service.id}
-            setSelectedServiceId={setSelectedServiceId}
           />
         ))}
       </section>
 
       {/* ################# CALENDAR ################ */}
 
-      <section className="order-3 mb-6 w-full rounded-3xl border-1 border-light-accent bg-white pl-4 pt-4 md:w-[calc(50%-1.5rem)] xl:order-4">
+      <section className="order-3 mb-6 w-full rounded-3xl border-1 border-light-accent bg-white pl-4 pt-4 lg:w-[calc(50%-12px)] xl:order-4">
         <h4 className="my-4 text-2xl text-secondary-font-color">
           Book Service
         </h4>
@@ -270,12 +258,10 @@ export default function Page() {
         The calendar will only be interactive after they click a service object, so in reality serviceLength will always be defined */}
         <Calendar
           providersAppointments={appointments}
-          selectedTimeSlot={selectedTimeSlot}
-          setSelectedTimeSlot={setSelectedTimeSlot}
           serviceLength={selectedServiceObject?.duration ?? 60}
         />
 
-        {selectedServiceId === undefined ? (
+        {!booking.serviceId ? (
           <span className="block font-bold"> Please select a service</span>
         ) : (
           <span className="block font-bold">
@@ -287,7 +273,7 @@ export default function Page() {
           className="mb-4 mt-6 block w-11/12 px-0 disabled:bg-gray-500"
           label="Continue to Booking"
           onPress={() => handleContinueToBooking()}
-          disabled={!selectedServiceId || !selectedTimeSlot}
+          disabled={!booking.serviceId || !booking.time || !booking.date}
         />
       </section>
 

@@ -1,20 +1,18 @@
-import React, { Dispatch, SetStateAction } from "react";
+import React from "react";
 import calculateBusyTimeSlots from "@/utils/calculateBusyTimeSlots";
 import getValidAppointmentStartTimes from "@/utils/getValidAppointmentStartTimes";
 import StyledAsButton from "../StyledAsButton";
-import handleClickToggleOffOrChangeState from "@/utils/handleClickToggleOffOrChangeState";
+
 import generateTimeSlots from "@/utils/generateTimeSlots";
 import convertTimeFrom24To12Hours from "@/utils/convertTimeFrom24To12Hours";
 import { useBooking } from "@/components/context-wrappers/BookingContext";
 
 type AvailableTimeSlotsType = {
   serviceLength: number;
-  setSelectedTimeSlot: Dispatch<SetStateAction<string | undefined>>;
   providersAppointments: Appointment[];
 };
 export default function AvailableTimeSlots({
   serviceLength,
-  setSelectedTimeSlot,
   providersAppointments,
 }: AvailableTimeSlotsType) {
   const { booking, updateBooking } = useBooking();
@@ -52,10 +50,6 @@ export default function AvailableTimeSlots({
               className="text-md w-full bg-transparent font-semibold text-black group-hover:text-white"
               // w-full that way if you click anywhere on the li, the special click ripple animation will be shown, since the button "fills" the li
               onPress={() => {
-                handleClickToggleOffOrChangeState({
-                  newId: slot,
-                  setState: setSelectedTimeSlot,
-                });
                 handleSlotChangeWithContext(slot);
               }}
             />
