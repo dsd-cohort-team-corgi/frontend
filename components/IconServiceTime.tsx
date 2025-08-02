@@ -64,7 +64,7 @@ export default function IconServiceTime({
       {/* group is used so when the div is hovered over the leaf icon also turns blue */}
 
       <span
-        className={`bg-slate-200p-2 group-hover:bg-slate-300 md:mr-4 md:shrink-0 ${booking.serviceId === id && "bg-primary text-white group-hover:bg-transparent"} `}
+        className={`bg-slate-200p-2 group-hover:bg-slate-300 md:mr-4 md:shrink-0 lg:mr-0 xl:mr-4 ${booking.serviceId === id && "bg-primary text-white group-hover:bg-transparent"} `}
       >
         <Leaf
           className={`group-hover:stroke-primary ${booking.serviceId === id && "group-hover:stroke-white"}`}
