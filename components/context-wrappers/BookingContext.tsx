@@ -11,7 +11,10 @@ import React, {
 
 interface BookingContextType {
   booking: BookingDetailsType;
-  updateBooking: (updates: Partial<BookingDetailsType>) => void;
+  updateBooking: (
+    updates: Partial<BookingDetailsType>,
+    shouldReset?: boolean,
+  ) => void;
   resetBooking: () => void;
 }
 
@@ -20,9 +23,12 @@ const BookingContext = createContext<BookingContextType | undefined>(undefined);
 export function BookingProvider({ children }: { children: ReactNode }) {
   const [booking, setBooking] = useState<BookingDetailsType>({});
 
-  const updateBooking = useCallback((updates: Partial<BookingDetailsType>) => {
-    setBooking((prev) => ({ ...prev, ...updates }));
-  }, []);
+  const updateBooking = useCallback(
+    (updates: Partial<BookingDetailsType>, shouldReset = false) => {
+      setBooking((prev) => (shouldReset ? updates : { ...prev, ...updates }));
+    },
+    [],
+  );
 
   const resetBooking = useCallback(() => {
     setBooking({});
