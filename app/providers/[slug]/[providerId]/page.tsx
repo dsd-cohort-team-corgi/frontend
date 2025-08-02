@@ -273,7 +273,7 @@ export default function Page() {
           className="mb-4 mt-6 block w-11/12 px-0 disabled:bg-gray-500"
           label="Continue to Booking"
           onPress={() => handleContinueToBooking()}
-          disabled={!booking.serviceId || !booking.time}
+          disabled={!booking.serviceId || !booking.time || !booking.date}
         />
       </section>
 
