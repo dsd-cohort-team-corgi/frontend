@@ -23,8 +23,8 @@ export default function ReviewCard({
         alt="default avatar"
       />
 
-      <div>
-        <div className="flex justify-between">
+      <div className="w-full">
+        <div className="flex w-full items-center justify-between">
           <span> {customerName} </span>
           <span className="text-xs text-secondary-font-color">
             {" "}

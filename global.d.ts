@@ -55,10 +55,17 @@ declare global {
     company_name: string;
     phone_number: string;
     services: ProviderService[];
-    reviews: string[];
+    reviews: Review[];
     review_count: number;
     average_rating: number | null;
   }
+
+  type ReviewType = {
+    rating: number;
+    description: string;
+    created_at: string; // ISO date string
+    customer_name: string;
+  };
 }
 
 // Due to Property 'google' does not exist on type 'Window & typeof globalThis error in googleSignInButton component
