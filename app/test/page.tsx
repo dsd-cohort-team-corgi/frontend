@@ -7,7 +7,7 @@ import { useAuthContext } from "@/components/context-wrappers/AuthContext";
 export default function ShowBearerToken() {
   const [stateToken, setStateToken] = useState<undefined | string>(undefined);
   const [copied, setCopied] = useState(false);
-  const { AuthContextObject } = useAuthContext();
+  const { authContextObject } = useAuthContext();
 
   useEffect(() => {
     const fetchToken = async () => {
@@ -38,8 +38,8 @@ export default function ShowBearerToken() {
   }, []);
 
   useEffect(() => {
-    console.log("AuthContextObject updated:", AuthContextObject);
-  }, [AuthContextObject]);
+    console.log("AuthContextObject updated:", authContextObject);
+  }, [authContextObject]);
 
   const handleCopy = async () => {
     if (!stateToken) return;
@@ -53,12 +53,16 @@ export default function ShowBearerToken() {
   };
 
   return (
-    <div>
+    <div className="text-center">
+      <span>
+        {`Hello from Auth Context 👋 ${authContextObject.displayName || "loading..."}`}
+      </span>
       <p>
         Check the console for the Bearer token or view here:{" "}
         {stateToken && "token found!"}{" "}
         {!stateToken && "No token found. User may not be signed in."}
       </p>
+
       {stateToken && (
         <button
           type="button"

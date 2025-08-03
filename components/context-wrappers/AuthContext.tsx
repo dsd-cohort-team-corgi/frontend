@@ -14,7 +14,7 @@ import React, {
 import supabase from "@/lib/supabase";
 
 interface AuthContextType {
-  AuthContextObject: AuthDetailsType;
+  authContextObject: AuthDetailsType;
   updateAuthContext: (updates: Partial<AuthDetailsType>) => void;
   resetAuthContext: () => void;
 }
@@ -22,7 +22,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [AuthContextObject, setAuthContextObject] = useState<AuthDetailsType>(
+  const [authContextObject, setAuthContextObject] = useState<AuthDetailsType>(
     {},
   );
 
@@ -57,11 +57,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const memoizedAuthValue = useMemo(
     () => ({
-      AuthContextObject,
+      authContextObject,
       updateAuthContext,
       resetAuthContext,
     }),
-    [AuthContextObject],
+    [authContextObject],
   );
 
   // ######### Automatic Auth Updates Logic  ###########
@@ -82,7 +82,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // if we switch tabs, Supabase’s onAuthStateChange can run, for example if its checking if session/token is still valid
       // so this logic will run again
       // if the metadatacache is empty, then we know this is the 1st loop so we're freshly decoding the JWT
-      userMetaDataFromJWT = claimsData.claims.app_metadata || {};
+      userMetaDataFromJWT = claimsData.claims.user_metadata || {};
 
       if (isMetaDataCacheEmpty) {
         updateAuthContext({
@@ -90,7 +90,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           email: claimsData.claims.email,
           phoneNumber: userMetaDataFromJWT.phone || "",
           displayName: userMetaDataFromJWT.full_name || "",
-          avatarUrl: userMetaDataFromJWT.picture || "",
+          avatarUrl: userMetaDataFromJWT.avatar_url || "",
         });
         cachedMetaData.current = userMetaDataFromJWT;
       }
