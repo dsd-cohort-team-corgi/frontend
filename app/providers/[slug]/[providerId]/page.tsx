@@ -62,45 +62,6 @@ export default function Page() {
     { start_time: "2025-07-28T20:00:00Z", duration: 60 },
   ];
 
-  const fakeReviews = [
-    {
-      customer_id: 1267673,
-      customer_name: "Sarah Johnson",
-      created_at: "2025-07-05T14:23:45.123456+00:00",
-      updated_at: "",
-      description:
-        "Great service! Very professional and thorough. Mike arrived on time and did an excellent job on my lawn. The attention to detail was impressive.",
-      rating: 5,
-    },
-    {
-      customer_id: 1245351323,
-      customer_name: "Evil Corgi",
-      created_at: "2025-07-05T14:23:45.123456+00:00",
-      updated_at: "",
-      description:
-        "Great service! Very professional and thorough. Mike arrived on time and did an excellent job on my lawn. The attention to detail was impressive.",
-      rating: 3,
-    },
-    {
-      customer_id: 134243231323,
-      customer_name: "Chaotic Neutral Corgi",
-      created_at: "2025-07-05T14:23:45.123456+00:00",
-      updated_at: "",
-      description:
-        "Great service! Very professional and thorough. Mike arrived on time and did an excellent job on my lawn. The attention to detail was impressive.",
-      rating: 4,
-    },
-    {
-      customer_id: 12453453,
-      customer_name: "Sir Barksworth II",
-      created_at: "2025-07-05T14:23:45.123456+00:00",
-      updated_at: "",
-      description:
-        "Great service! Very professional and thorough. Mike arrived on time and did an excellent job on my lawn. The attention to detail was impressive.",
-      rating: 1,
-    },
-  ];
-
   // we need customer reviews to move up on large screens to fill the leftover space when there are 2 or more services
   // how can we do this? with a classMap so tailwindcss understands what we want to do:
 
@@ -221,7 +182,10 @@ export default function Page() {
 
         {/* Added string versions the phone number and email since the mailto and tel links can be problematic for some users. For example, they might not use the email client that mailto tries to open. However, putting these under the actual call and email links looked strange and a long email would affect the layout
         placed here to long emails don't wrap strangely (like it would in the flexed provider name box) */}
-        <StarRatingReview />
+        <StarRatingReview
+          numberOfReviews={providerInfo.review_count}
+          providerRating={providerInfo.average_rating}
+        />
         {/* <p className="my-3"> {providerInfo?.description} </p> */}
       </section>
 
@@ -287,15 +251,22 @@ export default function Page() {
           Customer Reviews
         </h4>
 
-        {fakeReviews.map((review) => (
-          <ReviewCard
-            key={`review-${review.customer_id}`}
-            customerName={review.customer_name}
-            createdAt={convertDateToTimeFromNow(review.created_at)}
-            description={review.description}
-            rating={review.rating}
-          />
-        ))}
+        {providerInfo.reviews.length > 0 ? (
+          providerInfo.reviews.map((review) => (
+            <ReviewCard
+              key={`review-${review.customer_name}-${convertDateToTimeFromNow(review.created_at)}`}
+              customerName={review.customer_name}
+              createdAt={convertDateToTimeFromNow(review.created_at)}
+              description={review.description}
+              rating={review.rating}
+            />
+          ))
+        ) : (
+          <span className="ml-4 mt-4 block w-full">
+            {" "}
+            Be the first to review!{" "}
+          </span>
+        )}
       </section>
     </div>
   );
