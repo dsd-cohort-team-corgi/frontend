@@ -28,7 +28,6 @@ import {
 // NavBarMenu == mobile nav bar
 import supabaseClient from "@/lib/supabase";
 import StyledAsButton from "./StyledAsButton";
-import useAuth from "@/lib/hooks/useAuth";
 import listOfServices from "@/data/services";
 import GoogleSignInButton from "./GoogleSignInButton";
 
