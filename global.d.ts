@@ -5,6 +5,17 @@ declare global {
     google?: typeof google;
   }
 
+  type AuthDetailsType = {
+    displayName?: string;
+    phoneNumber?: string;
+    email?: string;
+    supabaseUserId?: string;
+    avatarUrl?: string;
+    clientId?: string;
+    providerId?: string;
+  };
+  // all are optional, because the auth context will start as a blank object
+
   type Appointment = {
     start_time: string; // ISO date string
     duration: number; // duration in minutes

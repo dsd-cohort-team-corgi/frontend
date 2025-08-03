@@ -12,7 +12,7 @@ import convertDateToTimeFromNow from "@/utils/convertDateToTimeFromNow";
 import SignInModal from "@/components/SignInModal";
 import Calendar from "@/components/Calendar/Calendar";
 import CompleteProfileModal from "@/components/CompleteProfileModal";
-import useAuth from "@/lib/useAuth";
+import useAuth from "@/lib/hooks/useAuth";
 import { useBooking } from "@/components/context-wrappers/BookingContext";
 
 // https://nextjs.org/docs/app/api-reference/file-conventions/dynamic-routes#convention

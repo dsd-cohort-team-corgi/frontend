@@ -28,7 +28,7 @@ import {
 // NavBarMenu == mobile nav bar
 import supabaseClient from "@/lib/supabase";
 import StyledAsButton from "./StyledAsButton";
-import useAuth from "@/lib/useAuth";
+import useAuth from "@/lib/hooks/useAuth";
 import listOfServices from "@/data/services";
 import GoogleSignInButton from "./GoogleSignInButton";
 
@@ -38,6 +38,7 @@ export default function App() {
 
   const handleLogOut = async () => {
     await supabaseClient.auth.signOut();
+    // the auth context automatically keeps track of auth changes, so we don't need to manually reset the auth context
     console.log("logged out :)");
     // logout Logic
   };

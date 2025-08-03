@@ -24,6 +24,7 @@ export default function AuthCallback() {
     // since Supabase never receives valid tokens to process.
 
     let hasRedirected = false;
+
     const handleRedirect = () => {
       if (hasRedirected) return;
       hasRedirected = true;
