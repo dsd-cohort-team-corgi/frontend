@@ -4,7 +4,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import Link from "next/link";
 import { Card, CardBody } from "@heroui/react";
-import useAuth from "@/lib/useAuth";
+import useAuth from "@/lib/hooks/useAuth";
 import Check from "@/components/icons/Check";
 import { useApiQuery } from "@/lib/api-client";
 import LoadingSkeleton from "@/components/LoadingSkeleton";

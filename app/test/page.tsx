@@ -2,10 +2,13 @@
 
 import { useEffect, useState } from "react";
 import supabase from "@/lib/supabase";
+import { useAuthContext } from "@/components/context-wrappers/AuthContext";
 
 export default function ShowBearerToken() {
   const [stateToken, setStateToken] = useState<undefined | string>(undefined);
   const [copied, setCopied] = useState(false);
+  const { AuthContextObject } = useAuthContext();
+
   useEffect(() => {
     const fetchToken = async () => {
       try {
@@ -33,6 +36,10 @@ export default function ShowBearerToken() {
     };
     fetchToken();
   }, []);
+
+  useEffect(() => {
+    console.log("AuthContextObject updated:", AuthContextObject);
+  }, [AuthContextObject]);
 
   const handleCopy = async () => {
     if (!stateToken) return;

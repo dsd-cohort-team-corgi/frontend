@@ -14,7 +14,7 @@ import Container from "@/components/Container";
 import HomePageHeroImage from "../public/HomePageHeroImage.png";
 import StyledAsButton from "@/components/StyledAsButton";
 import listOfServices from "@/data/services";
-import useAuth from "@/lib/useAuth";
+import useAuth from "@/lib/hooks/useAuth";
 import { useApiQuery } from "@/lib/api-client";
 import UpcomingService from "@/components/UpcomingService";
 import LeaveReview from "@/components/LeaveReview";

@@ -28,16 +28,19 @@ import {
 // NavBarMenu == mobile nav bar
 import supabaseClient from "@/lib/supabase";
 import StyledAsButton from "./StyledAsButton";
-import useAuth from "@/lib/useAuth";
+import useAuth from "@/lib/hooks/useAuth";
 import listOfServices from "@/data/services";
 import GoogleSignInButton from "./GoogleSignInButton";
+import { useAuthContext } from "@/components/context-wrappers/AuthContext";
 
 export default function App() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const { userSession } = useAuth();
+  const { resetAuthContext } = useAuthContext();
 
   const handleLogOut = async () => {
     await supabaseClient.auth.signOut();
+    resetAuthContext();
     console.log("logged out :)");
     // logout Logic
   };
