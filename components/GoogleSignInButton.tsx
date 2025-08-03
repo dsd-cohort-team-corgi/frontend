@@ -16,7 +16,6 @@ export default function GoogleSignInButton() {
     if (typeof window === "undefined") return;
 
     document.cookie = `redirectPath=${window.location.pathname}; path=/; max-age=300`;
-    console.log("Origin:", window.location.origin);
 
     // lets make sure we're entirely signed out for a fresh log in
     // this will avoid errors with supabase accidently using an invalid old session for api calls
@@ -54,9 +53,7 @@ export default function GoogleSignInButton() {
     //    const {  data: { subscription },} = supabaseClient.auth.onAuthStateChange((event, session) =>
     //    to read the access token (JWT) from the end of the url and store it in local storage (automatically)
     // 6. They are now logged in! JWT is then used for all future Supabase requests, like: supabase.from("users").select("*"); // Automatically sends JWT in headers
-    console.log(
-      JSON.stringify(`oauth sign in result ${JSON.stringify(result)}`),
-    );
+
     if (result.error) console.error("Login failed:", result.error);
     // supabase handles the session, and stores it in localStorage.
   };
