@@ -48,49 +48,58 @@ export default function BumiTestPage() {
 
   const testScenarios = [
     {
+      id: "simple-greeting",
       name: "Simple Greeting",
       message: "Hello, how are you?",
       description: "Basic functionality test",
     },
     {
+      id: "emergency-plumbing",
       name: "Emergency Plumbing",
       message: "My sink is leaking everywhere! It's an emergency!",
       description: "Should recommend emergency services",
     },
     {
+      id: "vague-request",
       name: "Vague Request",
       message: "I need help with my house",
       description: "Should ask for clarification",
     },
     {
+      id: "move-out-cleaning",
       name: "Move-Out Cleaning",
       message: "I need my house cleaned before I move out",
       description: "Should recommend cleaning services",
     },
 
     {
+      id: "multiple-issues",
       name: "Multiple Issues",
       message: "I have plumbing issues and my yard needs work",
       description: "Complex scenario with multiple services",
     },
     {
+      id: "kitchen-problems",
       name: "Kitchen Problems",
       message:
         "My kitchen faucet is dripping and the garbage disposal is broken",
       description: "Specific kitchen issues",
     },
     {
+      id: "seasonal-cleaning",
       name: "Seasonal Cleaning",
       message: "I need spring cleaning for my 3-bedroom house",
       description: "Seasonal cleaning request",
     },
     {
+      id: "appliance-repair",
       name: "Appliance Repair",
       message:
         "My dishwasher stopped working and my refrigerator is making strange noises",
       description: "Multiple appliance issues",
     },
     {
+      id: "landscaping",
       name: "Landscaping",
       message: "I need my lawn mowed and some tree trimming done",
       description: "Landscaping services",
@@ -111,7 +120,7 @@ export default function BumiTestPage() {
         conversation_history: conversationHistory,
       };
 
-      const response = await fetch(`${apiBaseUrl}/bumi/booking/chat`, {
+      const apiResponse = await fetch(`${apiBaseUrl}/bumi/booking/chat`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -119,11 +128,11 @@ export default function BumiTestPage() {
         body: JSON.stringify(requestBody),
       });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      if (!apiResponse.ok) {
+        throw new Error(`HTTP error! status: ${apiResponse.status}`);
       }
 
-      const data: ChatResponse = await response.json();
+      const data: ChatResponse = await apiResponse.json();
       setResponse(data);
 
       // Add to conversation history
@@ -221,9 +230,10 @@ export default function BumiTestPage() {
                 Quick Test Messages:
               </h2>
               <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
-                {testScenarios.map((scenario, index) => (
+                {testScenarios.map((scenario) => (
                   <button
-                    key={index}
+                    key={scenario.id}
+                    type="button"
                     onClick={() => handleTestMessage(scenario.message)}
                     className="rounded-lg border border-slate-200 bg-slate-50 p-4 text-left transition-colors hover:border-blue-300 hover:bg-blue-50"
                   >
@@ -248,6 +258,7 @@ export default function BumiTestPage() {
                     Conversation History:
                   </h2>
                   <button
+                    type="button"
                     onClick={clearHistory}
                     className="rounded-lg bg-slate-200 px-3 py-1 text-sm text-slate-700 hover:bg-slate-300"
                   >
@@ -256,7 +267,10 @@ export default function BumiTestPage() {
                 </div>
                 <div className="max-h-60 space-y-3 overflow-y-auto rounded-lg border border-slate-200 bg-slate-50 p-4">
                   {conversationHistory.map((msg, index) => (
-                    <div key={index} className="space-y-2">
+                    <div
+                      key={`conversation-${index}-${msg.user.substring(0, 10)}`}
+                      className="space-y-2"
+                    >
                       <div className="rounded-lg bg-white p-3">
                         <span className="text-sm font-medium text-blue-600">
                           User:
@@ -300,7 +314,7 @@ export default function BumiTestPage() {
                 <div className="flex items-center gap-2">
                   <Spinner size="sm" color="primary" />
                   <span className="text-blue-800">
-                    Waiting for Bumi's response...
+                    Waiting for Bumi&apos;s response...
                   </span>
                 </div>
               </div>
@@ -316,7 +330,7 @@ export default function BumiTestPage() {
             {response && (
               <div className="mb-6 rounded-lg border border-green-200 bg-green-50 p-4">
                 <h3 className="mb-2 font-semibold text-green-800">
-                  Bumi's Response:
+                  Bumi&apos;s Response:
                 </h3>
                 <div className="space-y-4">
                   <div className="rounded-lg border bg-white p-3">
@@ -334,7 +348,7 @@ export default function BumiTestPage() {
                       <div className="space-y-2">
                         {response.services.map((service, index) => (
                           <div
-                            key={index}
+                            key={`service-${service.id || index}-${service.name}`}
                             className="rounded-lg border border-slate-200 p-2"
                           >
                             <p className="font-medium text-slate-800">
