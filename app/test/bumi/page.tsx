@@ -266,9 +266,9 @@ export default function BumiTestPage() {
                   </button>
                 </div>
                 <div className="max-h-60 space-y-3 overflow-y-auto rounded-lg border border-slate-200 bg-slate-50 p-4">
-                  {conversationHistory.map((msg, index) => (
+                  {conversationHistory.map((msg) => (
                     <div
-                      key={`conversation-${index}-${msg.user.substring(0, 10)}`}
+                      key={`conversation-${msg.user.substring(0, 10)}-${msg.bumi.substring(0, 10)}`}
                       className="space-y-2"
                     >
                       <div className="rounded-lg bg-white p-3">
