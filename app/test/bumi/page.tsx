@@ -67,16 +67,7 @@ export default function BumiTestPage() {
       message: "I need my house cleaned before I move out",
       description: "Should recommend cleaning services",
     },
-    {
-      name: "HVAC Issue",
-      message: "My AC is not cooling properly",
-      description: "Should recommend HVAC services",
-    },
-    {
-      name: "Very Vague",
-      message: "Something's wrong",
-      description: "Should definitely clarify",
-    },
+
     {
       name: "Multiple Issues",
       message: "I have plumbing issues and my yard needs work",
@@ -87,11 +78,6 @@ export default function BumiTestPage() {
       message:
         "My kitchen faucet is dripping and the garbage disposal is broken",
       description: "Specific kitchen issues",
-    },
-    {
-      name: "Electrical Emergency",
-      message: "My lights are flickering and I smell something burning",
-      description: "Emergency electrical issue",
     },
     {
       name: "Seasonal Cleaning",
