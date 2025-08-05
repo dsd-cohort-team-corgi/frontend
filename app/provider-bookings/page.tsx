@@ -1,11 +1,11 @@
 "use client";
 
+import { Card, CardBody, CardHeader } from "@heroui/react";
+import { useApiQuery } from "@/lib/api-client";
 import MapPin from "@/components/icons/MapPin";
 import Maximize from "@/components/icons/Maximize";
 import LoadingSkeleton from "@/components/LoadingSkeleton";
 import ProviderBookingCard from "@/components/ProviderBookingCard";
-import { useApiQuery } from "@/lib/api-client";
-import { Card, CardBody, CardHeader } from "@heroui/react";
 
 interface Service {
   id: string;
@@ -49,7 +49,8 @@ interface BookingItem {
   id: string;
 }
 
-type BookingList = BookingItem[]; // Defines the type for the array of booking items
+// Defines the type for the array of booking items
+type BookingList = BookingItem[];
 
 export default function Page() {
   const { data, error, isLoading } = useApiQuery<BookingList>(
@@ -68,23 +69,21 @@ export default function Page() {
   if (data?.length === 0) {
     return (
       <h1 className="m-auto w-4/5 text-center text-lg font-semibold lg:text-2xl">
-        Looks like you've there's no work for today! 🎉
+        Looks like you&apos;ve there&apos;s no work for today! 🎉
       </h1>
     );
   }
 
-  const totalRevenue = data?.reduce(
-    (acc, booking) => (acc + booking.service.pricing, 0),
-  );
-  console.log(data);
+  const totalRevenue =
+    data?.reduce((acc, booking) => acc + booking.service.pricing, 0) ?? 0;
   return (
     <main className="m-auto w-[90%] md:w-4/5">
-      {/* Map Card */}
+      {/* Map Card to be done in a future PR */}
       <Card className="mb-4">
         <CardHeader className="flex justify-between">
           <div className="flex items-center gap-2 text-sm">
             <MapPin size={16} color="#2563eb" />
-            <span className="md:text-base">Today's Route</span>
+            <span className="md:text-base">Today&apos;s Route</span>
           </div>
           <div className="flex items-center gap-2 text-sm">
             <Maximize size={16} color="#2563eb" />
@@ -102,13 +101,14 @@ export default function Page() {
         </Card>
         <Card>
           <CardBody className="text-center text-base md:text-lg">
-            <p className="font-black text-primary">{totalRevenue}</p>
-            <p>Today's Revenue</p>
+            <p className="font-black text-green">${totalRevenue}</p>
+            <p>Today&apos;s Revenue</p>
           </CardBody>
         </Card>
+        {/* I will add functionality for this on next PR */}
         <Card className="">
           <CardBody className="text-nowrap px-0 text-center text-base md:text-lg">
-            <p className="text-green font-black">{data?.length}</p>
+            <p className="font-black text-primary">0</p>
             <p>Completed</p>
           </CardBody>
         </Card>
@@ -117,7 +117,6 @@ export default function Page() {
         ({
           status,
           start_time,
-          service_notes,
           special_instructions,
           service,
           customer,
@@ -128,7 +127,6 @@ export default function Page() {
             key={id}
             status={status}
             start_time={start_time}
-            service_notes={service_notes}
             special_instructions={special_instructions}
             service_title={service.service_title}
             pricing={service.pricing}

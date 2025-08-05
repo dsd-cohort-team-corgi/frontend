@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Card, CardHeader, CardBody, Chip } from "@heroui/react";
-import { formatDateTimeString } from "@/utils/formatDateTimeString";
 import { motion, AnimatePresence, Easing } from "framer-motion";
+import { formatDateTimeString } from "@/utils/formatDateTimeString";
 import MapPin from "./icons/MapPin";
 import Clock from "./icons/Clock";
 import ChevronDown from "./icons/ChevronDown";
@@ -13,7 +13,6 @@ import MessageSquare from "./icons/MessageSquare";
 interface ProviderBookingCardProps {
   special_instructions: string;
   start_time: string;
-  service_notes: string;
   status:
     | "confirmed"
     | "en_route"
@@ -37,7 +36,6 @@ interface ProviderBookingCardProps {
 function ProviderBookingCard({
   status,
   start_time,
-  service_notes,
   special_instructions,
   service_title,
   pricing,
@@ -54,6 +52,7 @@ function ProviderBookingCard({
   const [isDropDownOpen, setIsDropDownOpen] = useState<boolean>(false);
   const { timePart } = formatDateTimeString(start_time);
 
+  // tailwind could not do colors on the fly, created this to set chip status colors
   let statusChipColor;
   if (status === "confirmed") {
     statusChipColor = "2563eb";
@@ -63,6 +62,7 @@ function ProviderBookingCard({
     statusChipColor = "DC2626";
   }
 
+  // object for framer motion drop down animation
   const dropdownVariants = {
     hidden: { opacity: 0, height: 0, y: -10 },
     visible: {
@@ -87,8 +87,23 @@ function ProviderBookingCard({
     },
   };
 
+  const handleClick = () => {
+    setIsDropDownOpen(!isDropDownOpen);
+  };
+
   return (
-    <article>
+    /* eslint-disable jsx-a11y/no-noninteractive-element-to-interactive-role */
+    <article
+      role="button"
+      tabIndex={0}
+      onClick={handleClick}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          handleClick();
+        }
+      }}
+    >
       <Card className="relative mb-2 mt-4">
         <CardHeader className="flex items-start justify-between">
           {/* havingto use style here to dynamically inject background color. Tailwind seemingly can not inject background color on the fly */}
@@ -126,7 +141,7 @@ function ProviderBookingCard({
                 {street_address_2},
               </p>
               <p>
-                {city}, {state}
+                {city}, {state} {zip}
               </p>
             </div>
           </div>
@@ -135,7 +150,6 @@ function ProviderBookingCard({
           className={`absolute bottom-1 right-2 transition-transform duration-300 ease-in-out ${
             isDropDownOpen ? "rotate-0" : "-rotate-90"
           }`}
-          onClick={() => setIsDropDownOpen(!isDropDownOpen)}
         >
           <ChevronDown color="#62748e" />
         </div>
@@ -160,21 +174,29 @@ function ProviderBookingCard({
                 </div>
                 <StyledAsButton
                   className="mt-2 border-1 border-light-accent bg-orange-600 lg:text-lg"
-                  startContent={<Play size={16} />}
+                  startContent={
+                    <Play size={window.innerWidth >= 1024 ? 20 : 16} />
+                  }
                   label="Start Work"
                 />
                 <div className="md:flex md:gap-1">
                   <a href={`tel:${phone_number}`} className="w-full">
                     <StyledAsButton
                       className="mt-2 w-full border-1 border-light-accent bg-white text-black lg:text-lg"
-                      startContent={<Phone size={16} />}
+                      startContent={
+                        <Phone size={window.innerWidth >= 1024 ? 20 : 16} />
+                      }
                       label="Call"
                     />
                   </a>
                   <a href={`sms:${phone_number}`} className="w-full">
                     <StyledAsButton
                       className="mt-2 w-full border-1 border-light-accent bg-white text-black lg:text-lg"
-                      startContent={<MessageSquare size={16} />}
+                      startContent={
+                        <MessageSquare
+                          size={window.innerWidth >= 1024 ? 20 : 16}
+                        />
+                      }
                       label="Text"
                     />
                   </a>

@@ -27,7 +27,7 @@ function LeaveReview({
 
   return (
     <>
-      <Card className="mb-4 bg-green-100 lg:px-4">
+      <Card className="bg-green-100 mb-4 lg:px-4">
         <CardHeader>
           {" "}
           <MessageSquare color="#187a24" />

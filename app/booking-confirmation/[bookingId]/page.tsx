@@ -126,7 +126,7 @@ export default function Page() {
       <CardBody className="m-auto w-[90%] text-center">
         {/* Header */}
         <header className="mb-4 flex flex-col items-center gap-2">
-          <div className="flex h-10 w-10 flex-row items-center justify-center rounded-full bg-green-200 text-center">
+          <div className="bg-green-200 flex h-10 w-10 flex-row items-center justify-center rounded-full text-center">
             <Check color="#187a24" />
           </div>
           <h1 className="text-xl font-black lg:text-2xl">Booking Confirmed</h1>
