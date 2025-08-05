@@ -175,7 +175,9 @@ function ProviderBookingCard({
                 <StyledAsButton
                   className="mt-2 border-1 border-light-accent bg-orange-600 lg:text-lg"
                   startContent={
-                    <Play size={window.innerWidth >= 1024 ? 20 : 16} />
+                    <div className="lg:scale-125">
+                      <Play size={16} />
+                    </div>
                   }
                   label="Start Work"
                 />
@@ -184,7 +186,9 @@ function ProviderBookingCard({
                     <StyledAsButton
                       className="mt-2 w-full border-1 border-light-accent bg-white text-black lg:text-lg"
                       startContent={
-                        <Phone size={window.innerWidth >= 1024 ? 20 : 16} />
+                        <div className="lg:scale-125">
+                          <Phone size={16} />
+                        </div>
                       }
                       label="Call"
                     />
@@ -193,9 +197,9 @@ function ProviderBookingCard({
                     <StyledAsButton
                       className="mt-2 w-full border-1 border-light-accent bg-white text-black lg:text-lg"
                       startContent={
-                        <MessageSquare
-                          size={window.innerWidth >= 1024 ? 20 : 16}
-                        />
+                        <div className="lg:scale-125">
+                          <MessageSquare size={16} />
+                        </div>
                       }
                       label="Text"
                     />
