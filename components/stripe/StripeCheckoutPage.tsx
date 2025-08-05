@@ -252,7 +252,7 @@ function CheckoutForm({ clientSecret }: CheckoutOutFormType) {
       )}
 
       {message && message.includes("success") && (
-        <div className="mb-4 font-semibold text-green-600">{message}</div>
+        <div className="text-green-600 mb-4 font-semibold">{message}</div>
       )}
 
       <StyledAsButton
