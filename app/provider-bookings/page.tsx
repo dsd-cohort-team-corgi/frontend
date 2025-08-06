@@ -112,7 +112,7 @@ export default function Page() {
         </Card>
         <Card>
           <CardBody className="text-center text-base md:text-lg">
-            <p className="text-green font-black">${totalRevenue}</p>
+            <p className="font-black text-green">${totalRevenue}</p>
             <p>Today&apos;s Revenue</p>
           </CardBody>
         </Card>

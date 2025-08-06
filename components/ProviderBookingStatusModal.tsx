@@ -71,7 +71,7 @@ function ProviderBookingStatusModal({
               updateStatus.mutate({ status: "en_route" });
             }}
             label="Notify"
-            isLoading={updateStatus.isPending ? true : false}
+            isLoading={updateStatus.isPending || false}
           />
           <StyledAsButton
             className="mb-2"
@@ -96,7 +96,7 @@ function ProviderBookingStatusModal({
               updateStatus.mutate({ status: "in_progress" });
             }}
             label="Start"
-            isLoading={updateStatus.isPending ? true : false}
+            isLoading={updateStatus.isPending || false}
           />
           <StyledAsButton
             className="mb-2"
@@ -122,7 +122,7 @@ function ProviderBookingStatusModal({
               setCompleted((prev) => prev + 1);
             }}
             label="Complete"
-            isLoading={updateStatus.isPending ? true : false}
+            isLoading={updateStatus.isPending || false}
           />
           <StyledAsButton
             className="mb-2"
