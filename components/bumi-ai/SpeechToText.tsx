@@ -35,7 +35,7 @@ function VoiceInput() {
     finishedBubbles,
     inProgressBubbles,
     isListening,
-    apiThinking,
+    aiThinking,
     toggleListening,
     conversationHistoryRef,
   } = useVoiceRecognition({
@@ -55,7 +55,7 @@ function VoiceInput() {
         inProgressBubbles={inProgressBubbles}
       />
       <MicUi
-        apiThinking={apiThinking}
+        aiThinking={aiThinking}
         isListening={isListening}
         toggleListening={toggleListening}
       />
