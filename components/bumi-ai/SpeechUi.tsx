@@ -1,6 +1,7 @@
 import React from "react";
 import type { PressEvent } from "@react-types/shared";
 import { Mic } from "lucide-react";
+import { Spinner } from "@heroui/react";
 import StyledAsButton from "../StyledAsButton";
 
 type MicUiType = {
@@ -17,9 +18,9 @@ export default function MicUi({
   return (
     <>
       {apiThinking && (
-        <div className="flex">
-          <span>Hmm, let me think </span>
-          <div className="loader my-auto ml-8 inline-block bg-blue-300" />
+        <div className="mx-auto flex items-center justify-center">
+          <span className="inline-block">Hmm, let me think </span>
+          <Spinner className="ml-2" variant="dots" color="white" />
         </div>
       )}
       {!apiThinking && isListening && (
