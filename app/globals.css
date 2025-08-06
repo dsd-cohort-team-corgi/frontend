@@ -34,6 +34,10 @@ body {
   animation: l5 1s infinite linear alternate;
 }
 
+/* loader = actually a single middle dot, while box-shadow are the two "fake" dots beside it, which gives the appearance of 3 dots */
+/* keyframes then cycle through different patterns of #fff and #fff2, which creates a looping effect */
+/* % = the duration of that keyframe, 0 = 0 seconds, 33 = 0.33 seconds in */
+
 @keyframes l5 {
   0% {
     box-shadow:
