@@ -3,7 +3,11 @@ export {};
 declare global {
   interface Window {
     google?: typeof google;
+    webkitSpeechRecognition: typeof SpeechRecognition;
+    SpeechRecognition: typeof SpeechRecognition;
   }
+
+  //  but var is typically preferred for attaching properties directly to the global object as it aligns with how global variables are typically handled in JavaScript.
 
   type AuthDetailsType = {
     displayName?: string;
