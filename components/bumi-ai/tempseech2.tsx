@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Mic } from "lucide-react";
 
 type SpeechRecognitionConstructor =
@@ -12,10 +12,20 @@ interface SpeechRecognitionEvent extends Event {
   resultIndex: number;
 }
 
-function VoiceInput(): JSX.Element {
+interface SpeechRecognitionErrorEvent extends Event {
+  error: string;
+  message: string;
+}
+
+interface VoiceInputProps {
+  onSilence?: () => void;
+}
+
+function VoiceInput({ onSilence }: VoiceInputProps): JSX.Element {
   const [isListening, setIsListening] = useState(false);
-  const [bubbles, setBubbles] = useState<string[]>([]);
+  const [transcript, setTranscript] = useState("");
   const [interimTranscript, setInterimTranscript] = useState("");
+  const [bubbles, setBubbles] = useState<string[]>([]);
 
   const recognitionRef =
     useRef<InstanceType<SpeechRecognitionConstructor> | null>(null);
@@ -23,22 +33,38 @@ function VoiceInput(): JSX.Element {
 
   const resetSilenceTimer = () => {
     if (silenceTimer.current) clearTimeout(silenceTimer.current);
+
     silenceTimer.current = setTimeout(() => {
-      console.log("🔥 Silence detected");
-      // Silence ended a speech session
-      if (interimTranscript.trim()) {
-        setBubbles((prev) => [...prev, interimTranscript.trim()]);
-        setInterimTranscript("");
-      }
-    }, 3000); // 3 seconds of silence
+      console.log("🔥 No speech detected for 3 seconds!");
+
+      // Save the finished transcript into bubbles if there's anything to save
+      setTranscript((prevTranscript) => {
+        if (prevTranscript.trim()) {
+          setBubbles((prevBubbles) => [...prevBubbles, prevTranscript.trim()]);
+        }
+        return "";
+      });
+
+      setInterimTranscript("");
+      onSilence?.();
+    }, 3000);
   };
 
+  // Clean up recognition instance and timer on unmount
+  useEffect(() => {
+    return () => {
+      recognitionRef.current?.stop();
+      if (silenceTimer.current) clearTimeout(silenceTimer.current);
+    };
+  }, []);
+
+  // Create a fresh SpeechRecognition instance with all handlers
   const createRecognition = () => {
     const SpeechRecognition = (window.SpeechRecognition ||
       window.webkitSpeechRecognition) as SpeechRecognitionConstructor;
 
     if (!SpeechRecognition) {
-      console.error("Web Speech API not supported");
+      console.error("Web Speech API not supported in this browser");
       return null;
     }
 
@@ -47,37 +73,41 @@ function VoiceInput(): JSX.Element {
     recognition.interimResults = true;
     recognition.lang = "en-US";
 
+    recognition.onstart = () => {
+      console.log("✅ Speech recognition started");
+      resetSilenceTimer();
+    };
+
     recognition.onresult = (event: SpeechRecognitionEvent) => {
       let interim = "";
-      for (let i = event.resultIndex; i < event.results.length; ++i) {
+      for (let i = event.resultIndex; i < event.results.length; i += 1) {
         const result = event.results[i];
         const transcriptPiece = result[0].transcript;
         if (result.isFinal) {
-          // When final result, flush into a new bubble
-          setBubbles((prev) => [...prev, transcriptPiece.trim()]);
+          setTranscript((prev) => `${prev}${transcriptPiece} `);
           setInterimTranscript("");
         } else {
           interim += transcriptPiece;
+          setInterimTranscript(interim);
         }
       }
-      setInterimTranscript(interim);
       resetSilenceTimer();
     };
 
     recognition.onend = () => {
+      console.log("🔁 Speech recognition ended");
       if (isListening) {
-        // Restart if still listening
-        setTimeout(() => {
-          try {
-            recognition.start();
-          } catch (err) {
-            console.error("Failed to restart recognition:", err);
-          }
-        }, 200);
+        resetSilenceTimer();
+        try {
+          recognition.start();
+          console.log("🎙️ Speech recognition restarted");
+        } catch (err) {
+          console.error("❌ Failed to restart recognition:", err);
+        }
       }
     };
 
-    recognition.onerror = (event) => {
+    recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
       console.error("Speech recognition error", event);
     };
 
@@ -90,37 +120,43 @@ function VoiceInput(): JSX.Element {
       setIsListening(false);
       if (silenceTimer.current) clearTimeout(silenceTimer.current);
     } else {
+      setTranscript("");
+      setInterimTranscript("");
+
       recognitionRef.current = createRecognition();
       if (!recognitionRef.current) return;
 
+      // Small delay before starting recognition again
       setTimeout(() => {
         try {
           recognitionRef.current?.start();
           setIsListening(true);
           resetSilenceTimer();
         } catch (err) {
-          console.error("Failed to start recognition:", err);
+          console.error("❌ Failed to start recognition:", err);
         }
       }, 150);
     }
   };
 
   return (
-    <div className="mt-10 flex max-w-lg flex-col items-center space-y-4">
-      <div className="space-y-2">
+    <div className="mx-auto mt-10 max-w-lg rounded border p-4">
+      <div className="mt-4 overflow-y-auto whitespace-pre-wrap bg-blue-300 p-2">
+        <p>{transcript || "test"}</p>
+        <p className="italic text-gray-400">{interimTranscript}</p>
+      </div>
+
+      {/* Display chat-style bubbles */}
+      <div className="space-y-2 bg-red-300">
+        {bubbles ? `${JSON.stringify(bubbles)}` : "bubbles do not exist"}
         {bubbles.map((text, index) => (
           <div
             key={index}
-            className="rounded-2xl bg-gray-900 p-3 text-sm font-extralight text-white shadow"
+            className="max-w-fit rounded-lg bg-blue-100 px-4 py-2 text-black shadow"
           >
             {text}
           </div>
         ))}
-        {interimTranscript && (
-          <div className="rounded bg-gray-200 p-2 text-sm italic text-gray-500 shadow">
-            {interimTranscript}
-          </div>
-        )}
       </div>
 
       {isListening && <span className="block"> I&apos;m Listening </span>}

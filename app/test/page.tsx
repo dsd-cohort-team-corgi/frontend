@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import supabase from "@/lib/supabase";
 import { useAuthContext } from "@/components/context-wrappers/AuthContext";
-import SpeechToText from "@/components/bumi-ai/SpeechToText";
 
 export default function ShowBearerToken() {
   const [stateToken, setStateToken] = useState<undefined | string>(undefined);
@@ -81,8 +80,6 @@ export default function ShowBearerToken() {
           {copied ? "Copied!" : "Copy Token"}
         </button>
       )}
-
-      <SpeechToText />
     </div>
   );
 }
