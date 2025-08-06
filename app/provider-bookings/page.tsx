@@ -125,6 +125,7 @@ export default function Page() {
         }) => (
           <ProviderBookingCard
             key={id}
+            bookingId={id}
             status={status}
             start_time={start_time}
             special_instructions={special_instructions}

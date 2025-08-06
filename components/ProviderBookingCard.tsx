@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Card, CardHeader, CardBody, Chip } from "@heroui/react";
+import { Card, CardHeader, CardBody, Chip, useDisclosure } from "@heroui/react";
 import { motion, AnimatePresence, Easing } from "framer-motion";
 import { formatDateTimeString } from "@/utils/formatDateTimeString";
 import MapPin from "./icons/MapPin";
@@ -9,8 +9,10 @@ import StyledAsButton from "./StyledAsButton";
 import Play from "./icons/Start";
 import Phone from "./icons/Phone";
 import MessageSquare from "./icons/MessageSquare";
+import ProviderBookingStatusModal from "./ProviderBookingStatusModal";
 
 interface ProviderBookingCardProps {
+  bookingId: string;
   special_instructions: string;
   start_time: string;
   status:
@@ -33,7 +35,18 @@ interface ProviderBookingCardProps {
   zip: string;
 }
 
+interface StatusStates {
+  status:
+    | "confirmed"
+    | "en_route"
+    | "in_progress"
+    | "completed"
+    | "cancelled"
+    | "review_needed";
+}
+
 function ProviderBookingCard({
+  bookingId,
   status,
   start_time,
   special_instructions,
@@ -50,15 +63,17 @@ function ProviderBookingCard({
   zip,
 }: ProviderBookingCardProps) {
   const [isDropDownOpen, setIsDropDownOpen] = useState<boolean>(false);
+  const [bookingStatus, setBookingStatus] = useState<string>(status);
+  const { isOpen, onOpenChange } = useDisclosure();
   const { timePart } = formatDateTimeString(start_time);
 
   // tailwind could not do colors on the fly, created this to set chip status colors
   let statusChipColor;
-  if (status === "confirmed") {
+  if (bookingStatus === "confirmed") {
     statusChipColor = "2563eb";
-  } else if (status === "en_route") {
+  } else if (bookingStatus === "en_route") {
     statusChipColor = "EA580C";
-  } else if (status === "cancelled") {
+  } else if (bookingStatus === "cancelled") {
     statusChipColor = "DC2626";
   }
 
@@ -88,6 +103,9 @@ function ProviderBookingCard({
   };
 
   const handleClick = () => {
+    if (status === "confirmed" && isDropDownOpen === false) {
+      onOpenChange();
+    }
     setIsDropDownOpen(!isDropDownOpen);
   };
 
@@ -111,7 +129,7 @@ function ProviderBookingCard({
             style={{ backgroundColor: `#${statusChipColor}` }}
             className="text-white lg:text-lg"
           >
-            {status}
+            {bookingStatus}
           </Chip>
           <div className="flex flex-col">
             <span className="font-black lg:text-xl">${pricing}</span>
@@ -173,6 +191,7 @@ function ProviderBookingCard({
                   {special_instructions || "N/A"}
                 </div>
                 <StyledAsButton
+                  onPress={() => onOpenChange()}
                   className="mt-2 border-1 border-light-accent bg-orange-600 lg:text-lg"
                   startContent={
                     <div className="lg:scale-125">
@@ -210,6 +229,14 @@ function ProviderBookingCard({
           </motion.div>
         )}
       </AnimatePresence>
+      <ProviderBookingStatusModal
+        bookingId={bookingId}
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+        status={status}
+        name={`${first_name} ${last_name}`}
+        setBookingStatus={setBookingStatus}
+      />
     </article>
   );
 }
