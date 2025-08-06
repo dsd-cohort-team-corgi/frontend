@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import UserTextBubbles from "./UserTextBubbles";
-import MicUi from "./MicUi";
+import MicUi from "./SpeechUi";
 import useVoiceRecognition from "@/lib/hooks/useVoiceRecognition";
 
 interface ServiceRecommendation {
@@ -29,6 +29,7 @@ function VoiceInput() {
 
   const apiBaseUrl = "";
   // process.env.NEXT_PUBLIC_URL? "http://localhost:8000"
+  // "https://maidyoulook-backend.onrender.com",
 
   const {
     finishedBubbles,
@@ -36,6 +37,7 @@ function VoiceInput() {
     isListening,
     apiThinking,
     toggleListening,
+    conversationHistoryRef,
   } = useVoiceRecognition({
     onApiResponse: (data) => {
       // Customize this for whatever works best for the data you need
@@ -57,6 +59,8 @@ function VoiceInput() {
         isListening={isListening}
         toggleListening={toggleListening}
       />
+
+      {/* ################ Testing Frontend Code Starts here  ################ */}
 
       {errorMessage && (
         <div className="mb-6 rounded-lg border border-red-200 bg-red-50 p-4">
@@ -124,13 +128,37 @@ function VoiceInput() {
           </div>
         </div>
       )}
+      <div>
+        {" "}
+        {conversationHistoryRef.current.map((chat, index) => (
+          <div
+            /* eslint-disable react/no-array-index-key */
+            key={`chatHistory-${index}-${chat}`}
+            className="rounded-lg border border-slate-200 bg-white p-2"
+          >
+            <p className="font-medium text-slate-800">
+              <span>User: </span>
+              {chat.user}
+            </p>
+            <p className="text-sm text-slate-600">
+              <span>Bumi: </span>
+              {chat.bumi}
+            </p>
+          </div>
+        ))}
+      </div>
 
       <div className="mt-8 rounded-lg bg-slate-50 p-4">
         <h3 className="mb-2 font-semibold text-slate-800">API Information:</h3>
         <div className="space-y-1 text-sm text-slate-600">
           <p>
-            <strong>Endpoint:</strong> POST {apiBaseUrl}/bumi/booking/chat
+            <strong>Current Endpoint:</strong> POST api/speech
           </p>
+          <p>
+            <strong>Future Endpoint:</strong> POST {apiBaseUrl}
+            /bumi/booking/chat
+          </p>
+
           <p>
             <strong>Request Format:</strong>{" "}
             {"{message: string, conversation_history: ConversationMessage[]}"}

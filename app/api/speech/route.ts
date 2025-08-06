@@ -8,7 +8,18 @@ export async function POST(req: Request) {
     JSON.stringify({
       action: "recommend",
       ai_message: "Bark, bark, bork",
-      Services: ["gardening", "pokemon collecting, going to the beach"],
+      services: [
+        {
+          id: "1245",
+          name: "Nurse Joy",
+          provider: "pokemon center",
+          price: 65,
+          rating: 4.5,
+          description: "to heal your pokemon",
+          category: "pokemon",
+          duration: 60,
+        },
+      ],
       clarification_question: "bark?",
     }),
     {

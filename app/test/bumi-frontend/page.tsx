@@ -16,9 +16,9 @@ export default function ShowBearerToken() {
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 rounded-full bg-purple-600 px-4 py-2 text-white shadow-lg hover:bg-purple-700"
+        className="fixed bottom-6 right-6 rounded-full bg-primary px-4 py-2 text-white shadow-lg hover:bg-blue-800"
       >
-        Open Chat 💬
+        Open Chat
       </button>
 
       <BumiAiChatModal isOpen={isOpen} onClose={() => setIsOpen(false)} />

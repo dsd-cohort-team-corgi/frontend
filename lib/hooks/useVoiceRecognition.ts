@@ -9,8 +9,35 @@ interface SpeechRecognitionEvent extends Event {
   resultIndex: number;
 }
 
+interface SpeechRecognitionErrorEvent extends Event {
+  error: string;
+  message: string;
+}
+
+interface ConversationMessage {
+  user: string;
+  bumi: string;
+}
+
+interface ChatResponse {
+  action: "recommend" | "clarify";
+  ai_message: string;
+  services?: ServiceRecommendation[];
+  clarification_question?: string;
+}
+interface ServiceRecommendation {
+  id: string;
+  name: string;
+  provider: string;
+  price: number;
+  rating: number;
+  description: string;
+  category: string;
+  duration: number;
+}
+
 type UseVoiceRecognitionOptions = {
-  onApiResponse: (data: any) => void;
+  onApiResponse: (data: ChatResponse) => void;
   apiBaseUrl: string;
   setErrorMessage: React.Dispatch<React.SetStateAction<string>>;
 };
@@ -34,9 +61,11 @@ export default function useVoiceRecognition({
   // Ideal for storing mutable non-UI things (like timers, audio nodes, socket connections, speech recognition instances)
   // storing it in useState would not be ideal, because it would trigger rerenders even though we don't need UI updates because recognition changed
 
+  const conversationHistoryRef = useRef<ConversationMessage[]>([]);
+
   const silenceTimer = useRef<NodeJS.Timeout | null>(null);
   // detects silence, it keeps track if the silence has lasted for 3 seconds
-  const accumulatedTextRef = useRef<string>("");
+  const textsAfterLastApiRef = useRef<string>("");
   // stores all the user speech bubbles since last API call to send in one go
   // we want to use useRef instead of useState instead to ensure we're sending the most up to date value to the web api callbacks and timers, state would give us stale values because of the delay
   const liveTranscriptRef = useRef("");
@@ -55,7 +84,7 @@ export default function useVoiceRecognition({
 
     silenceTimer.current = setTimeout(() => {
       // start new 3 second timer, if it reaches its timeout of 3 seconds, send all accumulated speech to the api
-      const textToSend = accumulatedTextRef.current.trim();
+      const textToSend = textsAfterLastApiRef.current.trim();
       if (!textToSend) {
         console.warn("No text accumulated to send");
         return;
@@ -66,10 +95,18 @@ export default function useVoiceRecognition({
       fetch(`${apiBaseUrl}/api/speech`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ transcript: textToSend }),
+        body: JSON.stringify({
+          message: textToSend,
+          conversation_history: conversationHistoryRef,
+        }),
       })
         .then((res) => res.json())
-        .then((data) => {
+        .then((data: ChatResponse) => {
+          conversationHistoryRef.current.push({
+            user: textsAfterLastApiRef.current.trim(),
+            bumi: data.ai_message,
+          });
+
           onApiResponse(data);
           // these next 3 steps are used to turn off listening:
           recognitionRef.current?.stop();
@@ -85,7 +122,7 @@ export default function useVoiceRecognition({
         })
         .finally(() => {
           setApiThinking(false);
-          accumulatedTextRef.current = "";
+          textsAfterLastApiRef.current = "";
           //   Clear after sending
         });
     }, 3000); // 3 seconds of silence
@@ -109,7 +146,7 @@ export default function useVoiceRecognition({
     recognition.onresult = (event: SpeechRecognitionEvent) => {
       let inProgressChat = "";
 
-      for (let i = event.resultIndex; i < event.results.length; i++) {
+      for (let i = event.resultIndex; i < event.results.length; i += 1) {
         const result = event.results[i];
         const transcriptPiece = result[0].transcript;
 
@@ -117,7 +154,7 @@ export default function useVoiceRecognition({
           const finalPiece = transcriptPiece.trim();
           setFinishedBubbles((prev) => [...prev, finalPiece]);
           // Add bubble immediately
-          accumulatedTextRef.current += finalPiece + " ";
+          textsAfterLastApiRef.current += `${finalPiece} `;
           // Add this bubble text to the accumulated buffer for API sending
           setInProgressBubbles("");
           liveTranscriptRef.current = "";
@@ -151,7 +188,7 @@ export default function useVoiceRecognition({
       }
     };
 
-    recognition.onerror = (event) => {
+    recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
       console.error("Speech recognition error", event);
       setErrorMessage("A speech recognition error occured");
     };
@@ -169,7 +206,7 @@ export default function useVoiceRecognition({
       setIsListening(false);
       if (silenceTimer.current) clearTimeout(silenceTimer.current);
       // Clear the in progress text we've accumulated when we toggle the mic
-      accumulatedTextRef.current = "";
+      textsAfterLastApiRef.current = "";
       setInProgressBubbles("");
       liveTranscriptRef.current = "";
     } else {
@@ -204,5 +241,6 @@ export default function useVoiceRecognition({
     isListening,
     apiThinking,
     toggleListening,
+    conversationHistoryRef,
   };
 }
