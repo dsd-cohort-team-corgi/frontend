@@ -1,7 +1,9 @@
 "use client";
 
 import React, { useRef, useState, useEffect } from "react";
-import { Mic } from "lucide-react";
+import type { PressEvent } from "@react-types/shared";
+import UserTextBubbles from "./UserTextBubbles";
+import MicUi from "./MicUi";
 
 type SpeechRecognitionConstructor =
   | typeof window.SpeechRecognition
@@ -15,7 +17,7 @@ interface SpeechRecognitionEvent extends Event {
 function VoiceInput(): JSX.Element {
   const [isListening, setIsListening] = useState(false);
   const [bubbles, setBubbles] = useState<string[]>([]);
-  const [interimTranscript, setInterimTranscript] = useState("");
+  const [inProgressBattles, setInProgressTranscript] = useState("");
   const [apiThinking, setApiThinking] = useState(false);
 
   const recognitionRef =
@@ -28,8 +30,8 @@ function VoiceInput(): JSX.Element {
   const interimRef = useRef("");
 
   useEffect(() => {
-    interimRef.current = interimTranscript;
-  }, [interimTranscript]);
+    interimRef.current = inProgressBattles;
+  }, [inProgressBattles]);
 
   const resetSilenceTimer = () => {
     if (silenceTimer.current) clearTimeout(silenceTimer.current);
@@ -102,7 +104,7 @@ function VoiceInput(): JSX.Element {
           accumulatedTextRef.current += finalPiece + " ";
 
           // Clear interim text tracking
-          setInterimTranscript("");
+          setInProgressTranscript("");
           interimRef.current = "";
 
           // Reset silence timer here because we just got new final text
@@ -113,7 +115,7 @@ function VoiceInput(): JSX.Element {
       }
 
       if (interim) {
-        setInterimTranscript(interim);
+        setInProgressTranscript(interim);
         interimRef.current = interim;
         // Reset silence timer on interim results as well
         resetSilenceTimer();
@@ -140,7 +142,9 @@ function VoiceInput(): JSX.Element {
     return recognition;
   };
 
-  const toggleListening = () => {
+  // we need to type is to be a pressEvent, but we don't use e anywhere. So turn off this eslint warning
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const toggleListening = (_e?: PressEvent) => {
     if (isListening) {
       recognitionRef.current?.stop();
       setIsListening(false);
@@ -148,7 +152,7 @@ function VoiceInput(): JSX.Element {
 
       // Clear accumulation on stop
       accumulatedTextRef.current = "";
-      setInterimTranscript("");
+      setInProgressTranscript("");
       interimRef.current = "";
     } else {
       recognitionRef.current = createRecognition();
@@ -168,44 +172,15 @@ function VoiceInput(): JSX.Element {
 
   return (
     <div className="mt-10 flex max-w-lg flex-col items-center space-y-4">
-      <div className="space-y-2">
-        {bubbles.map((text, index) => (
-          <div
-            key={index}
-            className="rounded-2xl bg-gray-900 p-3 text-sm font-extralight text-white shadow"
-          >
-            {text}
-          </div>
-        ))}
-        {interimTranscript && (
-          <div className="rounded bg-gray-200 p-2 text-sm italic text-gray-500 shadow">
-            {interimTranscript}
-          </div>
-        )}
-      </div>
-
-      {apiThinking && <span className="block">Hmm, let me think...</span>}
-      {!apiThinking && isListening && (
-        <span className="block">I'm listening...</span>
-      )}
-
-      {!apiThinking && (
-        <button
-          type="button"
-          onClick={toggleListening}
-          className={`rounded-full p-5 ${
-            isListening ? "bg-slate-800 text-slate-400" : "bg-white text-black"
-          }`}
-        >
-          <div className={`${isListening ? "text-slate-400" : "text-black"}`}>
-            <Mic className="stroke-current" />
-          </div>
-        </button>
-      )}
-
-      {!apiThinking && !isListening && (
-        <span className="block">Tap to speak</span>
-      )}
+      <UserTextBubbles
+        bubbles={bubbles}
+        inProgressBattles={inProgressBattles}
+      />
+      <MicUi
+        apiThinking={apiThinking}
+        isListening={isListening}
+        toggleListening={toggleListening}
+      />
     </div>
   );
 }

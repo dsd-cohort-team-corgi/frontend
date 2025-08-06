@@ -21,7 +21,7 @@ import React from "react";
 import { Button as HeroUiButton, type ButtonProps } from "@heroui/react";
 
 type StyledAsButtonProps = ButtonProps & {
-  label: string;
+  label?: string;
 };
 // grabs all the props of a HeroUiButton (ButtonProps) and adds a custom prop called "label" and types it
 
