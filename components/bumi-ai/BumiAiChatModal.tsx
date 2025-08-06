@@ -20,6 +20,7 @@ export default function BumiAiChatModal({
       isOpen={isOpen}
       placement="top-center"
       onClose={onClose}
+      isDismissable={false} // This stops closing on outside clicks or escape
       classNames={{
         closeButton: "text-white top-8 right-6 hover:text-primary",
         // the X defaults to the top right corner, moved it with top and right
