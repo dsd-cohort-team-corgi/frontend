@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Card, CardBody, CardHeader } from "@heroui/react";
 import { useApiQuery } from "@/lib/api-client";
 import MapPin from "@/components/icons/MapPin";
@@ -53,10 +54,20 @@ interface BookingItem {
 type BookingList = BookingItem[];
 
 export default function Page() {
+  const [completed, setCompleted] = useState<number>(0);
+
   const { data, error, isLoading } = useApiQuery<BookingList>(
     ["providers", "bookings"],
     "/providers/bookings",
   );
+
+  useEffect(() => {
+    data?.forEach((booking) => {
+      if (booking.status === "completed") {
+        setCompleted((prev) => prev + 1);
+      }
+    });
+  }, [data]);
 
   if (isLoading) {
     return <LoadingSkeleton />;
@@ -108,7 +119,7 @@ export default function Page() {
         {/* I will add functionality for this on next PR */}
         <Card className="">
           <CardBody className="text-nowrap px-0 text-center text-base md:text-lg">
-            <p className="font-black text-primary">0</p>
+            <p className="font-black text-primary">{completed}</p>
             <p>Completed</p>
           </CardBody>
         </Card>
@@ -125,6 +136,7 @@ export default function Page() {
         }) => (
           <ProviderBookingCard
             key={id}
+            bookingId={id}
             status={status}
             start_time={start_time}
             special_instructions={special_instructions}
@@ -139,6 +151,7 @@ export default function Page() {
             city={address.city}
             state={address.state}
             zip={address.zip}
+            setCompleted={setCompleted}
           />
         ),
       )}

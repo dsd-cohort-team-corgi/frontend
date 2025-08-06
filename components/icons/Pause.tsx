@@ -1,4 +1,4 @@
-import { Check as CheckIcon } from "lucide-react";
+import { Pause as PauseIcon } from "lucide-react";
 
 interface IconProps {
   size?: number;
@@ -6,9 +6,9 @@ interface IconProps {
   strokeWidth?: number;
   fill?: string;
 }
-function Check({ size, color, strokeWidth, fill }: IconProps) {
+function Pause({ size, color, strokeWidth, fill }: IconProps) {
   return (
-    <CheckIcon
+    <PauseIcon
       size={size || 24}
       color={color || "currentColor"}
       strokeWidth={strokeWidth || 2}
@@ -17,4 +17,4 @@ function Check({ size, color, strokeWidth, fill }: IconProps) {
   );
 }
 
-export default Check;
+export default Pause;

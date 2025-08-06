@@ -42,7 +42,7 @@ export const useApiQuery = <T>(
 
 export const useApiMutation = <T, V>(
   endpoint: string,
-  method: "POST" | "PUT" | "DELETE" = "POST",
+  method: "POST" | "PUT" | "DELETE" | "PATCH" = "POST",
 ) => {
   return useMutation({
     mutationFn: async (variables: V) => {
