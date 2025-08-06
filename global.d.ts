@@ -3,6 +3,8 @@ export {};
 declare global {
   interface Window {
     google?: typeof google;
+    webkitSpeechRecognition: typeof SpeechRecognition;
+    SpeechRecognition: typeof SpeechRecognition;
   }
 
   type AuthDetailsType = {
