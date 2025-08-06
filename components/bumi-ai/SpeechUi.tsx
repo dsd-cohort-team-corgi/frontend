@@ -5,24 +5,24 @@ import StyledAsButton from "../StyledAsButton";
 import LoadingMessage from "../icons/LoadingMessage";
 
 type MicUiType = {
-  apiThinking: boolean;
+  aiThinking: boolean;
   isListening: boolean;
   toggleListening: (e: PressEvent) => void;
 };
 
 export default function MicUi({
-  apiThinking,
+  aiThinking,
   isListening,
   toggleListening,
 }: MicUiType) {
   return (
     <>
-      {apiThinking && <LoadingMessage text="Hmm, let me think" />}
-      {!apiThinking && isListening && (
+      {aiThinking && <LoadingMessage text="Hmm, let me think" />}
+      {!aiThinking && isListening && (
         <span className="block">I&apos;m listening...</span>
       )}
 
-      {!apiThinking && (
+      {!aiThinking && (
         <StyledAsButton
           className={`rounded-full p-5 ${
             isListening ? "bg-slate-800 text-slate-400" : "bg-white text-black"
@@ -31,7 +31,7 @@ export default function MicUi({
           startContent={<Mic size={18} />}
         />
       )}
-      {!apiThinking && !isListening && (
+      {!aiThinking && !isListening && (
         <span className="block">Tap to speak</span>
       )}
     </>

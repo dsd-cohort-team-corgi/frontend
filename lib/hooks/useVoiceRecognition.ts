@@ -52,7 +52,7 @@ export default function useVoiceRecognition({
   const [isListening, setIsListening] = useState(false);
   const [finishedBubbles, setFinishedBubbles] = useState<string[]>([]);
   const [inProgressBubbles, setInProgressBubbles] = useState("");
-  const [apiThinking, setApiThinking] = useState(false);
+  const [aiThinking, setAiThinking] = useState(false);
 
   const recognitionRef =
     useRef<InstanceType<SpeechRecognitionConstructor> | null>(null);
@@ -90,7 +90,7 @@ export default function useVoiceRecognition({
         return;
       }
 
-      setApiThinking(true);
+      setAiThinking(true);
 
       fetch(`${apiBaseUrl}/api/speech`, {
         method: "POST",
@@ -121,7 +121,7 @@ export default function useVoiceRecognition({
           setErrorMessage("an error occured when sending your api request");
         })
         .finally(() => {
-          setApiThinking(false);
+          setAiThinking(false);
           textsAfterLastApiRef.current = "";
           //   Clear after sending
         });
@@ -239,7 +239,7 @@ export default function useVoiceRecognition({
     finishedBubbles,
     inProgressBubbles,
     isListening,
-    apiThinking,
+    aiThinking,
     toggleListening,
     conversationHistoryRef,
   };
