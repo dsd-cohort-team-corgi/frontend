@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, Dispatch, SetStateAction } from "react";
 import { Card, CardHeader, CardBody, Chip, useDisclosure } from "@heroui/react";
 import { motion, AnimatePresence, Easing } from "framer-motion";
 import { formatDateTimeString } from "@/utils/formatDateTimeString";
@@ -10,6 +10,7 @@ import Play from "./icons/Start";
 import Phone from "./icons/Phone";
 import MessageSquare from "./icons/MessageSquare";
 import ProviderBookingStatusModal from "./ProviderBookingStatusModal";
+import Check from "./icons/Check";
 
 interface ProviderBookingCardProps {
   bookingId: string;
@@ -33,16 +34,7 @@ interface ProviderBookingCardProps {
   city: string;
   state: string;
   zip: string;
-}
-
-interface StatusStates {
-  status:
-    | "confirmed"
-    | "en_route"
-    | "in_progress"
-    | "completed"
-    | "cancelled"
-    | "review_needed";
+  setCompleted: Dispatch<SetStateAction<number>>;
 }
 
 function ProviderBookingCard({
@@ -61,6 +53,7 @@ function ProviderBookingCard({
   city,
   state,
   zip,
+  setCompleted,
 }: ProviderBookingCardProps) {
   const [isDropDownOpen, setIsDropDownOpen] = useState<boolean>(false);
   const [bookingStatus, setBookingStatus] = useState<string>(status);
@@ -73,8 +66,21 @@ function ProviderBookingCard({
     statusChipColor = "2563eb";
   } else if (bookingStatus === "en_route") {
     statusChipColor = "EA580C";
+  } else if (bookingStatus === "in_progress") {
+    statusChipColor = "28A745";
+  } else if (bookingStatus === "completed") {
+    statusChipColor = "4CAF50";
   } else if (bookingStatus === "cancelled") {
     statusChipColor = "DC2626";
+  }
+
+  let buttonLabel;
+  if (bookingStatus === "in_progress") {
+    buttonLabel = "Complete?";
+  } else if (bookingStatus === "completed") {
+    buttonLabel = "Completed";
+  } else if (bookingStatus === "confirmed" || bookingStatus === "en_route") {
+    buttonLabel = "Start";
   }
 
   // object for framer motion drop down animation
@@ -103,7 +109,7 @@ function ProviderBookingCard({
   };
 
   const handleClick = () => {
-    if (status === "confirmed" && isDropDownOpen === false) {
+    if (bookingStatus === "confirmed" && isDropDownOpen === false) {
       onOpenChange();
     }
     setIsDropDownOpen(!isDropDownOpen);
@@ -191,14 +197,25 @@ function ProviderBookingCard({
                   {special_instructions || "N/A"}
                 </div>
                 <StyledAsButton
+                  isDisabled={bookingStatus === "completed"}
                   onPress={() => onOpenChange()}
-                  className="mt-2 border-1 border-light-accent bg-orange-600 lg:text-lg"
+                  className={`mt-2 border-1 border-light-accent lg:text-lg ${
+                    bookingStatus === "in_progress" ||
+                    bookingStatus === "completed"
+                      ? "bg-green"
+                      : "bg-orange-600"
+                  }`}
                   startContent={
                     <div className="lg:scale-125">
-                      <Play size={16} />
+                      {bookingStatus === "in_progress" ||
+                      bookingStatus === "completed" ? (
+                        <Check size={16} />
+                      ) : (
+                        <Play size={16} />
+                      )}
                     </div>
                   }
-                  label="Start Work"
+                  label={buttonLabel || "Start"}
                 />
                 <div className="md:flex md:gap-1">
                   <a href={`tel:${phone_number}`} className="w-full">
@@ -233,9 +250,11 @@ function ProviderBookingCard({
         bookingId={bookingId}
         isOpen={isOpen}
         onOpenChange={onOpenChange}
-        status={status}
+        status={bookingStatus}
         name={`${first_name} ${last_name}`}
+        service_title={service_title}
         setBookingStatus={setBookingStatus}
+        setCompleted={setCompleted}
       />
     </article>
   );

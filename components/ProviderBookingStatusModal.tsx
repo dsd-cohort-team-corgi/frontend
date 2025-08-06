@@ -1,21 +1,17 @@
+import { ReactNode, useEffect, Dispatch, SetStateAction } from "react";
 import { Modal, ModalBody, ModalContent, ModalHeader } from "@heroui/react";
 import StyledAsButton from "./StyledAsButton";
 import { useApiMutation } from "@/lib/api-client";
-import { ReactNode, useEffect } from "react";
 
 interface StatusModal {
   bookingId: string;
   isOpen: boolean;
   onOpenChange: () => void;
-  status:
-    | "confirmed"
-    | "en_route"
-    | "in_progress"
-    | "completed"
-    | "cancelled"
-    | "review_needed";
+  service_title: string;
+  status: string;
   name: string;
   setBookingStatus: React.Dispatch<React.SetStateAction<string>>;
+  setCompleted: Dispatch<SetStateAction<number>>;
 }
 
 interface StatusData {
@@ -47,7 +43,9 @@ function ProviderBookingStatusModal({
   onOpenChange,
   status,
   name,
-  setBookingStatus
+  service_title,
+  setBookingStatus,
+  setCompleted,
 }: StatusModal) {
   const updateStatus = useApiMutation<StatusData, UpdateStatusRequest>(
     `/bookings/${bookingId}/status`,
@@ -55,11 +53,13 @@ function ProviderBookingStatusModal({
   );
   useEffect(() => {
     if (isOpen && updateStatus.isSuccess) {
-      setBookingStatus(updateStatus.data.status)
+      setBookingStatus(updateStatus.data.status);
       onOpenChange();
     }
   }, [updateStatus.isPending]);
+
   let modalContent: ReactNode | null;
+
   if (status === "confirmed") {
     modalContent = (
       <>
@@ -71,6 +71,57 @@ function ProviderBookingStatusModal({
               updateStatus.mutate({ status: "en_route" });
             }}
             label="Notify"
+            isLoading={updateStatus.isPending ? true : false}
+          />
+          <StyledAsButton
+            className="mb-2"
+            onPress={() => onOpenChange()}
+            label="Cancel"
+          />
+        </ModalBody>
+      </>
+    );
+  }
+
+  if (status === "en_route") {
+    modalContent = (
+      <>
+        <ModalHeader>Start Work?</ModalHeader>
+        <ModalBody>
+          <p>
+            Would you like to start {service_title} for {name}
+          </p>
+          <StyledAsButton
+            onPress={() => {
+              updateStatus.mutate({ status: "in_progress" });
+            }}
+            label="Start"
+            isLoading={updateStatus.isPending ? true : false}
+          />
+          <StyledAsButton
+            className="mb-2"
+            onPress={() => onOpenChange()}
+            label="Close"
+          />
+        </ModalBody>
+      </>
+    );
+  }
+
+  if (status === "in_progress") {
+    modalContent = (
+      <>
+        <ModalHeader>Complete Job?</ModalHeader>
+        <ModalBody>
+          <p>
+            Would you like to complete {service_title} for {name}
+          </p>
+          <StyledAsButton
+            onPress={() => {
+              updateStatus.mutate({ status: "completed" });
+              setCompleted((prev) => prev + 1);
+            }}
+            label="Complete"
             isLoading={updateStatus.isPending ? true : false}
           />
           <StyledAsButton
@@ -94,7 +145,21 @@ function ProviderBookingStatusModal({
         // default version was too small and had a max-w-m
       }}
     >
-      <ModalContent>{() => <>{modalContent}</>}</ModalContent>
+      <ModalContent>
+        {() => (
+          <>
+            {modalContent}
+            {updateStatus.isError && (
+              <>
+                <p className="text-red-500">
+                  Something went wrong: {updateStatus.error.message}
+                </p>
+                <p>Please try again</p>
+              </>
+            )}
+          </>
+        )}
+      </ModalContent>
     </Modal>
   );
 }
