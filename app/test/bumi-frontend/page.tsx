@@ -9,6 +9,10 @@ export default function ShowBearerToken() {
 
   return (
     <div className="text-center">
+      <img
+        src="https://cdn.pixabay.com/photo/2020/03/31/19/20/dog-4988985_960_720.jpg"
+        className="w-full"
+      />
       <button
         type="button"
         onClick={() => setIsOpen(true)}

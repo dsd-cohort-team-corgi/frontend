@@ -16,10 +16,14 @@ export default function MicUi({
 }: MicUiType) {
   return (
     <>
-      {apiThinking && <span className="block">Hmm, let me think...</span>}
-
+      {apiThinking && (
+        <div className="flex">
+          <span>Hmm, let me think </span>
+          <div className="loader my-auto ml-8 inline-block bg-blue-300" />
+        </div>
+      )}
       {!apiThinking && isListening && (
-        <span className="block">I'm listening...</span>
+        <span className="block">I&apos;m listening...</span>
       )}
 
       {!apiThinking && (
@@ -30,16 +34,7 @@ export default function MicUi({
           onPress={toggleListening}
           startContent={<Mic size={18} />}
         />
-        // <button
-        //   type="button"
-        //   onClick={toggleListening}
-        // >
-        //   <div className={`${isListening ? "text-slate-400" : "text-black"}`}>
-        //     <Mic className="stroke-current" />
-        //   </div>
-        // </button>
       )}
-
       {!apiThinking && !isListening && (
         <span className="block">Tap to speak</span>
       )}

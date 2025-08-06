@@ -5,6 +5,7 @@ import React from "react";
 import { Modal, ModalContent, ModalHeader, ModalBody } from "@heroui/react";
 
 import SpeechToText from "@/components/bumi-ai/SpeechToText";
+import BumiAiHeader from "./BumiAiHeader";
 
 type BumiAiChatModalType = {
   isOpen: boolean;
@@ -28,25 +29,13 @@ export default function BumiAiChatModal({
         // default version was too small and had a max-w-m
       }}
     >
-      <ModalContent className="bg-slate-800 bg-opacity-80 text-white">
+      <ModalContent className="bg-slate-800 bg-opacity-70 text-white backdrop-blur">
         {() => (
           <>
-            <ModalHeader className="mb-4 flex flex-row items-center bg-slate-900 bg-opacity-80 text-2xl font-extrabold">
-              <img
-                src="/bumi.png"
-                width={75}
-                height={75}
-                className="mr-4 rounded-full bg-primary"
-              />
-              <div>
-                <h3 className="font-small"> Bumi </h3>
-                <span className="block text-base font-light">
-                  {" "}
-                  Home maintenance assistant{" "}
-                </span>
-              </div>
+            <ModalHeader className="mb-4 flex flex-row items-center bg-[#2a323b] bg-opacity-70 text-2xl font-extrabold">
+              <BumiAiHeader />
             </ModalHeader>
-            <ModalBody className="gap-0 pl-12">
+            <ModalBody>
               <SpeechToText />
             </ModalBody>
           </>
