@@ -1,39 +1,29 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { useSearchParams } from "next/navigation";
 import { Calendar, Clock, MapPin } from "lucide-react";
 import { format } from "date-fns";
+import { useAuthContext } from "@/components/context-wrappers/AuthContext";
 import StarRatingReview from "../ProviderOverallRatingInfo";
 import IconLeftTwoTextRight from "../IconLeftTwoTextRight";
 import { useBooking } from "@/components/context-wrappers/BookingContext";
-import { getAuthHeaders } from "@/lib/api-client";
 
 export default function BookingCheckoutPage() {
-  const searchParams = useSearchParams();
-  const location =
-    searchParams.get("location") || "123 Main St, San Francisco, CA 94102";
+  const { authContextObject } = useAuthContext();
 
   const { booking, updateBooking } = useBooking();
 
-  useEffect(() => {
-    async function fetchCustomerId() {
-      const headers = await getAuthHeaders();
+  const addressFromAuth = `${authContextObject.streetAddress1}
+  ${authContextObject.streetAddress2}
+  ${authContextObject.city}
+    ${authContextObject.state}
+     ${authContextObject.zip}`;
 
-      const res = await fetch(
-        `https://maidyoulook-backend.onrender.com/customers/me`,
-        { headers },
-      );
-      if (!res.ok) {
-        console.error("failed to fetch users data");
-        return;
-      }
-      const data = await res.json();
-      const userId = data.id;
-      updateBooking({ customerId: userId });
-    }
-    fetchCustomerId();
-  }, []);
+  // wrapping updateBooking in a useEffect so it will only run once or when the autoContextObject changes, instead of on every render
+  useEffect(
+    () => updateBooking({ customerId: authContextObject.customerId }),
+    [authContextObject.customerId],
+  );
 
   return (
     <section className="mb-10">
@@ -62,7 +52,7 @@ export default function BookingCheckoutPage() {
           <IconLeftTwoTextRight
             icon={MapPin}
             heading="Location"
-            text={location}
+            text={addressFromAuth}
           />
         </div>
         <div className="flex items-center">

@@ -13,6 +13,7 @@ import SignInModal from "@/components/SignInModal";
 import Calendar from "@/components/Calendar/Calendar";
 import CompleteProfileModal from "@/components/CompleteProfileModal";
 import useAuth from "@/lib/hooks/useAuth";
+import { useAuthContext } from "@/components/context-wrappers/AuthContext";
 import { useBooking } from "@/components/context-wrappers/BookingContext";
 
 // https://nextjs.org/docs/app/api-reference/file-conventions/dynamic-routes#convention
@@ -25,6 +26,7 @@ import { useBooking } from "@/components/context-wrappers/BookingContext";
 // };
 export default function Page() {
   const { userSession } = useAuth();
+  const { authContextObject } = useAuthContext();
   const { booking, updateBooking } = useBooking();
   const router = useRouter();
   const params = useParams();
@@ -37,6 +39,7 @@ export default function Page() {
   const {
     isOpen: completeProfileIsOpen,
     onOpenChange: completeProfileOnOpenChange,
+    onOpen: openCompleteProfile,
   } = useDisclosure();
 
   const [providerInfo, setProviderInfo] = useState<ProviderInfo | null>(null);
@@ -109,6 +112,20 @@ export default function Page() {
     if (!userSession) {
       signInOnOpen(); // show sign-in modal
       return;
+    }
+
+    if (authContextObject.supabaseUserId) {
+      const isMissingProfileInfo =
+        !authContextObject.customerId ||
+        !authContextObject.streetAddress1 ||
+        !authContextObject.city ||
+        !authContextObject.state ||
+        !authContextObject.zip;
+
+      if (isMissingProfileInfo && !completeProfileIsOpen) {
+        openCompleteProfile();
+        return;
+      }
     }
     if (userSession) {
       router.push(`/checkout`);

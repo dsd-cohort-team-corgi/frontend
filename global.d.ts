@@ -13,8 +13,15 @@ declare global {
     email?: string;
     supabaseUserId?: string;
     avatarUrl?: string;
-    clientId?: string;
+    customerId?: string;
     providerId?: string;
+    firstName?: string;
+    lastName?: string;
+    streetAddress1?: string;
+    streetAddress2?: string;
+    city?: string;
+    state?: string;
+    zip?: string;
   };
   // all are optional, because the auth context will start as a blank object
 

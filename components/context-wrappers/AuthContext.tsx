@@ -12,6 +12,7 @@ import React, {
 } from "react";
 
 import supabase from "@/lib/supabase";
+import { getAuthHeaders } from "@/lib/api-client";
 
 interface AuthContextType {
   authContextObject: AuthDetailsType;
@@ -28,6 +29,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const cachedMetaData = useRef<Record<string, any>>({});
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const cachedAddressData = useRef<Record<string, any>>({});
 
   // ######## Update #################
 
@@ -130,6 +134,43 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         });
         cachedMetaData.current = freshMeta;
       }
+    }
+    // step 3: grab users address information
+
+    const headers = await getAuthHeaders();
+
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/addresses/me`,
+      { headers },
+    );
+
+    if (!response.ok) {
+      console.warn(
+        "no address information was returned from the fetch call, check if you are signed in",
+      );
+      return;
+    }
+
+    const data = await response.json();
+
+    const freshAddressData = (data && data[0]) || {};
+
+    const addressChanged = Object.entries(freshAddressData).some(
+      ([key, value]) => {
+        return cachedAddressData.current[key] !== value;
+      },
+    );
+
+    if (addressChanged) {
+      updateAuthContext({
+        streetAddress1: freshAddressData.street_address_1 || "",
+        streetAddress2: freshAddressData.street_address_2 || "",
+        city: freshAddressData.city || "",
+        state: freshAddressData.state || "",
+        zip: freshAddressData.zip || "",
+        customerId: freshAddressData.customer_id || "",
+      });
+      cachedAddressData.current = freshAddressData;
     }
   };
 
