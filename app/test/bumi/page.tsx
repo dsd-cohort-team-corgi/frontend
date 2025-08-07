@@ -328,8 +328,8 @@ export default function BumiTestPage() {
             )}
 
             {response && (
-              <div className="mb-6 rounded-lg border border-green-200 bg-green-50 p-4">
-                <h3 className="mb-2 font-semibold text-green-800">
+              <div className="border-green-200 bg-green-50 mb-6 rounded-lg border p-4">
+                <h3 className="text-green-800 mb-2 font-semibold">
                   Bumi&apos;s Response:
                 </h3>
                 <div className="space-y-4">
