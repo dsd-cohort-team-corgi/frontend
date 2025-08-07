@@ -8,13 +8,15 @@ declare global {
   }
 
   type AuthDetailsType = {
-    fullName?: string;
+    displayName?: string;
     phoneNumber?: string;
     email?: string;
     supabaseUserId?: string;
     avatarUrl?: string;
     customerId?: string;
     providerId?: string;
+    firstName?: string;
+    lastName?: string;
     streetAddress1?: string;
     streetAddress2?: string;
     city?: string;

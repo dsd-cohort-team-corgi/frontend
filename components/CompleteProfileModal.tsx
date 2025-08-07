@@ -78,7 +78,7 @@ const usStates = [
 ];
 
 interface ProfileData {
-  fullName: string;
+  displayName: string;
   phone: string;
   streetAddress: string;
   city: string;
@@ -98,7 +98,7 @@ function CompleteProfileModal({
   const { authContextObject } = useAuthContext();
 
   const [profileData, setProfileData] = useState<ProfileData>({
-    fullName: authContextObject.fullName || "",
+    displayName: authContextObject.displayName || "",
     phone: authContextObject.phoneNumber || "",
     streetAddress: authContextObject.streetAddress1 || "",
     city: authContextObject.city || "",
@@ -184,10 +184,10 @@ function CompleteProfileModal({
                   onChange={(e) =>
                     setProfileData((prev) => ({
                       ...prev,
-                      fullName: e.target.value,
+                      displayName: e.target.value,
                     }))
                   }
-                  value={profileData.fullName}
+                  value={profileData.displayName}
                   placeholder="John Smith"
                   startContent={<User size={18} color="#62748e" />}
                   isRequired

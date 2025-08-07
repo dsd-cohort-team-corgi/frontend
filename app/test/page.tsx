@@ -55,7 +55,7 @@ export default function ShowBearerToken() {
   return (
     <div className="text-center">
       <span>
-        {`Hello from Auth Context 👋 ${authContextObject.fullName || "loading..."}`}
+        {`Hello from Auth Context 👋 ${authContextObject.displayName || "loading..."}`}
       </span>
       <p>
         Check the console for the Bearer token or view here:{" "}
