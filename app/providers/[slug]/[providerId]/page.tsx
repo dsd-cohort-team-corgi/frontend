@@ -101,7 +101,9 @@ export default function Page() {
       const isMissingProfileInfo =
         !authContextObject.customerId ||
         !authContextObject.streetAddress1 ||
-        !authContextObject.city;
+        !authContextObject.city ||
+        !authContextObject.state ||
+        !authContextObject.zip;
 
       if (isMissingProfileInfo && !completeProfileIsOpen) {
         openCompleteProfile();
