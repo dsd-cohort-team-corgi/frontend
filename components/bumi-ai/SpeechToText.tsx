@@ -23,13 +23,22 @@ interface ChatResponse {
   clarification_question?: string;
 }
 
+interface ConversationMessage {
+  user: string;
+  bumi: string;
+}
+
+type RequestCopyType = {
+  message: string;
+  conversation_history: ConversationMessage[];
+};
+
 function VoiceInput() {
   const [response, setResponse] = useState<ChatResponse | null>(null);
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const [requestCopy, setRequestCopy] = useState<RequestCopyType | null>(null);
 
-  const apiBaseUrl = "";
-  // process.env.NEXT_PUBLIC_URL? "http://localhost:8000"
-  // "https://maidyoulook-backend.onrender.com",
+  const apiEndPath = "bumi/booking/chat";
 
   const {
     finishedBubbles,
@@ -37,15 +46,15 @@ function VoiceInput() {
     isListening,
     aiThinking,
     toggleListening,
-    conversationHistoryRef,
   } = useVoiceRecognition({
     onApiResponse: (data) => {
       // Customize this for whatever works best for the data you need
       setResponse(data);
       // data, data.message, data.response
     },
-    apiBaseUrl,
+    apiEndPath,
     setErrorMessage,
+    setRequestCopy,
   });
 
   return (
@@ -129,33 +138,52 @@ function VoiceInput() {
         </div>
       )}
       <div>
-        {" "}
-        {conversationHistoryRef.current.map((chat, index) => (
-          <div
-            /* eslint-disable react/no-array-index-key */
-            key={`chatHistory-${index}-${chat}`}
-            className="rounded-lg border border-slate-200 bg-white p-2"
-          >
-            <p className="font-medium text-slate-800">
-              <span>User: </span>
-              {chat.user}
-            </p>
-            <p className="text-sm text-slate-600">
-              <span>Bumi: </span>
-              {chat.bumi}
-            </p>
+        {requestCopy && (
+          <div className="border-green-200 bg-green-50 mb-6 rounded-lg border p-4">
+            <h3 className="text-green-800 mb-2 font-semibold">
+              requestCopy.message
+            </h3>
+            <div className="space-y-4">
+              <div className="rounded-lg border bg-white p-3 text-black">
+                <p>
+                  {" "}
+                  <strong>Customers Message: </strong> {requestCopy.message}
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div className="mt-5 rounded-lg border bg-white p-3 text-black">
+                <h5 className="text-green-800 mb-2 font-semibold">
+                  requestCopy.conversation_history
+                </h5>
+
+                {requestCopy.conversation_history.map((msg, i) => (
+                  /* eslint-disable react/no-array-index-key */
+                  <div key={i} className="mb-4">
+                    <p>
+                      <strong>user:</strong> {msg.user}
+                    </p>
+                    <p>
+                      <strong>bumi:</strong> {msg.bumi}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
-        ))}
+        )}
       </div>
 
       <div className="mt-8 rounded-lg bg-slate-50 p-4">
         <h3 className="mb-2 font-semibold text-slate-800">API Information:</h3>
         <div className="space-y-1 text-sm text-slate-600">
           <p>
-            <strong>Current Endpoint:</strong> POST api/speech
+            <strong>Current Endpoint:</strong> POST {apiEndPath}
           </p>
           <p>
-            <strong>Future Endpoint:</strong> POST {apiBaseUrl}
+            <strong>Future Endpoint:</strong> POST{" "}
+            {process.env.NEXT_PUBLIC_API_BASE_URL}
             /bumi/booking/chat
           </p>
 
