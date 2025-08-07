@@ -92,7 +92,7 @@ export default function useVoiceRecognition({
 
       setAiThinking(true);
 
-      fetch(`${apiBaseUrl}/api/speech`, {
+      fetch(`${apiBaseUrl}/bumi/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
