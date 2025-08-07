@@ -15,7 +15,6 @@ import StyledAsButton from "@/components/StyledAsButton";
 import User from "./icons/User";
 import Phone from "./icons/Phone";
 import MapPin from "./icons/MapPin";
-import { useAuthContext } from "@/components/context-wrappers/AuthContext";
 
 const usStates = [
   "Alabama",
@@ -78,7 +77,7 @@ const usStates = [
 ];
 
 interface ProfileData {
-  displayName: string;
+  fullName: string;
   phone: string;
   streetAddress: string;
   city: string;
@@ -95,15 +94,13 @@ function CompleteProfileModal({
   isOpen,
   onOpenChange,
 }: CompleteProfileModalProps) {
-  const { authContextObject } = useAuthContext();
-
   const [profileData, setProfileData] = useState<ProfileData>({
-    displayName: authContextObject.displayName || "",
-    phone: authContextObject.phoneNumber || "",
-    streetAddress: authContextObject.streetAddress1 || "",
-    city: authContextObject.city || "",
-    state: authContextObject.state || "",
-    zip: authContextObject.zip || "",
+    fullName: "",
+    phone: "",
+    streetAddress: "",
+    city: "",
+    state: "",
+    zip: "",
   });
   const mutation = useMutation({
     mutationFn: async () => {
@@ -184,10 +181,10 @@ function CompleteProfileModal({
                   onChange={(e) =>
                     setProfileData((prev) => ({
                       ...prev,
-                      displayName: e.target.value,
+                      fullName: e.target.value,
                     }))
                   }
-                  value={profileData.displayName}
+                  value={profileData.fullName}
                   placeholder="John Smith"
                   startContent={<User size={18} color="#62748e" />}
                   isRequired
