@@ -12,6 +12,7 @@ import React, {
 } from "react";
 
 import supabase from "@/lib/supabase";
+import { getAuthHeaders } from "@/lib/api-client";
 
 interface AuthContextType {
   authContextObject: AuthDetailsType;
@@ -136,29 +137,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
     // step 3: grab users address information
 
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-
-    const accessToken = session?.access_token;
-
-    if (!accessToken) {
-      throw new Error("No access token found");
-    }
+    const headers = await getAuthHeaders();
 
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}/addresses/me`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-      },
+      { headers },
     );
 
     if (!response.ok) {
-      console.log("failed to fetch an address");
+      console.warn(
+        "no address information was returned from the fetch call, check if you are signed in",
+      );
+      return;
     }
 
     const data = await response.json();
@@ -178,6 +168,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         city: freshAddressData.city || "",
         state: freshAddressData.state || "",
         zip: freshAddressData.zip || "",
+        customerId: freshAddressData.customer_id || "",
       });
       cachedAddressData.current = freshAddressData;
     }

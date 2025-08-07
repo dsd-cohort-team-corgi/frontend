@@ -13,7 +13,7 @@ declare global {
     email?: string;
     supabaseUserId?: string;
     avatarUrl?: string;
-    clientId?: string;
+    customerId?: string;
     providerId?: string;
     streetAddress1?: string;
     streetAddress2?: string;
