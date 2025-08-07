@@ -175,18 +175,16 @@ function VoiceInput() {
         )}
       </div>
 
+      <div className="rounded-lg border bg-slate-50 p-3">
+        <h4 className="mb-2 font-medium text-slate-800">Raw Request :</h4>
+        <pre className="whitespace-pre-wrap text-xs text-slate-600">
+          {JSON.stringify(response, null, 2)}
+        </pre>
+      </div>
+
       <div className="mt-8 rounded-lg bg-slate-50 p-4">
         <h3 className="mb-2 font-semibold text-slate-800">API Information:</h3>
         <div className="space-y-1 text-sm text-slate-600">
-          <p>
-            <strong>Current Endpoint:</strong> POST {apiEndPath}
-          </p>
-          <p>
-            <strong>Future Endpoint:</strong> POST{" "}
-            {process.env.NEXT_PUBLIC_API_BASE_URL}
-            /bumi/booking/chat
-          </p>
-
           <p>
             <strong>Request Format:</strong>{" "}
             {"{message: string, conversation_history: ConversationMessage[]}"}
