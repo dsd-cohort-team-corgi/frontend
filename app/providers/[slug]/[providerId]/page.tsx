@@ -95,22 +95,6 @@ export default function Page() {
     );
   }, [booking.serviceId, providerInfo?.services]);
 
-  // Will open the modal if the user is signed in but the profile is incomplete
-  useEffect(() => {
-    if (authContextObject.supabaseUserId) {
-      const isMissingProfileInfo =
-        !authContextObject.customerId ||
-        !authContextObject.streetAddress1 ||
-        !authContextObject.city ||
-        !authContextObject.state ||
-        !authContextObject.zip;
-
-      if (isMissingProfileInfo && !completeProfileIsOpen) {
-        openCompleteProfile();
-      }
-    }
-  }, [authContextObject, completeProfileIsOpen, openCompleteProfile]);
-
   useEffect(() => {
     updateBooking({
       companyName: providerInfo?.company_name,
@@ -128,6 +112,20 @@ export default function Page() {
     if (!userSession) {
       signInOnOpen(); // show sign-in modal
       return;
+    }
+
+    if (authContextObject.supabaseUserId) {
+      const isMissingProfileInfo =
+        !authContextObject.customerId ||
+        !authContextObject.streetAddress1 ||
+        !authContextObject.city ||
+        !authContextObject.state ||
+        !authContextObject.zip;
+
+      if (isMissingProfileInfo && !completeProfileIsOpen) {
+        openCompleteProfile();
+        return;
+      }
     }
     if (userSession) {
       router.push(`/checkout`);
