@@ -7,6 +7,7 @@ import MapPin from "@/components/icons/MapPin";
 import Maximize from "@/components/icons/Maximize";
 import LoadingSkeleton from "@/components/LoadingSkeleton";
 import ProviderBookingCard from "@/components/ProviderBookingCard";
+import MapComponent from "@/components/MapComponent";
 
 interface Service {
   id: string;
@@ -101,6 +102,9 @@ export default function Page() {
             <span className="text-[#2563eb] md:text-base">View Full Map</span>
           </div>
         </CardHeader>
+        <CardBody>
+          <MapComponent />
+        </CardBody>
       </Card>
       {/* At a glance cards */}
       <div className="grid grid-cols-3 gap-2">
@@ -112,7 +116,7 @@ export default function Page() {
         </Card>
         <Card>
           <CardBody className="text-center text-base md:text-lg">
-            <p className="font-black text-green">${totalRevenue}</p>
+            <p className="text-green font-black">${totalRevenue}</p>
             <p>Today&apos;s Revenue</p>
           </CardBody>
         </Card>
