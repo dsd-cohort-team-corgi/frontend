@@ -15,6 +15,11 @@ declare global {
     avatarUrl?: string;
     clientId?: string;
     providerId?: string;
+    streetAddress1?: string;
+    streedAddress2?: string;
+    city?: string;
+    state?: string;
+    zip?: string;
   };
   // all are optional, because the auth context will start as a blank object
 
