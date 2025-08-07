@@ -16,7 +16,7 @@ declare global {
     clientId?: string;
     providerId?: string;
     streetAddress1?: string;
-    streedAddress2?: string;
+    streetAddress2?: string;
     city?: string;
     state?: string;
     zip?: string;

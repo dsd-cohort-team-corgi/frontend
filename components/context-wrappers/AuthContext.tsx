@@ -29,6 +29,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const cachedMetaData = useRef<Record<string, any>>({});
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const cachedAddressData = useRef<Record<string, any>>({});
+
   // ######## Update #################
 
   const updateAuthContext = useCallback((updates: Partial<AuthDetailsType>) => {
@@ -130,6 +133,53 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         });
         cachedMetaData.current = freshMeta;
       }
+    }
+    // step 3: grab users address information
+
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    const accessToken = session?.access_token;
+
+    if (!accessToken) {
+      throw new Error("No access token found");
+    }
+
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/addresses/me`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      },
+    );
+
+    if (!response.ok) {
+      console.log("failed to fetch an address");
+    }
+
+    const data = await response.json();
+
+    const freshAddressData = (data && data[0]) || {};
+
+    const addressChanged = Object.entries(freshAddressData).some(
+      ([key, value]) => {
+        return cachedAddressData.current[key] !== value;
+      },
+    );
+
+    if (addressChanged) {
+      updateAuthContext({
+        streetAddress1: freshAddressData.street_address_1 || "",
+        streetAddress2: freshAddressData.street_address_2 || "",
+        city: freshAddressData.city || "",
+        state: freshAddressData.state || "",
+        zip: freshAddressData.zip || "",
+      });
+      cachedAddressData.current = freshAddressData;
     }
   };
 
