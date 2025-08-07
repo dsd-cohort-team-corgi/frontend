@@ -25,7 +25,7 @@ const config: Config = {
         "light-accent": "#e0e0e0",
         // used for faint borders
         // "" is necessary with - because otherwise JS/TS interprets it as subtract sign and gets confused
-        "green": "#187a24",
+        green: "#187a24",
       },
       fontFamily: {
         sans: ["var(--font-dm-sans)"],
