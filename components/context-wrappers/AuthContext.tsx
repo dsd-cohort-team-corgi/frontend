@@ -93,7 +93,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           supabaseUserId: claimsData.claims.sub,
           email: claimsData.claims.email,
           phoneNumber: userMetaDataFromJWT.phone || "",
-          displayName: userMetaDataFromJWT.full_name || "",
+          fullName: userMetaDataFromJWT.full_name || "",
           avatarUrl: userMetaDataFromJWT.avatar_url || "",
         });
         cachedMetaData.current = userMetaDataFromJWT;
@@ -129,7 +129,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         updateAuthContext({
           email: freshMeta.email,
           phoneNumber: freshMeta.phone || "",
-          displayName: freshMeta.full_name || "",
+          fullName: freshMeta.full_name || "",
           avatarUrl: freshMeta.picture || "",
         });
         cachedMetaData.current = freshMeta;

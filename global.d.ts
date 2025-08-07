@@ -8,7 +8,7 @@ declare global {
   }
 
   type AuthDetailsType = {
-    displayName?: string;
+    fullName?: string;
     phoneNumber?: string;
     email?: string;
     supabaseUserId?: string;
