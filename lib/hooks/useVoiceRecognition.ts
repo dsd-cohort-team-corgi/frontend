@@ -36,18 +36,25 @@ interface ServiceRecommendation {
   duration: number;
 }
 
+type RequestCopyType = {
+  message: string;
+  conversation_history: ConversationMessage[];
+};
+
 type UseVoiceRecognitionOptions = {
   onApiResponse: (data: ChatResponse) => void;
-  apiBaseUrl: string;
+  apiEndPath: string;
   setErrorMessage: React.Dispatch<React.SetStateAction<string>>;
+  setRequestCopy: React.Dispatch<React.SetStateAction<RequestCopyType | null>>;
 };
 // SpeechRecognition is the standardized and unprefixed newer version
 // however some browsers only support the legacy webkitSpeechRecognition which uses vendor prefixes
 
 export default function useVoiceRecognition({
   onApiResponse,
-  apiBaseUrl,
+  apiEndPath,
   setErrorMessage,
+  setRequestCopy,
 }: UseVoiceRecognitionOptions) {
   const [isListening, setIsListening] = useState(false);
   const [finishedBubbles, setFinishedBubbles] = useState<string[]>([]);
@@ -92,12 +99,23 @@ export default function useVoiceRecognition({
 
       setAiThinking(true);
 
-      fetch(`${apiBaseUrl}/api/speech`, {
+      if (!Array.isArray(conversationHistoryRef.current)) {
+        setErrorMessage(
+          "There was an error with your message! ConversationHistoryRef.current is not an array",
+        );
+      }
+
+      setRequestCopy({
+        message: textToSend,
+        conversation_history: conversationHistoryRef.current,
+      });
+
+      fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/${apiEndPath}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           message: textToSend,
-          conversation_history: conversationHistoryRef,
+          conversation_history: conversationHistoryRef.current,
         }),
       })
         .then((res) => res.json())
@@ -106,7 +124,6 @@ export default function useVoiceRecognition({
             user: textsAfterLastApiRef.current.trim(),
             bumi: data.ai_message,
           });
-
           onApiResponse(data);
           // these next 3 steps are used to turn off listening:
           recognitionRef.current?.stop();
@@ -241,6 +258,5 @@ export default function useVoiceRecognition({
     isListening,
     aiThinking,
     toggleListening,
-    conversationHistoryRef,
   };
 }
