@@ -2,15 +2,28 @@
 
 import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useDisclosure } from "@heroui/react";
 import StyledAsButton from "@/components/StyledAsButton";
 import { useAuthContext } from "@/components/context-wrappers/AuthContext";
 import { useBooking } from "@/components/context-wrappers/BookingContext";
 import SignInModal from "@/components/SignInModal";
+import CompleteProfileModal from "@/components/CompleteProfileModal";
 
-export default function CheckoutButton() {
+type CheckoutButtonProps = {
+  providerInfo: ProviderInfo;
+};
+
+export default function CheckoutButton({ providerInfo }: CheckoutButtonProps) {
   const { authContextObject } = useAuthContext();
   const { booking, updateBooking } = useBooking();
   const router = useRouter();
+
+  const { isOpen: signInIsOpen, onOpen: signInOnOpen } = useDisclosure();
+  const {
+    isOpen: completeProfileIsOpen,
+    onOpenChange: completeProfileOnOpenChange,
+    onOpen: openCompleteProfile,
+  } = useDisclosure();
 
   useEffect(() => {
     updateBooking({
@@ -43,14 +56,17 @@ export default function CheckoutButton() {
         return;
       }
     }
-    if (userSession) {
-      router.push(`/checkout`);
-    }
+
+    router.push(`/checkout`);
   }
 
   return (
     <section>
       <SignInModal isOpen={signInIsOpen} onOpenChange={signInOnOpen} />
+      <CompleteProfileModal
+        isOpen={completeProfileIsOpen}
+        onOpenChange={completeProfileOnOpenChange}
+      />
       <StyledAsButton
         className="mb-4 mt-6 block w-11/12 px-0 disabled:bg-gray-500"
         label="Continue to Booking"

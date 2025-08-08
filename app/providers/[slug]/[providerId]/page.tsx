@@ -1,20 +1,17 @@
 "use client";
 
 import React, { useState, useMemo, useEffect } from "react";
-import { useRouter, useParams } from "next/navigation";
+import { useParams } from "next/navigation";
 import { Mail, Phone } from "lucide-react";
-import { useDisclosure } from "@heroui/react";
+
 import StarRatingReview from "@/components/ProviderOverallRatingInfo";
 import IconServiceTime from "@/components/IconServiceTime";
 import ReviewCard from "@/components/ReviewCard";
 import StyledAsButton from "@/components/StyledAsButton";
 import convertDateToTimeFromNow from "@/utils/convertDateToTimeFromNow";
-import SignInModal from "@/components/SignInModal";
 import Calendar from "@/components/Calendar/Calendar";
-import CompleteProfileModal from "@/components/CompleteProfileModal";
-import useAuth from "@/lib/hooks/useAuth";
-import { useAuthContext } from "@/components/context-wrappers/AuthContext";
 import { useBooking } from "@/components/context-wrappers/BookingContext";
+import CheckoutButton from "@/components/buttons/CheckoutButton";
 
 // https://nextjs.org/docs/app/api-reference/file-conventions/dynamic-routes#convention
 // the docs are showing the Next.JS 15 behavior where params is a promise
@@ -25,22 +22,12 @@ import { useBooking } from "@/components/context-wrappers/BookingContext";
 //   providerId: string;
 // };
 export default function Page() {
-  const { userSession } = useAuth();
-  const { authContextObject } = useAuthContext();
   const { booking, updateBooking } = useBooking();
-  const router = useRouter();
   const params = useParams();
   const { providerId } = params;
   // { params }: { params: ProviderProps }
   // const { slug, providerId } = params;
   // params must match dynamic folder names,providerid !== providerId
-
-  const { isOpen: signInIsOpen, onOpen: signInOnOpen } = useDisclosure();
-  const {
-    isOpen: completeProfileIsOpen,
-    onOpenChange: completeProfileOnOpenChange,
-    onOpen: openCompleteProfile,
-  } = useDisclosure();
 
   const [providerInfo, setProviderInfo] = useState<ProviderInfo | null>(null);
 
@@ -106,43 +93,13 @@ export default function Page() {
     });
   }, [providerInfo]);
 
-  function handleContinueToBooking() {
-    if (!booking.serviceId || !booking.time) return;
-
-    if (!userSession) {
-      signInOnOpen(); // show sign-in modal
-      return;
-    }
-
-    if (authContextObject.supabaseUserId) {
-      const isMissingProfileInfo =
-        !authContextObject.customerId ||
-        !authContextObject.streetAddress1 ||
-        !authContextObject.city ||
-        !authContextObject.state ||
-        !authContextObject.zip;
-
-      if (isMissingProfileInfo && !completeProfileIsOpen) {
-        openCompleteProfile();
-        return;
-      }
-    }
-    if (userSession) {
-      router.push(`/checkout`);
-    }
-  }
-
   if (!providerInfo) return <div>Loading...</div>;
 
   return (
     <div className="xl:cols-2 m-4 flex columns-2 flex-col flex-wrap gap-6 sm:flex-row">
       {/* Have to use flex, since we have to reorder some elements on different screen sizes, which grid does not support */}
       {/* if the gap-6's value is changed xl:w-[calc(50%-1.5rem)] will have to be adjusted in the following sections */}
-      <SignInModal isOpen={signInIsOpen} onOpenChange={signInOnOpen} />
-      <CompleteProfileModal
-        isOpen={completeProfileIsOpen}
-        onOpenChange={completeProfileOnOpenChange}
-      />
+
       {/* ################# PROVIDER INFO ################ */}
 
       <section className="order-1 mb-6 h-fit w-full rounded-3xl border-1 border-light-accent bg-white px-4 py-5 xl:w-[calc(50%-1.5rem)]">
@@ -249,13 +206,7 @@ export default function Page() {
             {`${booking?.description} (${booking.serviceDuration} mins) - $${booking?.price}`}
           </span>
         )}
-
-        <StyledAsButton
-          className="mb-4 mt-6 block w-11/12 px-0 disabled:bg-gray-500"
-          label="Continue to Booking"
-          onPress={() => handleContinueToBooking()}
-          disabled={!booking.serviceId || !booking.time || !booking.date}
-        />
+        <CheckoutButton providerInfo={providerInfo} />
       </section>
 
       {/* ################# REVIEWS ################ */}
