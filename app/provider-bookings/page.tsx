@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
 import { Card, CardBody, CardHeader } from "@heroui/react";
 import { useApiQuery } from "@/lib/api-client";
 import MapPin from "@/components/icons/MapPin";
-import Maximize from "@/components/icons/Maximize";
 import LoadingSkeleton from "@/components/LoadingSkeleton";
 import ProviderBookingCard from "@/components/ProviderBookingCard";
+import MapComponent from "@/components/MapComponent";
 
 interface Service {
   id: string;
@@ -31,6 +31,8 @@ interface Address {
   state: string;
   zip: string;
   id: string;
+  latitude: number;
+  longitude: number;
 }
 
 interface BookingItem {
@@ -53,20 +55,47 @@ interface BookingItem {
 // Defines the type for the array of booking items
 type BookingList = BookingItem[];
 
+interface MapBooking {
+  id: string;
+  coordinates: [latitude: number, longitude: number];
+  name: string;
+  service_title: string;
+}
+
 export default function Page() {
   const [completed, setCompleted] = useState<number>(0);
+  const [bookingsForMap, setBookingsForMap] = useState<
+    MapBooking[] | undefined
+  >([]);
 
   const { data, error, isLoading } = useApiQuery<BookingList>(
     ["providers", "bookings"],
     "/providers/bookings",
   );
 
+  // sets the number of completed bookings on page load
   useEffect(() => {
     data?.forEach((booking) => {
       if (booking.status === "completed") {
         setCompleted((prev) => prev + 1);
       }
     });
+  }, [data]);
+
+  // creates a temp array that gets data needed for component map and sets it to array state
+  useEffect(() => {
+    const tempArr = data?.map((booking) => {
+      return {
+        id: booking.id,
+        coordinates: [booking.address.latitude, booking.address.longitude] as [
+          number,
+          number,
+        ],
+        name: `${booking.customer.first_name} ${booking.customer.last_name}`,
+        service_title: booking.service.service_title,
+      };
+    });
+    setBookingsForMap(tempArr);
   }, [data]);
 
   if (isLoading) {
@@ -80,27 +109,26 @@ export default function Page() {
   if (data?.length === 0) {
     return (
       <h1 className="m-auto w-4/5 text-center text-lg font-semibold lg:text-2xl">
-        Looks like you&apos;ve there&apos;s no work for today! 🎉
+        Looks like there&apos;s no work for today! 🎉
       </h1>
     );
   }
 
   const totalRevenue =
     data?.reduce((acc, booking) => acc + booking.service.pricing, 0) ?? 0;
+
   return (
     <main className="m-auto w-[90%] md:w-4/5">
-      {/* Map Card to be done in a future PR */}
       <Card className="mb-4">
-        <CardHeader className="flex justify-between">
+        <CardHeader className="pb-0">
           <div className="flex items-center gap-2 text-sm">
             <MapPin size={16} color="#2563eb" />
             <span className="md:text-base">Today&apos;s Route</span>
           </div>
-          <div className="flex items-center gap-2 text-sm">
-            <Maximize size={16} color="#2563eb" />
-            <span className="text-[#2563eb] md:text-base">View Full Map</span>
-          </div>
         </CardHeader>
+        <CardBody>
+          <MapComponent bookingsForMap={bookingsForMap || []} />
+        </CardBody>
       </Card>
       {/* At a glance cards */}
       <div className="grid grid-cols-3 gap-2">
@@ -116,8 +144,7 @@ export default function Page() {
             <p>Today&apos;s Revenue</p>
           </CardBody>
         </Card>
-        {/* I will add functionality for this on next PR */}
-        <Card className="">
+        <Card>
           <CardBody className="text-nowrap px-0 text-center text-base md:text-lg">
             <p className="font-black text-primary">{completed}</p>
             <p>Completed</p>
