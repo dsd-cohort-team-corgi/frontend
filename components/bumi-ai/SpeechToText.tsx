@@ -6,6 +6,7 @@ import MicUi from "./SpeechUi";
 import useVoiceRecognition from "@/lib/hooks/useVoiceRecognition";
 import Calendar from "@/components/icons/Calendar";
 import Star from "../icons/Star";
+import CheckoutButton from "../buttons/CheckoutButton";
 
 interface ServiceRecommendation {
   id: string;
@@ -59,6 +60,8 @@ function VoiceInput() {
     setRequestCopy,
   });
 
+  const [providerInfo, setProviderInfo] = useState<ProviderInfo | null>(null);
+
   return (
     <div className="mt-10 flex max-w-lg flex-col items-center space-y-4">
       <UserTextBubbles
@@ -91,9 +94,11 @@ function VoiceInput() {
               <div className="rounded-2xl bg-slate-900 bg-opacity-70 p-3">
                 <div className="space-y-2">
                   {response.services.map((service, index) => (
-                    <section
+                    <button
+                      type="button"
                       key={`service-${service.id || index}-${service.name}`}
                       className="p-2"
+                      onClick={() => setProviderInfo(service)}
                     >
                       <div className="flex justify-between">
                         <span className="font-medium">{service.name}</span>
@@ -116,8 +121,9 @@ function VoiceInput() {
                         <Calendar size={16} />
                         <span className="ml-1">within 1 hour </span>
                       </div>
-                    </section>
+                    </button>
                   ))}
+                  <CheckoutButton ProviderInfo={providerInfo} />
                 </div>
               </div>
             )}
