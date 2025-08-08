@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { Card, CardBody, CardHeader } from "@heroui/react";
 import { useApiQuery } from "@/lib/api-client";
 import MapPin from "@/components/icons/MapPin";
-import Maximize from "@/components/icons/Maximize";
 import LoadingSkeleton from "@/components/LoadingSkeleton";
 import ProviderBookingCard from "@/components/ProviderBookingCard";
 import MapComponent from "@/components/MapComponent";
@@ -74,6 +73,7 @@ export default function Page() {
     "/providers/bookings",
   );
 
+  // sets the number of completed bookings on page load
   useEffect(() => {
     data?.forEach((booking) => {
       if (booking.status === "completed") {
@@ -82,6 +82,7 @@ export default function Page() {
     });
   }, [data]);
 
+  // creates a temp array that gets data needed for component map and sets it to array state
   useEffect(() => {
     const tempArr = data?.map((booking) => {
       return {
@@ -108,13 +109,14 @@ export default function Page() {
   if (data?.length === 0) {
     return (
       <h1 className="m-auto w-4/5 text-center text-lg font-semibold lg:text-2xl">
-        Looks like you&apos;ve there&apos;s no work for today! 🎉
+        Looks like there&apos;s no work for today! 🎉
       </h1>
     );
   }
 
   const totalRevenue =
     data?.reduce((acc, booking) => acc + booking.service.pricing, 0) ?? 0;
+
   return (
     <main className="m-auto w-[90%] md:w-4/5">
       <Card className="mb-4">
@@ -138,12 +140,11 @@ export default function Page() {
         </Card>
         <Card>
           <CardBody className="text-center text-base md:text-lg">
-            <p className="text-green font-black">${totalRevenue}</p>
+            <p className="font-black text-green">${totalRevenue}</p>
             <p>Today&apos;s Revenue</p>
           </CardBody>
         </Card>
-        {/* I will add functionality for this on next PR */}
-        <Card className="">
+        <Card>
           <CardBody className="text-nowrap px-0 text-center text-base md:text-lg">
             <p className="font-black text-primary">{completed}</p>
             <p>Completed</p>

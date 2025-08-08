@@ -1,16 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-
-import "leaflet/dist/leaflet.css";
-
-import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.webpack.css";
-
-import "leaflet-defaulticon-compatibility";
-import "react-leaflet-fullscreen/styles.css";
+import { Spinner } from "@heroui/react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import { FullscreenControl } from "react-leaflet-fullscreen";
-import { Spinner } from "@heroui/react";
+import "leaflet/dist/leaflet.css";
+import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.webpack.css";
+import "leaflet-defaulticon-compatibility";
+import "react-leaflet-fullscreen/styles.css";
 
 interface MapBooking {
   id: string;
@@ -25,7 +22,12 @@ interface MapComponentProps {
 
 function MapComponent({ bookingsForMap }: MapComponentProps) {
   const [mapCenter, setMapCenter] = useState({ latitude: 0, longitude: 0 });
+  const [providerCoordinates, setProviderCoordinates] = useState({
+    latitude: 0,
+    longitude: 0,
+  });
 
+  //   sets an avereage of latitudes and longitudes so provider can see a high view of all locations for service
   useEffect(() => {
     const bookingLength = bookingsForMap?.length;
     let lat = 0;
@@ -42,6 +44,31 @@ function MapComponent({ bookingsForMap }: MapComponentProps) {
     }
   }, [bookingsForMap]);
 
+  //   makes use of watch position function to get live updates on provider position
+  useEffect(() => {
+    if (!("geolocation" in navigator)) {
+      return; // Exit early if geolocation is not available
+    }
+
+    const watchId = navigator.geolocation.watchPosition(
+      (position) => {
+        setProviderCoordinates({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        });
+      },
+      (err) => {
+        console.error(err);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 20000,
+        maximumAge: 0,
+      },
+    );
+    /* eslint-disable consistent-return */
+    return () => navigator.geolocation.clearWatch(watchId);
+  }, []);
 
   if (mapCenter.latitude === 0 || mapCenter.longitude === 0) {
     return <Spinner className="h-[30dvh] w-full" />;
@@ -49,6 +76,7 @@ function MapComponent({ bookingsForMap }: MapComponentProps) {
 
   return (
     <MapContainer
+      // IMPORTANT: sizes must be set on this component or it will not render
       center={[mapCenter.latitude, mapCenter.longitude]}
       zoom={10}
       className="h-[30dvh] w-full"
@@ -64,6 +92,16 @@ function MapComponent({ bookingsForMap }: MapComponentProps) {
           </Popup>
         </Marker>
       ))}
+      {providerCoordinates && (
+        <Marker
+          position={[
+            providerCoordinates.latitude,
+            providerCoordinates.longitude,
+          ]}
+        >
+          <Popup>Your location</Popup>
+        </Marker>
+      )}
       <FullscreenControl
         position="topright"
         title="Full Screen"
@@ -73,5 +111,4 @@ function MapComponent({ bookingsForMap }: MapComponentProps) {
     </MapContainer>
   );
 }
-
 export default MapComponent;
