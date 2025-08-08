@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import UserTextBubbles from "./UserTextBubbles";
 import MicUi from "./SpeechUi";
 import useVoiceRecognition from "@/lib/hooks/useVoiceRecognition";
+import Calendar from "@/components/icons/Calendar";
+import Star from "../icons/Star";
 
 interface ServiceRecommendation {
   id: string;
@@ -68,6 +70,78 @@ function VoiceInput() {
         isListening={isListening}
         toggleListening={toggleListening}
       />
+
+      {response && (
+        <div className="">
+          <div className="my-4 flex items-center justify-center">
+            <img
+              src="/bumi.png"
+              width={30}
+              height={30}
+              className="mr-2 rounded-full bg-primary"
+            />
+            <h3 className="text-green-800 text-center text-small">
+              Bumi says:
+            </h3>
+          </div>
+          <div className="space-y-4">
+            <p className="text-white">{response.ai_message}</p>
+
+            {response.services && response.services.length > 0 && (
+              <div className="rounded-2xl bg-slate-900 bg-opacity-70 p-3">
+                <div className="space-y-2">
+                  {response.services.map((service, index) => (
+                    <section
+                      key={`service-${service.id || index}-${service.name}`}
+                      className="p-2"
+                    >
+                      <div className="flex justify-between">
+                        <span className="font-medium">{service.name}</span>
+                        <span> ${service.price} </span>
+                      </div>
+                      <div className="flex justify-between text-sm text-slate-300">
+                        <span>{service.provider}</span>
+                        <div className="my-1 flex items-center text-[#ffd250]">
+                          <Star size={14} />
+                          <span className="ml-px inline-block">
+                            {" "}
+                            {service.rating}{" "}
+                          </span>
+                        </div>
+                      </div>
+                      <p className="py-1 text-sm text-slate-300">
+                        {service.description}
+                      </p>
+                      <div className="flex items-center text-sm text-slate-300">
+                        <Calendar size={16} />
+                        <span className="ml-1">within 1 hour </span>
+                      </div>
+                    </section>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {response.clarification_question && (
+              <div className="rounded-lg border bg-yellow-50 p-3">
+                <h4 className="mb-2 font-medium text-yellow-800">
+                  Clarification Question:
+                </h4>
+                <p className="text-yellow-700">
+                  {response.clarification_question}
+                </p>
+              </div>
+            )}
+
+            <div className="rounded-lg border bg-slate-50 p-3">
+              <h4 className="mb-2 font-medium text-slate-800">Raw Response:</h4>
+              <pre className="whitespace-pre-wrap text-xs text-slate-600">
+                {JSON.stringify(response, null, 2)}
+              </pre>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ################ Testing Frontend Code Starts here  ################ */}
 
