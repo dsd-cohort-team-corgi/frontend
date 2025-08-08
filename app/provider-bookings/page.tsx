@@ -32,6 +32,8 @@ interface Address {
   state: string;
   zip: string;
   id: string;
+  latitude: number;
+  longitude: number;
 }
 
 interface BookingItem {
@@ -54,8 +56,18 @@ interface BookingItem {
 // Defines the type for the array of booking items
 type BookingList = BookingItem[];
 
+interface MapBooking {
+  id: string;
+  coordinates: [latitude: number, longitude: number];
+  name: string;
+  service_title: string;
+}
+
 export default function Page() {
   const [completed, setCompleted] = useState<number>(0);
+  const [bookingsForMap, setBookingsForMap] = useState<
+    MapBooking[] | undefined
+  >([]);
 
   const { data, error, isLoading } = useApiQuery<BookingList>(
     ["providers", "bookings"],
@@ -68,6 +80,21 @@ export default function Page() {
         setCompleted((prev) => prev + 1);
       }
     });
+  }, [data]);
+
+  useEffect(() => {
+    const tempArr = data?.map((booking) => {
+      return {
+        id: booking.id,
+        coordinates: [booking.address.latitude, booking.address.longitude] as [
+          number,
+          number,
+        ],
+        name: `${booking.customer.first_name} ${booking.customer.last_name}`,
+        service_title: booking.service.service_title,
+      };
+    });
+    setBookingsForMap(tempArr);
   }, [data]);
 
   if (isLoading) {
@@ -90,20 +117,15 @@ export default function Page() {
     data?.reduce((acc, booking) => acc + booking.service.pricing, 0) ?? 0;
   return (
     <main className="m-auto w-[90%] md:w-4/5">
-      {/* Map Card to be done in a future PR */}
       <Card className="mb-4">
-        <CardHeader className="flex justify-between">
+        <CardHeader className="pb-0">
           <div className="flex items-center gap-2 text-sm">
             <MapPin size={16} color="#2563eb" />
             <span className="md:text-base">Today&apos;s Route</span>
           </div>
-          <div className="flex items-center gap-2 text-sm">
-            <Maximize size={16} color="#2563eb" />
-            <span className="text-[#2563eb] md:text-base">View Full Map</span>
-          </div>
         </CardHeader>
         <CardBody>
-          <MapComponent />
+          <MapComponent bookingsForMap={bookingsForMap || []} />
         </CardBody>
       </Card>
       {/* At a glance cards */}
