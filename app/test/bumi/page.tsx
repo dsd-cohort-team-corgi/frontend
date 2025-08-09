@@ -32,6 +32,8 @@ export default function BumiTestPage() {
   const [customApiUrl, setCustomApiUrl] = useState(
     "https://maidyoulook-backend.onrender.com",
   );
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   const apiBaseUrl = useLocalhost ? "http://localhost:8000" : customApiUrl;
 
@@ -95,6 +97,30 @@ export default function BumiTestPage() {
     },
   ];
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedImage(file);
+
+      // Create preview URL
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setImagePreview(event.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const clearImage = () => {
+    setSelectedImage(null);
+    setImagePreview(null);
+    // Reset file input
+    const fileInput = document.getElementById(
+      "image-input",
+    ) as HTMLInputElement;
+    if (fileInput) fileInput.value = "";
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!message.trim()) return;
@@ -104,18 +130,37 @@ export default function BumiTestPage() {
     setResponse(null);
 
     try {
-      const requestBody: ChatRequest = {
-        message: message.trim(),
-        conversation_history: conversationHistory,
-      };
+      let apiResponse;
 
-      const apiResponse = await fetch(`${apiBaseUrl}/bumi/booking/chat`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestBody),
-      });
+      if (selectedImage) {
+        // Use multipart form data for image upload
+        const formData = new FormData();
+        formData.append("message", message.trim());
+        formData.append(
+          "conversation_history",
+          JSON.stringify(conversationHistory),
+        );
+        formData.append("image", selectedImage);
+
+        apiResponse = await fetch(`${apiBaseUrl}/bumi/booking/chat/image`, {
+          method: "POST",
+          body: formData,
+        });
+      } else {
+        // Use JSON for text-only requests
+        const requestBody: ChatRequest = {
+          message: message.trim(),
+          conversation_history: conversationHistory,
+        };
+
+        apiResponse = await fetch(`${apiBaseUrl}/bumi/booking/chat`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestBody),
+        });
+      }
 
       if (!apiResponse.ok) {
         throw new Error(`HTTP error! status: ${apiResponse.status}`);
@@ -161,8 +206,7 @@ export default function BumiTestPage() {
                   🤖 Bumi Chat Test
                 </h1>
                 <p className="text-slate-600">
-                  Test the Bumi AI chat endpoint while the frontend is being
-                  built.
+                  Test the Bumi AI chat endpoint with text and images.
                 </p>
               </div>
 
@@ -209,7 +253,9 @@ export default function BumiTestPage() {
                   Current API:
                 </span>
                 <code className="rounded bg-slate-200 px-2 py-1 text-sm text-slate-800">
-                  {apiBaseUrl}/bumi/booking/chat
+                  {selectedImage
+                    ? `${apiBaseUrl}/bumi/booking/chat/image`
+                    : `${apiBaseUrl}/bumi/booking/chat`}
                 </code>
               </div>
             </div>
@@ -279,22 +325,61 @@ export default function BumiTestPage() {
             )}
 
             <form onSubmit={handleSubmit} className="mb-6">
-              <div className="flex gap-4">
-                <input
-                  type="text"
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  placeholder="Type your message here..."
-                  className="flex-1 rounded-lg border border-slate-300 p-3 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                  disabled={loading}
-                />
-                <button
-                  type="submit"
-                  disabled={loading || !message.trim()}
-                  className="rounded-lg bg-blue-600 px-6 py-3 text-white transition-colors hover:bg-blue-700 disabled:bg-slate-400"
-                >
-                  {loading ? "Sending..." : "Send"}
-                </button>
+              <div className="space-y-4">
+                {/* Image Upload Section */}
+                <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
+                  <h3 className="mb-3 text-sm font-medium text-slate-800">
+                    📷 Upload Image (Optional)
+                  </h3>
+                  <div className="flex items-center gap-4">
+                    <input
+                      id="image-input"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      className="flex-1 rounded-lg border border-slate-300 p-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    />
+                    {selectedImage && (
+                      <button
+                        type="button"
+                        onClick={clearImage}
+                        className="rounded-lg bg-red-100 px-3 py-2 text-sm text-red-700 hover:bg-red-200"
+                      >
+                        Clear
+                      </button>
+                    )}
+                  </div>
+
+                  {imagePreview && (
+                    <div className="mt-3">
+                      <p className="mb-2 text-xs text-slate-600">Preview:</p>
+                      <img
+                        src={imagePreview}
+                        alt="Preview"
+                        className="max-h-32 rounded-lg border border-slate-200"
+                      />
+                    </div>
+                  )}
+                </div>
+
+                {/* Message Input */}
+                <div className="flex gap-4">
+                  <input
+                    type="text"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    placeholder="Type your message here..."
+                    className="flex-1 rounded-lg border border-slate-300 p-3 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    disabled={loading}
+                  />
+                  <button
+                    type="submit"
+                    disabled={loading || !message.trim()}
+                    className="rounded-lg bg-blue-600 px-6 py-3 text-white transition-colors hover:bg-blue-700 disabled:bg-slate-400"
+                  >
+                    {loading ? "Sending..." : "Send"}
+                  </button>
+                </div>
               </div>
             </form>
 
@@ -384,19 +469,33 @@ export default function BumiTestPage() {
               </h3>
               <div className="space-y-1 text-sm text-slate-600">
                 <p>
-                  <strong>Endpoint:</strong> POST {apiBaseUrl}/bumi/booking/chat
+                  <strong>Text Endpoint:</strong> POST {apiBaseUrl}
+                  /bumi/booking/chat
                 </p>
                 <p>
-                  <strong>Request Format:</strong>{" "}
+                  <strong>Image Endpoint:</strong> POST {apiBaseUrl}
+                  /bumi/booking/chat/image
+                </p>
+                <p>
+                  <strong>Text Request Format:</strong>{" "}
                   {
                     "{message: string, conversation_history: ConversationMessage[]}"
                   }
+                </p>
+                <p>
+                  <strong>Image Request Format:</strong>
+                  FormData with message, conversation_history (JSON string), and
+                  image file
                 </p>
                 <p>
                   <strong>Response Format:</strong>{" "}
                   {
                     "{action: string, ai_message: string, services?: ServiceRecommendation[], clarification_question?: string}"
                   }
+                </p>
+                <p className="mt-2 text-xs text-slate-500">
+                  💡 <strong>Tip:</strong> Upload an image of a maintenance
+                  issue to get more accurate service recommendations!
                 </p>
               </div>
             </div>

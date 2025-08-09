@@ -3,6 +3,7 @@
 import styled from "styled-components";
 import Image from "next/image";
 import Bumi from "@/public/bumi.gif";
+import SpeechToText from "./bumi-ai/SpeechToText";
 
 type BumiModalType = {
   isOpen: boolean;
@@ -103,7 +104,7 @@ function BumiModal({ isOpen, onOpenChange }: BumiModalType) {
       {isOpen && (
         <ModalContainer onClick={(e) => e.stopPropagation()}>
           <ModalHeader />
-          other stuff
+          <SpeechToText />
         </ModalContainer>
       )}
     </ModalOverlay>

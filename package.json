@@ -28,6 +28,7 @@
     "react": "^18",
     "react-day-picker": "^9.8.0",
     "react-dom": "^18",
+    "react-dropzone": "^14.3.8",
     "react-leaflet": "^4.2.1",
     "react-leaflet-fullscreen": "^4.1.1",
     "stripe": "^18.3.0",
