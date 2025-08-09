@@ -7,6 +7,7 @@ import { useAuthContext } from "@/components/context-wrappers/AuthContext";
 import StarRatingReview from "../ProviderOverallRatingInfo";
 import IconLeftTwoTextRight from "../IconLeftTwoTextRight";
 import { useBooking } from "@/components/context-wrappers/BookingContext";
+import formatDateTimeString from "@/utils/formatDateTimeString";
 
 export default function BookingCheckoutPage() {
   const { authContextObject } = useAuthContext();
@@ -18,12 +19,28 @@ export default function BookingCheckoutPage() {
   ${authContextObject.city}
     ${authContextObject.state}
      ${authContextObject.zip}`;
+  console.log(booking);
 
   // wrapping updateBooking in a useEffect so it will only run once or when the autoContextObject changes, instead of on every render
   useEffect(
-    () => updateBooking({ customerId: authContextObject.customerId }),
+    () =>
+      updateBooking({
+        customerId: authContextObject.customerId,
+        addressId: authContextObject.addressId,
+      }),
     [authContextObject.customerId],
   );
+
+  let eventDate = "";
+  let eventTime = "";
+
+  if (booking.date) {
+    eventDate = format(booking.date, "EEEE, MMMM d, yyyy");
+  } else if (booking.availableTime) {
+    const { datePart, timePart } = formatDateTimeString(booking.availableTime);
+    eventDate = datePart;
+    eventTime = timePart;
+  }
 
   return (
     <section className="mb-10">
@@ -35,18 +52,18 @@ export default function BookingCheckoutPage() {
             : `${booking.firstName} ${booking.lastName}`}
         </h2>
         <StarRatingReview />
+
         <div className="my-8">
           <IconLeftTwoTextRight
             icon={Calendar}
             heading="Event Date"
-            text={
-              booking.date ? format(booking?.date, "EEEE, MMMM d, yyyy") : ""
-            }
+            text={eventDate}
           />
           <IconLeftTwoTextRight
             icon={Clock}
             heading="Time"
-            text={booking.time || ""}
+            text={booking.time || (booking.availableTime ? eventTime : "")}
+            // since booking.available_time can be undefined, we need to do a guard check first
           />
 
           <IconLeftTwoTextRight

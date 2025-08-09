@@ -13,17 +13,6 @@ interface ChatRequest {
   conversation_history: ConversationMessage[];
 }
 
-interface ServiceRecommendation {
-  id: string;
-  name: string;
-  provider: string;
-  price: number;
-  rating: number;
-  description: string;
-  category: string;
-  duration: number;
-}
-
 interface ChatResponse {
   action: "recommend" | "clarify";
   ai_message: string;

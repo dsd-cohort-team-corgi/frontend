@@ -169,6 +169,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         state: freshAddressData.state || "",
         zip: freshAddressData.zip || "",
         customerId: freshAddressData.customer_id || "",
+        addressId: freshAddressData.id,
       });
       cachedAddressData.current = freshAddressData;
     }

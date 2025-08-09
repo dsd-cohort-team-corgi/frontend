@@ -16,7 +16,7 @@ import { CircleAlert, Lock } from "lucide-react";
 import StyledAsButton from "@/components/StyledAsButton";
 import { useApiMutation } from "@/lib/api-client";
 import { useBooking } from "@/components/context-wrappers/BookingContext";
-import combineDateAndTimeToISOString from "@/utils/combineDateAndTimeToIsoString";
+import combineDateAndTimeToUTC from "@/utils/combineDateAndTimeToUTC";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY!);
 
@@ -47,7 +47,6 @@ type BookingRequestPayload = {
   address_id: string;
   start_time: string;
   special_instructions: string;
-  // location: string;
 };
 
 function CheckoutForm({ clientSecret }: CheckoutOutFormType) {
@@ -135,13 +134,16 @@ function CheckoutForm({ clientSecret }: CheckoutOutFormType) {
       // ########################## CREATE BOOKING ###################
       // createBooking() will call useAPIMutation's mutation function const { mutate: createBooking, error } ....
 
+      const hasDateAndTime = booking.date && booking.time;
+      const hasAvailableTime = booking.availableTime;
+
       if (
         !result.paymentIntent.id ||
         !booking.serviceId ||
         !booking.customerId ||
         !booking.providerId ||
-        !booking.date ||
-        !booking.time
+        !booking.addressId ||
+        !(hasDateAndTime || hasAvailableTime)
       ) {
         console.log(
           `missing required data to create booking booking.serviceId ${booking.serviceId} booking.serviceId ${booking.serviceId} booking.customerId ${booking.customerId} booking.providerId ${booking.providerId} booking.date ${booking.date} booking.time
@@ -150,16 +152,25 @@ function CheckoutForm({ clientSecret }: CheckoutOutFormType) {
         return;
       }
 
+      const convertAvailableTimeToUTC = function (localTime: string) {
+        let utcTime = "";
+        if (localTime) {
+          utcTime = new Date(localTime).toISOString();
+        }
+        return utcTime;
+      };
       createBooking(
         {
           stripe_payment_id: result.paymentIntent.id,
           service_id: booking.serviceId,
           customer_id: booking.customerId,
           provider_id: booking.providerId,
-          start_time: combineDateAndTimeToISOString(booking.date, booking.time),
+          start_time: hasDateAndTime
+            ? combineDateAndTimeToUTC(booking.date!, booking.time!)
+            : convertAvailableTimeToUTC(booking.availableTime || ""),
           service_notes: "",
           special_instructions: booking.serviceNotes || "",
-          address_id: "697a971f-3f1d-4014-8093-5e4cb0156f77",
+          address_id: booking.addressId,
         },
         {
           onSuccess: (data) => {

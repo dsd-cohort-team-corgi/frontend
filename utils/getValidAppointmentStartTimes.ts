@@ -32,8 +32,6 @@ export default function getValidAppointmentStartTimes({
   const requiredSlots = serviceLength / interval;
   const result: string[] = [];
 
-  console.log(allTimeSlots);
-
   for (let i = 0; i <= allTimeSlots.length - requiredSlots; i += 1) {
     const currentWindow = allTimeSlots.slice(i, i + requiredSlots);
     // ex: required slots = 3, then we'd be slicing the allTimeSlots into 3 items at a time, and checking if the slots are available and sequential
@@ -58,7 +56,5 @@ export default function getValidAppointmentStartTimes({
       result.push(allTimeSlots[i]);
     }
   }
-  console.log(result);
-
   return result;
 }

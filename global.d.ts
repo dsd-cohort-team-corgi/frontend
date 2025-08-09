@@ -22,6 +22,7 @@ declare global {
     city?: string;
     state?: string;
     zip?: string;
+    addressId?: string;
   };
   // all are optional, because the auth context will start as a blank object
 
@@ -35,20 +36,22 @@ declare global {
     serviceId?: string;
     customerId?: string;
     providerId?: string;
-
+    addressId?: string;
     companyName?: string;
     firstName?: string;
     lastName?: string;
     description?: string;
-    price?: string;
+    price?: string | number;
+    rating?: string | number;
     serviceDuration?: number;
     location?: string;
     time?: string;
     date?: Date;
+    availableTime?: string;
     serviceNotes?: string;
   };
 
-  export interface ProviderService {
+  interface ProviderService {
     id: string;
     service_title: string;
     service_description: string;
@@ -57,7 +60,21 @@ declare global {
     category: string;
   }
 
-  export interface ProviderInfo {
+  interface ServiceRecommendation {
+    id: string;
+    name: string;
+    provider: string;
+    provider_id: string;
+    price: number;
+    rating: number;
+    description: string;
+    category: string;
+    duration: number;
+    available_time: string;
+    // _ because its directly from the backend
+  }
+
+  interface ProviderInfo {
     id: string;
     first_name: string;
     last_name: string;

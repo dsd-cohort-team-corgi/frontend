@@ -1,13 +1,14 @@
-export const formatDateTimeString = (
-  dateTimeString: string,
-): { datePart: string; timePart: string } => {
+export default function formatDateTimeString(dateTimeString: string): {
+  datePart: string;
+  timePart: string;
+} {
   const standardizedString = dateTimeString
     .replace(" ", "T")
     .replace("+00", "Z");
 
   const date = new Date(standardizedString);
 
-  if (isNaN(date.getTime())) {
+  if (Number.isNaN(date.getTime())) {
     throw new Error("Invalid date string provided.");
   }
 
@@ -29,4 +30,4 @@ export const formatDateTimeString = (
   const timePart = new Intl.DateTimeFormat(undefined, timeOptions).format(date);
 
   return { datePart, timePart };
-};
+}

@@ -1,11 +1,7 @@
 import React from "react";
-import calculateBusyTimeSlots from "@/utils/calculateBusyTimeSlots";
-import getValidAppointmentStartTimes from "@/utils/getValidAppointmentStartTimes";
 import StyledAsButton from "../StyledAsButton";
-
-import generateTimeSlots from "@/utils/generateTimeSlots";
-import convertTimeFrom24To12Hours from "@/utils/convertTimeFrom24To12Hours";
 import { useBooking } from "@/components/context-wrappers/BookingContext";
+import returnAvailableTimeSlotsIn12Hour from "@/utils/returnAvailableTimeSlotsIn12Hour";
 
 type AvailableTimeSlotsType = {
   serviceLength: number;
@@ -16,18 +12,11 @@ export default function AvailableTimeSlots({
   providersAppointments,
 }: AvailableTimeSlotsType) {
   const { booking, updateBooking } = useBooking();
-  const busySlots = calculateBusyTimeSlots(providersAppointments);
 
-  const allTimeSlots = generateTimeSlots(9, 17, 30);
-
-  const availableStartTimes = getValidAppointmentStartTimes({
-    allTimeSlots,
-    busySlots, // [   ("10:30", "11:00", "13:00", "14:00") ];
-    serviceLength, // 60 === needs 2 consecutive open slots
+  const availableTimeSlots = returnAvailableTimeSlotsIn12Hour({
+    serviceLength,
+    providersAppointments,
   });
-
-  const availableTimesIn12HourFormat =
-    convertTimeFrom24To12Hours(availableStartTimes);
 
   function handleSlotChangeWithContext(slot: string) {
     if (booking.time === slot) {
@@ -39,7 +28,7 @@ export default function AvailableTimeSlots({
   return (
     <div className="w-full">
       <ul className="flex w-full flex-col gap-y-3">
-        {availableTimesIn12HourFormat.map((slot) => (
+        {availableTimeSlots.map((slot) => (
           <li
             className="group w-full rounded-md border-1 border-light-accent text-center hover:bg-primary"
             key={`li available time ${slot}`}

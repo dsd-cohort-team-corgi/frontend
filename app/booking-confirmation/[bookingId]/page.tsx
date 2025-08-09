@@ -8,7 +8,7 @@ import { useAuthContext } from "@/components/context-wrappers/AuthContext";
 import Check from "@/components/icons/Check";
 import { useApiQuery } from "@/lib/api-client";
 import LoadingSkeleton from "@/components/LoadingSkeleton";
-import { formatDateTimeString } from "@/utils/formatDateTimeString";
+import formatDateTimeString from "@/utils/formatDateTimeString";
 import Calendar from "@/components/icons/Calendar";
 import StyledAsButton from "@/components/StyledAsButton";
 import ArrowRight from "@/components/icons/ArrowRight";
@@ -99,6 +99,7 @@ export default function Page() {
   const service = providerData?.services.find((s) => s.id === serviceId);
   // due to waiting for info from network we have to wrap the assignment of this variable in an if statement or we get errors on page
   /* eslint-disable no-undef-init */
+
   let serviceDateAndTime: { datePart: string; timePart: string } | undefined =
     undefined;
   if (bookingData) {
@@ -137,7 +138,7 @@ export default function Page() {
       <CardBody className="m-auto w-[90%] text-center">
         {/* Header */}
         <header className="mb-4 flex flex-col items-center gap-2">
-          <div className="flex h-10 w-10 flex-row items-center justify-center rounded-full bg-green-200 text-center">
+          <div className="bg-green-200 flex h-10 w-10 flex-row items-center justify-center rounded-full text-center">
             <Check color="#187a24" />
           </div>
           <h1 className="text-xl font-black lg:text-2xl">Booking Confirmed</h1>
@@ -169,6 +170,11 @@ export default function Page() {
             <MapPin color="#2563eb" size={20} />
             <div>
               <p>{service ? service.service_title : "Service not found"}</p>
+              <p>
+                {`${authContextObject.streetAddress1},
+                ${authContextObject.streetAddress2} ${authContextObject.city},
+                ${authContextObject.state} ${authContextObject.zip}`}
+              </p>
             </div>
           </CardBody>
         </Card>
