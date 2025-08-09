@@ -25,7 +25,11 @@ export default function BookingCheckoutPage() {
 
   // wrapping updateBooking in a useEffect so it will only run once or when the autoContextObject changes, instead of on every render
   useEffect(
-    () => updateBooking({ customerId: authContextObject.customerId }),
+    () =>
+      updateBooking({
+        customerId: authContextObject.customerId,
+        addressId: authContextObject.addressId,
+      }),
     [authContextObject.customerId],
   );
 

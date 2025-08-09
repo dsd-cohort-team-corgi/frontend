@@ -22,6 +22,7 @@ declare global {
     city?: string;
     state?: string;
     zip?: string;
+    addressId?: string;
   };
   // all are optional, because the auth context will start as a blank object
 
@@ -35,6 +36,7 @@ declare global {
     serviceId?: string;
     customerId?: string;
     providerId?: string;
+    addressId?: string;
     companyName?: string;
     firstName?: string;
     lastName?: string;

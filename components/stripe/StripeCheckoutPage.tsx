@@ -47,7 +47,6 @@ type BookingRequestPayload = {
   address_id: string;
   start_time: string;
   special_instructions: string;
-  // location: string;
 };
 
 function CheckoutForm({ clientSecret }: CheckoutOutFormType) {
@@ -143,7 +142,8 @@ function CheckoutForm({ clientSecret }: CheckoutOutFormType) {
         !booking.serviceId ||
         !booking.customerId ||
         !booking.providerId ||
-        !(hasDateAndTime || hasAvailableTime)
+        !(hasDateAndTime || hasAvailableTime) ||
+        !booking.addressId
       ) {
         console.log(
           `missing required data to create booking booking.serviceId ${booking.serviceId} booking.serviceId ${booking.serviceId} booking.customerId ${booking.customerId} booking.providerId ${booking.providerId} booking.date ${booking.date} booking.time
@@ -163,7 +163,7 @@ function CheckoutForm({ clientSecret }: CheckoutOutFormType) {
             : booking.available_time!,
           service_notes: "",
           special_instructions: booking.serviceNotes || "",
-          address_id: "697a971f-3f1d-4014-8093-5e4cb0156f77",
+          address_id: booking.addressId,
         },
         {
           onSuccess: (data) => {

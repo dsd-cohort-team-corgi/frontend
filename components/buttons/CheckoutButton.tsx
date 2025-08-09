@@ -12,11 +12,13 @@ import CompleteProfileModal from "@/components/CompleteProfileModal";
 type CheckoutButtonProps = {
   providerInfo: ProviderInfo | ServiceRecommendation;
   disabled?: boolean;
+  className?: string;
 };
 
 export default function CheckoutButton({
   providerInfo,
   disabled,
+  className,
 }: CheckoutButtonProps) {
   const { authContextObject } = useAuthContext();
   const { booking, updateBooking } = useBooking();
@@ -96,7 +98,7 @@ export default function CheckoutButton({
         onOpenChange={completeProfileOnOpenChange}
       />
       <StyledAsButton
-        className="mb-4 mt-6 block w-11/12 px-0 disabled:bg-gray-500"
+        className={`mb-4 mt-6 block w-11/12 px-0 disabled:bg-gray-500 ${className}`}
         label="Continue to Booking"
         onPress={() => handleContinueToBooking()}
         disabled={disabled}

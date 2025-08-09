@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import UserTextBubbles from "./UserTextBubbles";
 import MicUi from "./SpeechUi";
 import useVoiceRecognition from "@/lib/hooks/useVoiceRecognition";
@@ -53,6 +53,12 @@ function VoiceInput() {
   const [providerInfo, setProviderInfo] =
     useState<ServiceRecommendation | null>(null);
 
+  useEffect(() => {
+    if (response?.services?.length === 1) {
+      setProviderInfo(response.services[0]);
+    }
+  }, [response?.services]);
+
   return (
     <div className="mt-10 flex max-w-lg flex-col items-center space-y-4">
       <UserTextBubbles
@@ -84,48 +90,54 @@ function VoiceInput() {
             {response.services && response.services.length > 0 && (
               <div className="rounded-2xl bg-slate-900 bg-opacity-70 p-3">
                 <div className="space-y-2">
-                  {response.services.map((service, index) => (
-                    <section
-                      key={`service-${service.id || index}-${service.name}`}
-                    >
-                      <div className="flex justify-between">
-                        <span className="font-medium">{service.name}</span>
-                        <span> ${service.price} </span>
-                      </div>
-                      <div className="flex justify-between text-sm text-slate-300">
-                        <span>{service.provider}</span>
-                        <div className="my-1 flex items-center text-[#ffd250]">
-                          <Star size={14} />
-                          <span className="ml-px inline-block">
-                            {" "}
-                            {service.rating}{" "}
+                  {response.services.map((service, index) => {
+                    const isSelected = providerInfo?.id === service.id;
+                    return (
+                      <section
+                        key={`service-${service.id || index}-${service.name}`}
+                      >
+                        <div className="flex justify-between">
+                          <span className="font-medium">{service.name}</span>
+                          <span> ${service.price} </span>
+                        </div>
+                        <div className="flex justify-between text-sm text-slate-300">
+                          <span>{service.provider}</span>
+                          <div className="my-1 flex items-center text-[#ffd250]">
+                            <Star size={14} />
+                            <span className="ml-px inline-block">
+                              {" "}
+                              {service.rating}{" "}
+                            </span>
+                          </div>
+                        </div>
+                        <p className="py-1 text-sm text-slate-300">
+                          {service.description}
+                        </p>
+                        <div className="flex items-center text-sm text-slate-300">
+                          <Calendar size={16} />
+                          <span className="ml-1">
+                            {new Date(
+                              service.available_time,
+                            ).toLocaleDateString()}
                           </span>
                         </div>
-                      </div>
-                      <p className="py-1 text-sm text-slate-300">
-                        {service.description}
-                      </p>
-                      <div className="flex items-center text-sm text-slate-300">
-                        <Calendar size={16} />
-                        <span className="ml-1">
-                          {new Date(
-                            service.available_time,
-                          ).toLocaleDateString()}
-                        </span>
-                      </div>
-                      <div className="flex justify-center">
-                        <StyledAsButton
-                          label="select"
-                          onPress={() => setProviderInfo(service)}
-                        />
-                      </div>
-                    </section>
-                  ))}
+                        <div className="flex justify-center">
+                          <StyledAsButton
+                            label={isSelected ? "selected" : "select"}
+                            onPress={() => setProviderInfo(service)}
+                            className={
+                              isSelected ? "bg-white text-black" : "bg-primary"
+                            }
+                          />
+                        </div>
+                      </section>
+                    );
+                  })}
 
                   {providerInfo ? (
                     <CheckoutButton
                       providerInfo={providerInfo}
-                      disabled={!providerInfo}
+                      className="bg-white text-black"
                     />
                   ) : (
                     <CheckoutButton
