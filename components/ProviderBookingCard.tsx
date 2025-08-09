@@ -1,7 +1,7 @@
 import React, { useState, Dispatch, SetStateAction } from "react";
 import { Card, CardHeader, CardBody, Chip, useDisclosure } from "@heroui/react";
 import { motion, AnimatePresence, Easing } from "framer-motion";
-import { formatDateTimeString } from "@/utils/formatDateTimeString";
+import formatDateTimeString from "@/utils/formatDateTimeString";
 import MapPin from "./icons/MapPin";
 import Clock from "./icons/Clock";
 import ChevronDown from "./icons/ChevronDown";

@@ -7,8 +7,7 @@ import { useAuthContext } from "@/components/context-wrappers/AuthContext";
 import StarRatingReview from "../ProviderOverallRatingInfo";
 import IconLeftTwoTextRight from "../IconLeftTwoTextRight";
 import { useBooking } from "@/components/context-wrappers/BookingContext";
-import convertDateObjToTime from "@/utils/time/convertDateObjToTime";
-import convertDateObjToDate from "@/utils/time/convertDateObjToDate";
+import formatDateTimeString from "@/utils/formatDateTimeString";
 
 export default function BookingCheckoutPage() {
   const { authContextObject } = useAuthContext();
@@ -32,15 +31,15 @@ export default function BookingCheckoutPage() {
     [authContextObject.customerId],
   );
 
-  let eventDateText = "";
+  let eventDate = "";
+  let eventTime = "";
 
   if (booking.date) {
-    eventDateText = format(booking.date, "EEEE, MMMM d, yyyy");
-    console.log("eventDataText", eventDateText);
+    eventDate = format(booking.date, "EEEE, MMMM d, yyyy");
   } else if (booking.availableTime) {
-    console.log("booking.availableTime", booking.availableTime);
-    eventDateText = convertDateObjToDate(new Date(booking.availableTime));
-    console.log("eventDataText", eventDateText);
+    const { datePart, timePart } = formatDateTimeString(booking.availableTime);
+    eventDate = datePart;
+    eventTime = timePart;
   }
 
   return (
@@ -58,17 +57,12 @@ export default function BookingCheckoutPage() {
           <IconLeftTwoTextRight
             icon={Calendar}
             heading="Event Date"
-            text={eventDateText}
+            text={eventDate}
           />
           <IconLeftTwoTextRight
             icon={Clock}
             heading="Time"
-            text={
-              booking.time ||
-              (booking.availableTime
-                ? convertDateObjToTime(new Date(booking.availableTime))
-                : "")
-            }
+            text={booking.time || (booking.availableTime ? eventTime : "")}
             // since booking.available_time can be undefined, we need to do a guard check first
           />
 

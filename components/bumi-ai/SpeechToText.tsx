@@ -8,8 +8,8 @@ import Calendar from "@/components/icons/Calendar";
 import Star from "../icons/Star";
 import CheckoutButton from "../buttons/CheckoutButton";
 import StyledAsButton from "../StyledAsButton";
-import convertDateObjToTime from "@/utils/time/convertDateObjToTime";
-import convertDateObjToDate from "@/utils/time/convertDateObjToDate";
+import formatDateTimeString from "@/utils/formatDateTimeString";
+import convertDateToTimeFromNow from "@/utils/convertDateToTimeFromNow";
 
 interface ChatResponse {
   action: "recommend" | "clarify";
@@ -94,8 +94,23 @@ function VoiceInput() {
               <div className="rounded-2xl bg-slate-900/70 p-3">
                 <div className="space-y-2">
                   {response.services.map((service, index) => {
+                    const timeFromNow = convertDateToTimeFromNow(
+                      service.available_time,
+                    );
+                    const timeUnitsIgnore = ["day", "week", "month", "year"];
+                    const hasBigTimeUnit = timeUnitsIgnore.some((unit) =>
+                      timeFromNow.includes(unit),
+                    );
                     const isSelected = providerInfo?.id === service.id;
-                    const isoStringToDate = new Date(service.available_time);
+
+                    const formattedTime = formatDateTimeString(
+                      service.available_time,
+                    );
+
+                    const timeToUse = hasBigTimeUnit
+                      ? `${formattedTime.datePart} ${formattedTime.timePart}`
+                      : timeFromNow;
+
                     return (
                       <section
                         key={`service-${service.id || index}-${service.name}`}
@@ -119,9 +134,7 @@ function VoiceInput() {
                         </p>
                         <div className="flex items-center text-sm text-slate-300">
                           <Calendar size={16} />
-                          <span className="ml-1">
-                            {`${convertDateObjToDate(isoStringToDate)} ${convertDateObjToTime(isoStringToDate)}`}{" "}
-                          </span>
+                          <span className="ml-1">{timeToUse}</span>
                         </div>
                         <div className="flex justify-center">
                           <StyledAsButton

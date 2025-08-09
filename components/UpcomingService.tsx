@@ -1,5 +1,5 @@
 import Calendar from "./icons/Calendar";
-import { formatDateTimeString } from "@/utils/formatDateTimeString";
+import formatDateTimeString from "@/utils/formatDateTimeString";
 import CircleCheck from "./icons/CircleCheck";
 import ChevronDown from "./icons/ChevronDown";
 
