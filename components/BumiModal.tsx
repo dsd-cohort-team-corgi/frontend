@@ -64,7 +64,7 @@ const ModalContainer = styled.div`
   }
 `;
 
-const ModalHeader = () => {
+function ModalHeader() {
   return (
     <div className="absolute left-0 top-0 flex h-[100px] w-full items-center justify-between rounded-t-[24px] bg-black bg-opacity-10 p-6">
       <div className="flex items-center gap-4">
@@ -95,9 +95,9 @@ const ModalHeader = () => {
       </div>
     </div>
   );
-};
+}
 
-const BumiModal = ({ isOpen, onOpenChange }: BumiModalType) => {
+function BumiModal({ isOpen, onOpenChange }: BumiModalType) {
   return (
     <ModalOverlay isOpen={isOpen} onClick={onOpenChange}>
       {isOpen && (
@@ -108,6 +108,6 @@ const BumiModal = ({ isOpen, onOpenChange }: BumiModalType) => {
       )}
     </ModalOverlay>
   );
-};
+}
 
 export default BumiModal;

@@ -8,7 +8,7 @@ interface LoadingWrapperProps {
   children: React.ReactNode;
 }
 
-const LoadingWrapper = ({ children }: LoadingWrapperProps) => {
+function LoadingWrapper({ children }: LoadingWrapperProps) {
   const [isLoading, setIsLoading] = useState(true);
   const { authContextObject } = useAuthContext();
   const [authLoading, setAuthLoading] = useState(true);
@@ -28,13 +28,21 @@ const LoadingWrapper = ({ children }: LoadingWrapperProps) => {
 
       return () => clearTimeout(timer);
     }
+
+    // If auth is not initialized, set loading to false after a delay
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+      setAuthLoading(false);
+    }, 2500);
+
+    return () => clearTimeout(timer);
   }, [authContextObject]);
 
   if (isLoading || authLoading) {
-    return <LoadingScreen onLoadingComplete={() => setIsLoading(false)} />;
+    return <LoadingScreen />;
   }
 
-  return <>{children}</>;
-};
+  return children;
+}
 
 export default LoadingWrapper;

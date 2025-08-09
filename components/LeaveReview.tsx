@@ -1,6 +1,7 @@
 "use client";
 
 import { Card, CardBody, CardHeader, useDisclosure } from "@heroui/react";
+import { useState, useEffect } from "react";
 import MessageSquare from "./icons/MessageSquare";
 import StyledAsButton from "./StyledAsButton";
 import Star from "./icons/Star";
@@ -23,7 +24,19 @@ function LeaveReview({
   provider_id,
 }: BookingItem) {
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
+  const [isMobile, setIsMobile] = useState(false);
   const dateFromStartTime = formatDateTimeString(start_time);
+
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkScreenSize();
+    window.addEventListener("resize", checkScreenSize);
+
+    return () => window.removeEventListener("resize", checkScreenSize);
+  }, []);
 
   return (
     <>
@@ -44,7 +57,7 @@ function LeaveReview({
             </p>
           </div>
           <StyledAsButton
-            startContent={<Star size={window.innerWidth >= 768 ? 20 : 16} />}
+            startContent={<Star size={isMobile ? 16 : 20} />}
             label="Leave Review"
             className="my-4 bg-[#187a24] lg:text-lg"
             onPress={onOpen}
