@@ -28,13 +28,13 @@ import {
 // NavBarMenu == mobile nav bar
 import supabaseClient from "@/lib/supabase";
 import StyledAsButton from "./StyledAsButton";
-import useAuth from "@/lib/hooks/useAuth";
+import { useAuthContext } from "@/components/context-wrappers/AuthContext";
 import listOfServices from "@/data/services";
 import GoogleSignInButton from "./GoogleSignInButton";
 
 export default function App() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
-  const { userSession } = useAuth();
+  const { authContextObject } = useAuthContext();
 
   const handleLogOut = async () => {
     await supabaseClient.auth.signOut();
@@ -57,7 +57,7 @@ export default function App() {
   ];
 
   const mobileNavMenuItems = [
-    ...(userSession ? loggedInMenuItems : []),
+    ...(authContextObject.supabaseUserId ? loggedInMenuItems : []),
     ...Object.values(listOfServices),
   ];
 
@@ -125,13 +125,13 @@ export default function App() {
           </Dropdown>
         </NavbarItem>
 
-        {!userSession && (
+        {!authContextObject.supabaseUserId && (
           <NavbarItem>
             <GoogleSignInButton />
           </NavbarItem>
         )}
 
-        {userSession && (
+        {authContextObject.supabaseUserId && (
           <>
             <NavbarItem className="hidden md:flex">
               <HeroUiLink
@@ -195,7 +195,7 @@ export default function App() {
             )}
           </NavbarMenuItem>
         ))}
-        {!userSession && (
+        {!authContextObject.supabaseUserId && (
           <NavbarMenuItem>
             <GoogleSignInButton />
           </NavbarMenuItem>

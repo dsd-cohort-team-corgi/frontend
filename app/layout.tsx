@@ -13,11 +13,13 @@ import { DM_Sans } from "next/font/google"; // https://nextjs.org/docs/app/getti
 // improves privacy
 // 1. user's browser won't ping google's servers for the font data
 import BookingProvider from "../components/context-wrappers/BookingWrapper";
-import AuthProvider from "../components/context-wrappers/AuthWrapper";
+import ClientProviders from "../components/context-wrappers/AuthWrapper";
 
 import "./globals.css";
 import Header from "../components/Header";
 import TanstackQueryProvider from "@/components/TanstackQueryProvider";
+import Bumi from "@/components/Bumi";
+import LoadingWrapper from "@/components/LoadingWrapper";
 
 const dmSans = DM_Sans({ subsets: ["latin"], variable: "--font-dm-sans" });
 // variable "--font-dm-sans" =  a custom css property we created so we can setup this font in Tailwindcss's config
@@ -60,29 +62,32 @@ export default function RootLayout({
 
           Special note: if we make another layout, we'd have to import DM_Sans and pass it to that layouts body as well like we did with this root layout, so tailwindCSS can "see" it for that other layout's pages
          */}
-        <AuthProvider>
-          <BookingProvider>
-            <HeroUIProvider>
-              <TanstackQueryProvider>
-                <Header />
-                {/* Toast provider needed for HeroUI toasts. Set defaults for project */}
-                <ToastProvider
-                  toastProps={{
-                    timeout: 5000,
-                    radius: "md",
-                    hideCloseButton: false,
-                    classNames: {
-                      title: "text-white",
-                      base: "bg-[#1c1c1c]",
-                      closeButton: "opacity-100 absolute right-4 top-2",
-                    },
-                  }}
-                />
-                <main className="pt-6">{children}</main>
-              </TanstackQueryProvider>
-            </HeroUIProvider>
-          </BookingProvider>
-        </AuthProvider>
+        <ClientProviders>
+          <LoadingWrapper>
+            <BookingProvider>
+              <HeroUIProvider>
+                <TanstackQueryProvider>
+                  <Header />
+                  {/* Toast provider needed for HeroUI toasts. Set defaults for project */}
+                  <ToastProvider
+                    toastProps={{
+                      timeout: 5000,
+                      radius: "md",
+                      hideCloseButton: false,
+                      classNames: {
+                        title: "text-white",
+                        base: "bg-[#1c1c1c]",
+                        closeButton: "opacity-100 absolute right-4 top-2",
+                      },
+                    }}
+                  />
+                  <main className="pt-6">{children}</main>
+                  <Bumi />
+                </TanstackQueryProvider>
+              </HeroUIProvider>
+            </BookingProvider>
+          </LoadingWrapper>
+        </ClientProviders>
       </body>
     </html>
   );

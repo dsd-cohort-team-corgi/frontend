@@ -1,10 +1,10 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Card, CardBody } from "@heroui/react";
-import useAuth from "@/lib/hooks/useAuth";
+import { useAuthContext } from "@/components/context-wrappers/AuthContext";
 import Check from "@/components/icons/Check";
 import { useApiQuery } from "@/lib/api-client";
 import LoadingSkeleton from "@/components/LoadingSkeleton";
@@ -56,7 +56,8 @@ interface ProviderProps {
 }
 
 export default function Page() {
-  const { userSession, loading: authLoading } = useAuth();
+  const { authContextObject } = useAuthContext();
+  const [authLoading, setAuthLoading] = useState(true);
   const pathName = usePathname();
   const bookingId = pathName.split("/")[2];
   const router = useRouter();
@@ -65,6 +66,16 @@ export default function Page() {
   useEffect(() => resetBooking(), []);
   // if they have reached this page, their booking was successful. Empty the booking context
   // If they backtrack to the providers page to check out another service, the useEffect will fire and refill the booking context with the basic provider information
+
+  useEffect(() => {
+    // Check if auth context has been initialized
+    const isAuthInitialized =
+      Object.keys(authContextObject).length > 0 ||
+      authContextObject.supabaseUserId;
+    if (isAuthInitialized !== undefined) {
+      setAuthLoading(false);
+    }
+  }, [authContextObject]);
 
   const {
     data: bookingData,
@@ -101,7 +112,7 @@ export default function Page() {
       </div>
     );
   }
-  if (!userSession) {
+  if (!authContextObject.supabaseUserId) {
     alert("You must be signed in");
     router.push("/");
   }
@@ -126,7 +137,7 @@ export default function Page() {
       <CardBody className="m-auto w-[90%] text-center">
         {/* Header */}
         <header className="mb-4 flex flex-col items-center gap-2">
-          <div className="bg-green-200 flex h-10 w-10 flex-row items-center justify-center rounded-full text-center">
+          <div className="flex h-10 w-10 flex-row items-center justify-center rounded-full bg-green-200 text-center">
             <Check color="#187a24" />
           </div>
           <h1 className="text-xl font-black lg:text-2xl">Booking Confirmed</h1>
