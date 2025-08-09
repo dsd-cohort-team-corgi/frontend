@@ -2,11 +2,17 @@
 
 import { useEffect, useState } from "react";
 import { Card, CardBody, CardHeader } from "@heroui/react";
+import dynamic from "next/dynamic";
 import { useApiQuery } from "@/lib/api-client";
 import MapPin from "@/components/icons/MapPin";
 import LoadingSkeleton from "@/components/LoadingSkeleton";
 import ProviderBookingCard from "@/components/ProviderBookingCard";
-import MapComponent from "@/components/MapComponent";
+
+// Dynamically import MapComponent to avoid SSR issues
+const MapComponent = dynamic(() => import("@/components/MapComponent"), {
+  ssr: false,
+  loading: () => <div className="h-[30dvh] w-full bg-gray-100 animate-pulse" />,
+});
 
 interface Service {
   id: string;

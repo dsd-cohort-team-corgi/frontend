@@ -17,6 +17,7 @@
     "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.52.0",
     "@tanstack/react-query": "^5.83.0",
+    "@types/styled-components": "^5.1.34",
     "date-fns": "^4.1.0",
     "framer-motion": "^12.23.0",
     "ical-generator": "^9.0.0",
@@ -29,7 +30,8 @@
     "react-dom": "^18",
     "react-leaflet": "^4.2.1",
     "react-leaflet-fullscreen": "^4.1.1",
-    "stripe": "^18.3.0"
+    "stripe": "^18.3.0",
+    "styled-components": "^6.1.19"
   },
   "devDependencies": {
     "@tanstack/react-query-devtools": "^5.83.0",
