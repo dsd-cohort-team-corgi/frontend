@@ -14,7 +14,7 @@ import Container from "@/components/Container";
 import HomePageHeroImage from "../public/HomePageHeroImage.png";
 import StyledAsButton from "@/components/StyledAsButton";
 import listOfServices from "@/data/services";
-import useAuth from "@/lib/hooks/useAuth";
+import { useAuthContext } from "@/components/context-wrappers/AuthContext";
 import { useApiQuery } from "@/lib/api-client";
 import UpcomingService from "@/components/UpcomingService";
 import LeaveReview from "@/components/LeaveReview";
@@ -182,17 +182,25 @@ function ServicesSection() {
   );
 }
 
-const renderHero = (userSession: UserSession | null) => {
-  if (userSession) return <AuthenticatedHero userSession={userSession} />;
+const renderHero = (authContextObject: AuthDetailsType) => {
+  if (authContextObject.supabaseUserId)
+    return (
+      <AuthenticatedHero
+        userSession={{
+          id: authContextObject.supabaseUserId,
+          email: authContextObject.email || "",
+        }}
+      />
+    );
   return <UnauthenticatedHero />;
 };
 
 export default function Home() {
-  const { userSession } = useAuth();
+  const { authContextObject } = useAuthContext();
 
   return (
     <div>
-      {renderHero(userSession)}
+      {renderHero(authContextObject)}
       <ServicesSection />
     </div>
   );

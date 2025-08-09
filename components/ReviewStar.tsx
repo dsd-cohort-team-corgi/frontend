@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Star from "./icons/Star";
 
 interface ReviewStarProps {
@@ -8,7 +8,19 @@ interface ReviewStarProps {
 
 function ReviewStar({ clickedStar, setClickedStar }: ReviewStarProps) {
   const [hoveredStar, setHoveredStar] = useState(0);
+  const [isDesktop, setIsDesktop] = useState(false);
   const starArr = new Array(5).fill(null);
+
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsDesktop(window.innerWidth >= 1024);
+    };
+
+    checkScreenSize();
+    window.addEventListener("resize", checkScreenSize);
+
+    return () => window.removeEventListener("resize", checkScreenSize);
+  }, []);
   const handleMouseEnter = (idx: number) => {
     setHoveredStar(idx + 1);
   };
@@ -46,7 +58,7 @@ function ReviewStar({ clickedStar, setClickedStar }: ReviewStarProps) {
             <Star
               color={starColor}
               fill={starColor}
-              size={window.innerWidth >= 1024 ? 24 : 20}
+              size={isDesktop ? 24 : 20}
             />
           </div>
         );
