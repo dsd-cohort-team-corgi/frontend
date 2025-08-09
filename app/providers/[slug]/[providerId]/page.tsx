@@ -206,7 +206,10 @@ export default function Page() {
             {`${booking?.description} (${booking.serviceDuration} mins) - $${booking?.price}`}
           </span>
         )}
-        <CheckoutButton providerInfo={providerInfo} />
+        <CheckoutButton
+          providerInfo={providerInfo}
+          disabled={!booking.serviceId || !booking.time || !booking.date}
+        />
       </section>
 
       {/* ################# REVIEWS ################ */}
