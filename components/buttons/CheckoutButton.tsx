@@ -30,6 +30,10 @@ export default function CheckoutButton({
   } = useDisclosure();
 
   useEffect(() => {
+    console.log("booking", booking);
+  }, [booking]);
+
+  useEffect(() => {
     if (providerInfo && "first_name" in providerInfo) {
       // providerInfo is a ProviderInfo object
       updateBooking({
@@ -51,13 +55,13 @@ export default function CheckoutButton({
         description: providerInfo.description,
         serviceDuration: providerInfo.duration,
         paymentIntentId: undefined,
-        providerId: providerInfo.id,
+        providerId: providerInfo.provider_id,
         available_time: providerInfo.available_time,
       });
     }
   }, [providerInfo]);
   function handleContinueToBooking() {
-    if (!booking.serviceId || !booking.time) {
+    if (!booking.serviceId && (!booking.time || !booking.available_time)) {
       console.error("no booking time or serviceId Found");
       return;
     }

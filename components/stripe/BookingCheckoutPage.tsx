@@ -13,6 +13,10 @@ export default function BookingCheckoutPage() {
 
   const { booking, updateBooking } = useBooking();
 
+  useEffect(() => {
+    console.log("booking", booking);
+  }, [booking]);
+
   const addressFromAuth = `${authContextObject.streetAddress1}
   ${authContextObject.streetAddress2}
   ${authContextObject.city}
@@ -25,6 +29,34 @@ export default function BookingCheckoutPage() {
     [authContextObject.customerId],
   );
 
+  function convertDateObjToTime(dateObj: Date) {
+    const time = dateObj.toLocaleTimeString(undefined, {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    });
+
+    return time;
+  }
+
+  function convertDateObjToDate(dateObj: Date) {
+    const date = dateObj.toLocaleDateString("en-US", {
+      month: "2-digit",
+      day: "2-digit",
+      year: "numeric",
+    });
+
+    return date;
+  }
+
+  let eventDateText = "";
+
+  if (booking.date) {
+    eventDateText = format(booking.date, "EEEE, MMMM d, yyyy");
+  } else if (booking.available_time) {
+    eventDateText = convertDateObjToDate(new Date(booking.available_time));
+  }
+
   return (
     <section className="mb-10">
       <div className="rounded-lg border-1 border-light-accent bg-white p-4">
@@ -35,18 +67,23 @@ export default function BookingCheckoutPage() {
             : `${booking.firstName} ${booking.lastName}`}
         </h2>
         <StarRatingReview />
+
         <div className="my-8">
           <IconLeftTwoTextRight
             icon={Calendar}
             heading="Event Date"
-            text={
-              booking.date ? format(booking?.date, "EEEE, MMMM d, yyyy") : ""
-            }
+            text={eventDateText}
           />
           <IconLeftTwoTextRight
             icon={Clock}
             heading="Time"
-            text={booking.time || ""}
+            text={
+              booking.time ||
+              (booking.available_time
+                ? convertDateObjToTime(new Date(booking.available_time))
+                : "")
+            }
+            // since booking.available_time can be undefined, we need to do a guard check first
           />
 
           <IconLeftTwoTextRight

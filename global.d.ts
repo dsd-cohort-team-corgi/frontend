@@ -62,12 +62,13 @@ declare global {
     id: string;
     name: string;
     provider: string;
+    provider_id: string;
     price: number;
     rating: number;
     description: string;
     category: string;
     duration: number;
-    available_time: Date;
+    available_time: string;
   }
 
   interface ProviderInfo {
