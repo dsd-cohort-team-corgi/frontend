@@ -14,7 +14,6 @@ import ArrowRight from "@/components/icons/ArrowRight";
 import Phone from "@/components/icons/Phone";
 import MapPin from "@/components/icons/MapPin";
 import { useBooking } from "@/components/context-wrappers/BookingContext";
-import { useAuthContext } from "@/components/context-wrappers/AuthContext";
 import formatDateTimeString from "@/utils/formatDateTimeString";
 
 interface BookingQueryProps {
@@ -63,7 +62,6 @@ export default function Page() {
   const bookingId = pathName.split("/")[2];
   const router = useRouter();
   const { resetBooking } = useBooking();
-  const { authContextObject } = useAuthContext();
 
   useEffect(() => resetBooking(), []);
   // if they have reached this page, their booking was successful. Empty the booking context
@@ -140,7 +138,7 @@ export default function Page() {
       <CardBody className="m-auto w-[90%] text-center">
         {/* Header */}
         <header className="mb-4 flex flex-col items-center gap-2">
-          <div className="flex h-10 w-10 flex-row items-center justify-center rounded-full bg-green-200 text-center">
+          <div className="bg-green-200 flex h-10 w-10 flex-row items-center justify-center rounded-full text-center">
             <Check color="#187a24" />
           </div>
           <h1 className="text-xl font-black lg:text-2xl">Booking Confirmed</h1>
