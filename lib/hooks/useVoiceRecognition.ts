@@ -25,16 +25,6 @@ interface ChatResponse {
   services?: ServiceRecommendation[];
   clarification_question?: string;
 }
-interface ServiceRecommendation {
-  id: string;
-  name: string;
-  provider: string;
-  price: number;
-  rating: number;
-  description: string;
-  category: string;
-  duration: number;
-}
 
 type RequestCopyType = {
   message: string;

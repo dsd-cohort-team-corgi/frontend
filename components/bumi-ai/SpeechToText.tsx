@@ -7,17 +7,7 @@ import useVoiceRecognition from "@/lib/hooks/useVoiceRecognition";
 import Calendar from "@/components/icons/Calendar";
 import Star from "../icons/Star";
 import CheckoutButton from "../buttons/CheckoutButton";
-
-interface ServiceRecommendation {
-  id: string;
-  name: string;
-  provider: string;
-  price: number;
-  rating: number;
-  description: string;
-  category: string;
-  duration: number;
-}
+import StyledAsButton from "../StyledAsButton";
 
 interface ChatResponse {
   action: "recommend" | "clarify";
@@ -60,7 +50,8 @@ function VoiceInput() {
     setRequestCopy,
   });
 
-  const [providerInfo, setProviderInfo] = useState<ProviderInfo | null>(null);
+  const [providerInfo, setProviderInfo] =
+    useState<ServiceRecommendation | null>(null);
 
   return (
     <div className="mt-10 flex max-w-lg flex-col items-center space-y-4">
@@ -94,11 +85,8 @@ function VoiceInput() {
               <div className="rounded-2xl bg-slate-900 bg-opacity-70 p-3">
                 <div className="space-y-2">
                   {response.services.map((service, index) => (
-                    <button
-                      type="button"
+                    <section
                       key={`service-${service.id || index}-${service.name}`}
-                      className="p-2"
-                      onClick={() => setProviderInfo(service)}
                     >
                       <div className="flex justify-between">
                         <span className="font-medium">{service.name}</span>
@@ -119,11 +107,32 @@ function VoiceInput() {
                       </p>
                       <div className="flex items-center text-sm text-slate-300">
                         <Calendar size={16} />
-                        <span className="ml-1">within 1 hour </span>
+                        <span className="ml-1">
+                          {new Date(
+                            service.available_time,
+                          ).toLocaleDateString()}
+                        </span>
                       </div>
-                    </button>
+                      <div className="flex justify-center">
+                        <StyledAsButton
+                          label="select"
+                          onPress={() => setProviderInfo(service)}
+                        />
+                      </div>
+                    </section>
                   ))}
-                  <CheckoutButton ProviderInfo={providerInfo} />
+
+                  {providerInfo ? (
+                    <CheckoutButton
+                      providerInfo={providerInfo}
+                      disabled={!providerInfo}
+                    />
+                  ) : (
+                    <CheckoutButton
+                      providerInfo={{} as ProviderInfo | ServiceRecommendation}
+                      disabled
+                    />
+                  )}
                 </div>
               </div>
             )}

@@ -156,7 +156,9 @@ function CheckoutForm({ clientSecret }: CheckoutOutFormType) {
           service_id: booking.serviceId,
           customer_id: booking.customerId,
           provider_id: booking.providerId,
-          start_time: combineDateAndTimeToISOString(booking.date, booking.time),
+          start_time: booking.available_time
+            ? booking.available_time
+            : combineDateAndTimeToISOString(booking.date, booking.time),
           service_notes: "",
           special_instructions: booking.serviceNotes || "",
           address_id: "697a971f-3f1d-4014-8093-5e4cb0156f77",

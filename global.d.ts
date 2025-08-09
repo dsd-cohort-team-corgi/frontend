@@ -35,20 +35,21 @@ declare global {
     serviceId?: string;
     customerId?: string;
     providerId?: string;
-
     companyName?: string;
     firstName?: string;
     lastName?: string;
     description?: string;
-    price?: string;
+    price?: string | number;
+    rating?: string | number;
     serviceDuration?: number;
     location?: string;
     time?: string;
     date?: Date;
+    available_time?: string;
     serviceNotes?: string;
   };
 
-  export interface ProviderService {
+  interface ProviderService {
     id: string;
     service_title: string;
     service_description: string;
@@ -57,7 +58,19 @@ declare global {
     category: string;
   }
 
-  export interface ProviderInfo {
+  interface ServiceRecommendation {
+    id: string;
+    name: string;
+    provider: string;
+    price: number;
+    rating: number;
+    description: string;
+    category: string;
+    duration: number;
+    available_time: Date;
+  }
+
+  interface ProviderInfo {
     id: string;
     first_name: string;
     last_name: string;
