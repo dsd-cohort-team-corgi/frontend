@@ -15,6 +15,7 @@ import ArrowRight from "@/components/icons/ArrowRight";
 import Phone from "@/components/icons/Phone";
 import MapPin from "@/components/icons/MapPin";
 import { useBooking } from "@/components/context-wrappers/BookingContext";
+import { useAuthContext } from "@/components/context-wrappers/AuthContext";
 
 interface BookingQueryProps {
   special_instructions: string;
@@ -61,6 +62,7 @@ export default function Page() {
   const bookingId = pathName.split("/")[2];
   const router = useRouter();
   const { resetBooking } = useBooking();
+  const { authContextObject } = useAuthContext();
 
   useEffect(() => resetBooking(), []);
   // if they have reached this page, their booking was successful. Empty the booking context
@@ -158,6 +160,11 @@ export default function Page() {
             <MapPin color="#2563eb" size={20} />
             <div>
               <p>{service ? service.service_title : "Service not found"}</p>
+              <p>
+                {`${authContextObject.streetAddress1},
+                ${authContextObject.streetAddress2} ${authContextObject.city},
+                ${authContextObject.state} ${authContextObject.zip}`}
+              </p>
             </div>
           </CardBody>
         </Card>
