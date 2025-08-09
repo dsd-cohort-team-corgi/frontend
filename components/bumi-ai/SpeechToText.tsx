@@ -61,6 +61,7 @@ function VoiceInput() {
     }
   }, [response?.services]);
 
+  const services = response?.services ?? [];
   return (
     <div className="mt-10 flex max-w-lg flex-col items-center space-y-4">
       <UserTextBubbles
@@ -90,10 +91,10 @@ function VoiceInput() {
           <div className="space-y-4">
             <p className="text-white">{response.ai_message}</p>
 
-            {response.services && response.services.length > 0 && (
+            {services.length > 0 && (
               <div className="rounded-2xl bg-slate-900/70 p-3">
                 <div className="space-y-2">
-                  {response.services.map((service, index) => {
+                  {services.map((service, index) => {
                     const timeFromNow = convertDateToTimeFromNow(
                       service.available_time,
                     );
@@ -136,15 +137,20 @@ function VoiceInput() {
                           <Calendar size={16} />
                           <span className="ml-1">{timeToUse}</span>
                         </div>
-                        <div className="flex justify-center">
-                          <StyledAsButton
-                            label={isSelected ? "selected" : "select"}
-                            onPress={() => setProviderInfo(service)}
-                            className={
-                              isSelected ? "bg-white text-black" : "bg-primary"
-                            }
-                          />
-                        </div>
+
+                        {services.length > 1 && (
+                          <div className="flex justify-center">
+                            <StyledAsButton
+                              label={isSelected ? "selected" : "select"}
+                              onPress={() => setProviderInfo(service)}
+                              className={
+                                isSelected
+                                  ? "bg-white text-black"
+                                  : "bg-primary"
+                              }
+                            />
+                          </div>
+                        )}
                       </section>
                     );
                   })}
