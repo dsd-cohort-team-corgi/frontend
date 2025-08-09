@@ -36,7 +36,6 @@ export default function calculateBusyTimes(
       busySet.add(label);
     }
   });
-  console.log(busySet);
 
   return busySet;
 }

@@ -13,10 +13,6 @@ export default function BookingCheckoutPage() {
 
   const { booking, updateBooking } = useBooking();
 
-  useEffect(() => {
-    console.log("booking", booking);
-  }, [booking]);
-
   const addressFromAuth = `${authContextObject.streetAddress1}
   ${authContextObject.streetAddress2}
   ${authContextObject.city}

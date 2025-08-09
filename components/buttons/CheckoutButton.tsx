@@ -32,10 +32,6 @@ export default function CheckoutButton({
   } = useDisclosure();
 
   useEffect(() => {
-    console.log("booking", booking);
-  }, [booking]);
-
-  useEffect(() => {
     if (providerInfo && "first_name" in providerInfo) {
       // providerInfo is a ProviderInfo object
       updateBooking({

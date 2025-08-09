@@ -174,21 +174,6 @@ function CheckoutForm({ clientSecret }: CheckoutOutFormType) {
             router.push(`/booking-confirmation/${bookingId}`);
           },
           onError: (err) => {
-            console.log({
-              stripe_payment_id: result.paymentIntent?.id,
-              service_id: booking.serviceId,
-              customer_id: booking.customerId,
-              provider_id: booking.providerId,
-              hasDateAndTime,
-              booking_date: booking.date,
-              booking_time: booking.time,
-              booking_available_time: booking.available_time,
-              start_time: hasDateAndTime
-                ? combineDateAndTimeToISOString(booking.date!, booking.time!)
-                : booking.available_time!,
-              service_notes: "",
-              special_instructions: booking.serviceNotes || "",
-            });
             setMessage("There was an error creating your booking");
             console.error("Booking failed:", err.message);
           },
@@ -292,10 +277,6 @@ export default function StripeCheckoutPage() {
   const { booking } = useBooking();
 
   const { serviceId } = booking;
-
-  useEffect(() => {
-    console.log("stripe booking", booking);
-  }, [booking]);
 
   const { mutate: createPaymentIntent } = useApiMutation<
     { client_secret: string },
