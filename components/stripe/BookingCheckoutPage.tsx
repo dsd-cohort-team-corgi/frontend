@@ -53,8 +53,8 @@ export default function BookingCheckoutPage() {
 
   if (booking.date) {
     eventDateText = format(booking.date, "EEEE, MMMM d, yyyy");
-  } else if (booking.available_time) {
-    eventDateText = convertDateObjToDate(new Date(booking.available_time));
+  } else if (booking.availableTime) {
+    eventDateText = convertDateObjToDate(new Date(booking.availableTime));
   }
 
   return (
@@ -79,8 +79,8 @@ export default function BookingCheckoutPage() {
             heading="Time"
             text={
               booking.time ||
-              (booking.available_time
-                ? convertDateObjToTime(new Date(booking.available_time))
+              (booking.availableTime
+                ? convertDateObjToTime(new Date(booking.availableTime))
                 : "")
             }
             // since booking.available_time can be undefined, we need to do a guard check first

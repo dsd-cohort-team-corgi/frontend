@@ -47,7 +47,7 @@ declare global {
     location?: string;
     time?: string;
     date?: Date;
-    available_time?: string;
+    availableTime?: string;
     serviceNotes?: string;
   };
 
@@ -64,13 +64,13 @@ declare global {
     id: string;
     name: string;
     provider: string;
-    provider_id: string;
+    providerId: string;
     price: number;
     rating: number;
     description: string;
     category: string;
     duration: number;
-    available_time: string;
+    availableTime: string;
   }
 
   interface ProviderInfo {

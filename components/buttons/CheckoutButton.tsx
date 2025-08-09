@@ -53,13 +53,13 @@ export default function CheckoutButton({
         description: providerInfo.description,
         serviceDuration: providerInfo.duration,
         paymentIntentId: undefined,
-        providerId: providerInfo.provider_id,
-        available_time: providerInfo.available_time,
+        providerId: providerInfo.providerId,
+        availableTime: providerInfo.availableTime,
       });
     }
   }, [providerInfo]);
   function handleContinueToBooking() {
-    if (!booking.serviceId && (!booking.time || !booking.available_time)) {
+    if (!booking.serviceId && (!booking.time || !booking.availableTime)) {
       console.error("no booking time or serviceId Found");
       return;
     }

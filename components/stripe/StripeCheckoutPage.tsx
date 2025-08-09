@@ -135,7 +135,7 @@ function CheckoutForm({ clientSecret }: CheckoutOutFormType) {
       // createBooking() will call useAPIMutation's mutation function const { mutate: createBooking, error } ....
 
       const hasDateAndTime = booking.date && booking.time;
-      const hasAvailableTime = booking.available_time;
+      const hasAvailableTime = booking.availableTime;
 
       if (
         !result.paymentIntent.id ||
@@ -160,7 +160,7 @@ function CheckoutForm({ clientSecret }: CheckoutOutFormType) {
           provider_id: booking.providerId,
           start_time: hasDateAndTime
             ? combineDateAndTimeToISOString(booking.date!, booking.time!)
-            : booking.available_time!,
+            : booking.availableTime!,
           service_notes: "",
           special_instructions: booking.serviceNotes || "",
           address_id: booking.addressId,
