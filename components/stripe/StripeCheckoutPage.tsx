@@ -16,7 +16,7 @@ import { CircleAlert, Lock } from "lucide-react";
 import StyledAsButton from "@/components/StyledAsButton";
 import { useApiMutation } from "@/lib/api-client";
 import { useBooking } from "@/components/context-wrappers/BookingContext";
-import combineDateAndTimeToISOString from "@/utils/combineDateAndTimeToIsoString";
+import combineDateAndTimeToUTC from "@/utils/combineDateAndTimeToUTC";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY!);
 
@@ -142,8 +142,8 @@ function CheckoutForm({ clientSecret }: CheckoutOutFormType) {
         !booking.serviceId ||
         !booking.customerId ||
         !booking.providerId ||
-        !(hasDateAndTime || hasAvailableTime) ||
-        !booking.addressId
+        !booking.addressId ||
+        !(hasDateAndTime || hasAvailableTime)
       ) {
         console.log(
           `missing required data to create booking booking.serviceId ${booking.serviceId} booking.serviceId ${booking.serviceId} booking.customerId ${booking.customerId} booking.providerId ${booking.providerId} booking.date ${booking.date} booking.time
@@ -152,6 +152,13 @@ function CheckoutForm({ clientSecret }: CheckoutOutFormType) {
         return;
       }
 
+      const convertAvailableTimeToUTC = function (localTime: string) {
+        let utcTime = "";
+        if (localTime) {
+          utcTime = new Date(localTime).toISOString();
+        }
+        return utcTime;
+      };
       createBooking(
         {
           stripe_payment_id: result.paymentIntent.id,
@@ -159,8 +166,8 @@ function CheckoutForm({ clientSecret }: CheckoutOutFormType) {
           customer_id: booking.customerId,
           provider_id: booking.providerId,
           start_time: hasDateAndTime
-            ? combineDateAndTimeToISOString(booking.date!, booking.time!)
-            : booking.availableTime!,
+            ? combineDateAndTimeToUTC(booking.date!, booking.time!)
+            : convertAvailableTimeToUTC(booking.availableTime || ""),
           service_notes: "",
           special_instructions: booking.serviceNotes || "",
           address_id: booking.addressId,

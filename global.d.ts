@@ -64,13 +64,14 @@ declare global {
     id: string;
     name: string;
     provider: string;
-    providerId: string;
+    provider_id: string;
     price: number;
     rating: number;
     description: string;
     category: string;
     duration: number;
-    availableTime: string;
+    available_time: string;
+    // _ because its directly from the backend
   }
 
   interface ProviderInfo {

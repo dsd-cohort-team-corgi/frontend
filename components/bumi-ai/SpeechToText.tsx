@@ -8,6 +8,8 @@ import Calendar from "@/components/icons/Calendar";
 import Star from "../icons/Star";
 import CheckoutButton from "../buttons/CheckoutButton";
 import StyledAsButton from "../StyledAsButton";
+import convertDateObjToTime from "@/utils/time/convertDateObjToTime";
+import convertDateObjToDate from "@/utils/time/convertDateObjToDate";
 
 interface ChatResponse {
   action: "recommend" | "clarify";
@@ -79,6 +81,7 @@ function VoiceInput() {
               width={30}
               height={30}
               className="mr-2 rounded-full bg-primary"
+              alt="a happy corgi with its tongue lolling out of its mouth"
             />
             <h3 className="text-green-800 text-center text-small">
               Bumi says:
@@ -88,10 +91,11 @@ function VoiceInput() {
             <p className="text-white">{response.ai_message}</p>
 
             {response.services && response.services.length > 0 && (
-              <div className="rounded-2xl bg-slate-900 bg-opacity-70 p-3">
+              <div className="rounded-2xl bg-slate-900/70 p-3">
                 <div className="space-y-2">
                   {response.services.map((service, index) => {
                     const isSelected = providerInfo?.id === service.id;
+                    const isoStringToDate = new Date(service.available_time);
                     return (
                       <section
                         key={`service-${service.id || index}-${service.name}`}
@@ -116,9 +120,7 @@ function VoiceInput() {
                         <div className="flex items-center text-sm text-slate-300">
                           <Calendar size={16} />
                           <span className="ml-1">
-                            {new Date(
-                              service.available_time,
-                            ).toLocaleDateString()}
+                            {`${convertDateObjToDate(isoStringToDate)} ${convertDateObjToTime(isoStringToDate)}`}{" "}
                           </span>
                         </div>
                         <div className="flex justify-center">
@@ -137,7 +139,8 @@ function VoiceInput() {
                   {providerInfo ? (
                     <CheckoutButton
                       providerInfo={providerInfo}
-                      className="bg-white text-black"
+                      className="bg-white font-bold text-black"
+                      text={`Book Service $${providerInfo.price}`}
                     />
                   ) : (
                     <CheckoutButton

@@ -8,7 +8,6 @@ import useAuth from "@/lib/hooks/useAuth";
 import Check from "@/components/icons/Check";
 import { useApiQuery } from "@/lib/api-client";
 import LoadingSkeleton from "@/components/LoadingSkeleton";
-import { formatDateTimeString } from "@/utils/formatDateTimeString";
 import Calendar from "@/components/icons/Calendar";
 import StyledAsButton from "@/components/StyledAsButton";
 import ArrowRight from "@/components/icons/ArrowRight";
@@ -16,6 +15,8 @@ import Phone from "@/components/icons/Phone";
 import MapPin from "@/components/icons/MapPin";
 import { useBooking } from "@/components/context-wrappers/BookingContext";
 import { useAuthContext } from "@/components/context-wrappers/AuthContext";
+import convertDateObjToTime from "@/utils/time/convertDateObjToTime";
+import convertDateObjToDate from "@/utils/time/convertDateObjToDate";
 
 interface BookingQueryProps {
   special_instructions: string;
@@ -90,11 +91,18 @@ export default function Page() {
   const service = providerData?.services.find((s) => s.id === serviceId);
   // due to waiting for info from network we have to wrap the assignment of this variable in an if statement or we get errors on page
   /* eslint-disable no-undef-init */
-  let serviceDateAndTime: { datePart: string; timePart: string } | undefined =
-    undefined;
+  let isoToDate = "";
+  let isoToTime = "";
   if (bookingData) {
-    serviceDateAndTime = formatDateTimeString(bookingData?.start_time ?? "");
+    isoToDate = convertDateObjToDate(new Date(bookingData?.start_time));
+    isoToTime = convertDateObjToTime(new Date(bookingData?.start_time));
   }
+
+  // let serviceDateAndTime: { datePart: string; timePart: string } | undefined =
+  //   undefined;
+  // if (bookingData) {
+  //   serviceDateAndTime = formatDateTimeString(bookingData?.start_time ?? "");
+  // }
 
   if (bookingIsLoading || providerIsLoading || authLoading) {
     return (
@@ -141,12 +149,10 @@ export default function Page() {
           <CardBody className="flex flex-row items-center gap-4">
             <Calendar color="#2563eb" size={18} />
             <div className="flex flex-col">
-              {serviceDateAndTime ? (
+              {isoToDate && isoToTime ? (
                 <>
-                  <p>{serviceDateAndTime.datePart}</p>
-                  <p className="sm text-light-font-color">
-                    {serviceDateAndTime.timePart}
-                  </p>
+                  <p>{isoToDate}</p>
+                  <p className="sm text-light-font-color">{isoToTime}</p>
                 </>
               ) : (
                 <p>There was an error getting the booking date</p>

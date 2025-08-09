@@ -7,6 +7,8 @@ import { useAuthContext } from "@/components/context-wrappers/AuthContext";
 import StarRatingReview from "../ProviderOverallRatingInfo";
 import IconLeftTwoTextRight from "../IconLeftTwoTextRight";
 import { useBooking } from "@/components/context-wrappers/BookingContext";
+import convertDateObjToTime from "@/utils/time/convertDateObjToTime";
+import convertDateObjToDate from "@/utils/time/convertDateObjToDate";
 
 export default function BookingCheckoutPage() {
   const { authContextObject } = useAuthContext();
@@ -18,6 +20,7 @@ export default function BookingCheckoutPage() {
   ${authContextObject.city}
     ${authContextObject.state}
      ${authContextObject.zip}`;
+  console.log(booking);
 
   // wrapping updateBooking in a useEffect so it will only run once or when the autoContextObject changes, instead of on every render
   useEffect(
@@ -29,32 +32,15 @@ export default function BookingCheckoutPage() {
     [authContextObject.customerId],
   );
 
-  function convertDateObjToTime(dateObj: Date) {
-    const time = dateObj.toLocaleTimeString(undefined, {
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true,
-    });
-
-    return time;
-  }
-
-  function convertDateObjToDate(dateObj: Date) {
-    const date = dateObj.toLocaleDateString("en-US", {
-      month: "2-digit",
-      day: "2-digit",
-      year: "numeric",
-    });
-
-    return date;
-  }
-
   let eventDateText = "";
 
   if (booking.date) {
     eventDateText = format(booking.date, "EEEE, MMMM d, yyyy");
+    console.log("eventDataText", eventDateText);
   } else if (booking.availableTime) {
+    console.log("booking.availableTime", booking.availableTime);
     eventDateText = convertDateObjToDate(new Date(booking.availableTime));
+    console.log("eventDataText", eventDateText);
   }
 
   return (

@@ -13,12 +13,14 @@ type CheckoutButtonProps = {
   providerInfo: ProviderInfo | ServiceRecommendation;
   disabled?: boolean;
   className?: string;
+  text?: string;
 };
 
 export default function CheckoutButton({
   providerInfo,
   disabled,
   className,
+  text,
 }: CheckoutButtonProps) {
   const { authContextObject } = useAuthContext();
   const { booking, updateBooking } = useBooking();
@@ -45,6 +47,7 @@ export default function CheckoutButton({
     } else {
       // providerInfo is a ServiceRecommendation object
       const priceToNumber = Number(providerInfo?.price);
+      console.log("providerInfo.available_time", providerInfo.available_time);
       updateBooking({
         companyName: providerInfo?.provider,
         serviceId: providerInfo.id,
@@ -53,8 +56,8 @@ export default function CheckoutButton({
         description: providerInfo.description,
         serviceDuration: providerInfo.duration,
         paymentIntentId: undefined,
-        providerId: providerInfo.providerId,
-        availableTime: providerInfo.availableTime,
+        providerId: providerInfo.provider_id,
+        availableTime: providerInfo.available_time,
       });
     }
   }, [providerInfo]);
@@ -95,10 +98,9 @@ export default function CheckoutButton({
       />
       <StyledAsButton
         className={`mb-4 mt-6 block w-11/12 px-0 disabled:bg-gray-500 ${className}`}
-        label="Continue to Booking"
+        label={text || "Continue to Booking"}
         onPress={() => handleContinueToBooking()}
         disabled={disabled}
-        // disabled={!booking.serviceId || !booking.time || !booking.date}
       />
     </section>
   );

@@ -30,10 +30,10 @@ export default function BumiAiChatModal({
         // default version was too small and had a max-w-m
       }}
     >
-      <ModalContent className="bg-slate-800 bg-opacity-70 text-white backdrop-blur">
+      <ModalContent className="0 bg-slate-800/70 text-white backdrop-blur">
         {() => (
           <>
-            <ModalHeader className="mb-4 flex flex-row items-center bg-[#2a323b] bg-opacity-70 text-2xl font-extrabold">
+            <ModalHeader className="mb-4 flex flex-row items-center bg-[#2a323b]/70 text-2xl font-extrabold">
               <BumiAiHeader />
             </ModalHeader>
             <ModalBody>
