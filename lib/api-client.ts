@@ -22,7 +22,11 @@ export const getAuthHeaders = async () => {
 export const useApiQuery = <T>(
   queryKey: string[],
   endpoint: string,
-  options?: { refetchInterval: number; refetchIntervalInBackGround: boolean },
+  options?: {
+    refetchInterval: number;
+    refetchIntervalInBackGround: boolean;
+    skip: boolean;
+  },
 ) => {
   return useQuery({
     queryKey,
@@ -37,6 +41,7 @@ export const useApiQuery = <T>(
     },
     refetchInterval: options?.refetchInterval || false,
     refetchIntervalInBackground: options?.refetchIntervalInBackGround || false,
+    enabled: !options?.skip,
   });
 };
 

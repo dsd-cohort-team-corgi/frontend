@@ -135,44 +135,49 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         cachedMetaData.current = freshMeta;
       }
     }
-    // step 3: grab users address information
 
-    const headers = await getAuthHeaders();
+    (async () => {
+      try {
+        const headers = await getAuthHeaders();
 
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/addresses/me`,
-      { headers },
-    );
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/addresses/me`,
+          { headers },
+        );
 
-    if (!response.ok) {
-      console.warn(
-        "no address information was returned from the fetch call, check if you are signed in",
-      );
-      return;
-    }
+        if (!response.ok) {
+          console.warn(
+            "no address information was returned from the fetch call, check if you are signed in",
+          );
+          return;
+        }
 
-    const data = await response.json();
+        const data = await response.json();
 
-    const freshAddressData = (data && data[0]) || {};
+        const freshAddressData = (data && data[0]) || {};
 
-    const addressChanged = Object.entries(freshAddressData).some(
-      ([key, value]) => {
-        return cachedAddressData.current[key] !== value;
-      },
-    );
+        const addressChanged = Object.entries(freshAddressData).some(
+          ([key, value]) => {
+            return cachedAddressData.current[key] !== value;
+          },
+        );
 
-    if (addressChanged) {
-      updateAuthContext({
-        streetAddress1: freshAddressData.street_address_1 || "",
-        streetAddress2: freshAddressData.street_address_2 || "",
-        city: freshAddressData.city || "",
-        state: freshAddressData.state || "",
-        zip: freshAddressData.zip || "",
-        customerId: freshAddressData.customer_id || "",
-        addressId: freshAddressData.id,
-      });
-      cachedAddressData.current = freshAddressData;
-    }
+        if (addressChanged) {
+          updateAuthContext({
+            streetAddress1: freshAddressData.street_address_1 || "",
+            streetAddress2: freshAddressData.street_address_2 || "",
+            city: freshAddressData.city || "",
+            state: freshAddressData.state || "",
+            zip: freshAddressData.zip || "",
+            customerId: freshAddressData.customer_id || "",
+            addressId: freshAddressData.id,
+          });
+          cachedAddressData.current = freshAddressData;
+        }
+      } catch (error) {
+        console.warn("Failed to fetch address data:", error);
+      }
+    })();
   };
 
   // ###### Grab existing session on intial render of the app #####

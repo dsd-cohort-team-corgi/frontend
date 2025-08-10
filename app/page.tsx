@@ -40,6 +40,14 @@ export interface BookingsData {
   upcoming_bookings: BookingItem[];
   completed_needs_review: BookingItem[];
 }
+
+interface UserData {
+  data: {
+    id: string;
+  };
+  // Add other user fields as needed
+}
+
 const TEMP_CUSTOMER_ID = "09761bda-e98b-46f0-b976-89658eb70148";
 const TEMP_PROVIDER_ID = "1f0f15da-9de9-4c79-bd6d-a48919b988d4";
 
@@ -47,10 +55,24 @@ function AuthenticatedHero({ userSession }: { userSession: UserSession }) {
   const [bookingStatuses, setBookingStatuses] = useState<
     BookingItem[] | undefined
   >([]);
+  const [showAllServices, setShowAllServices] = useState(false);
+
+  const {
+    data: userData,
+    isLoading: userLoading,
+    error: userError,
+  } = useApiQuery<UserData>(["users", "me"], "/users/me");
+
+  const customerId = userData?.data?.id;
+
   const { data, dataUpdatedAt, error, isLoading } = useApiQuery<BookingsData>(
     ["customers", "customerId", "dashboard"],
-    `/customers/${userSession.id}/dashboard`,
-    { refetchInterval: 1000, refetchIntervalInBackGround: false },
+    `/customers/${customerId}/dashboard`,
+    {
+      refetchInterval: 1000,
+      refetchIntervalInBackGround: false,
+      skip: !customerId,
+    },
   );
 
   // sets booking statuses to initial data for comparisons
@@ -74,6 +96,51 @@ function AuthenticatedHero({ userSession }: { userSession: UserSession }) {
       setBookingStatuses(data?.upcoming_bookings);
     }
   }, [dataUpdatedAt, bookingStatuses, data?.upcoming_bookings]);
+
+  if (userLoading) {
+    return (
+      <Container>
+        <div className="mb-8 text-center md:text-left">
+          <div className="mb-6 relative group">
+            <div className="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl opacity-60 -z-10 animate-pulse" />
+            <div className="py-4 rounded-2xl">
+              <div className="mb-3">
+                <div className="h-8 bg-gray-300 rounded-lg animate-pulse mb-2 md:h-10 lg:h-10" />
+                <div className="h-6 bg-gray-300 rounded-lg animate-pulse w-3/4 md:h-8" />
+              </div>
+              <div className="h-5 bg-gray-300 rounded-lg animate-pulse w-2/3" />
+            </div>
+          </div>
+        </div>
+      </Container>
+    );
+  }
+
+  if (userError) {
+    return (
+      <Container>
+        <div className="mb-8 text-center md:text-left">
+          <div className="mb-6 relative group">
+            <div className="absolute inset-0 bg-gradient-to-br from-red-50 to-red-100 rounded-2xl opacity-60 -z-10" />
+            <div className="py-4 rounded-2xl">
+              <div className="mb-3">
+                <h1 className="text-2xl font-bold text-red-800 md:text-3xl leading-tight">
+                  ⚠️ Authentication Error
+                </h1>
+                <p className="text-lg text-red-600 md:text-xl mt-2">
+                  {userError.message || "Unable to load user information"}
+                </p>
+              </div>
+              <p className="text-base text-red-500">
+                Please try refreshing the page or contact support if the problem
+                persists.
+              </p>
+            </div>
+          </div>
+        </div>
+      </Container>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -237,9 +304,10 @@ function AuthenticatedHero({ userSession }: { userSession: UserSession }) {
           </div>
           <button
             type="button"
-            className="text-nowrap text-blue-600 hover:text-blue-700 font-semibold transition-colors duration-200 hover:underline"
+            onClick={() => setShowAllServices(!showAllServices)}
+            className="text-nowrap text-blue-600 hover:text-blue-700 font-semibold transition-colors duration-200 hover:underline cursor-pointer"
           >
-            View All
+            {showAllServices ? "Show Less" : "View All"}
           </button>
         </CardHeader>
         <CardBody className="px-4 pb-4">
@@ -254,22 +322,24 @@ function AuthenticatedHero({ userSession }: { userSession: UserSession }) {
             </div>
           ) : (
             <div className="space-y-4">
-              {data?.upcoming_bookings.map(
-                ({
-                  provider_company_name,
-                  status,
-                  start_time,
-                  service_title,
-                }) => (
-                  <UpcomingService
-                    key={provider_company_name}
-                    provider_company_name={provider_company_name}
-                    status={status}
-                    start_time={start_time}
-                    service_title={service_title}
-                  />
-                ),
-              )}
+              {data?.upcoming_bookings
+                .slice(0, showAllServices ? undefined : 2)
+                .map(
+                  ({
+                    provider_company_name,
+                    status,
+                    start_time,
+                    service_title,
+                  }) => (
+                    <UpcomingService
+                      key={provider_company_name}
+                      provider_company_name={provider_company_name}
+                      status={status}
+                      start_time={start_time}
+                      service_title={service_title}
+                    />
+                  ),
+                )}
             </div>
           )}
         </CardBody>
