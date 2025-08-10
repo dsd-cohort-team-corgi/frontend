@@ -8,6 +8,17 @@ export default function GoogleSignInButton() {
   // Save the current path before loging so they get sent back to the right page
 
   const handleLoginWithSupabase = async () => {
+    console.log("=== DEBUG INFO ===");
+    console.log("Button clicked!");
+    console.log("NEXT_PUBLIC_URL:", process.env.NEXT_PUBLIC_URL);
+    console.log(
+      "NEXT_PUBLIC_SUPABASE_URL:",
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+    );
+    console.log("Supabase client:", supabaseClient);
+    console.log("Window location:", window.location.href);
+    console.log("==================");
+
     // placed in useEffect because Supabase relies on window.location under the hood
     // and google oAuth also relies on window.google
     // We use useEffect to ensure rendering has happened on the client side,
