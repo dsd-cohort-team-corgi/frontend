@@ -8,6 +8,7 @@ import StarRatingReview from "../ProviderOverallRatingInfo";
 import IconLeftTwoTextRight from "../IconLeftTwoTextRight";
 import { useBooking } from "@/components/context-wrappers/BookingContext";
 import formatDateTimeString from "@/utils/formatDateTimeString";
+import { getBookingFromCookies } from "@/utils/cookies/bookingCookies";
 
 export default function BookingCheckoutPage() {
   const { authContextObject } = useAuthContext();
@@ -22,14 +23,19 @@ export default function BookingCheckoutPage() {
   console.log(booking);
 
   // wrapping updateBooking in a useEffect so it will only run once or when the autoContextObject changes, instead of on every render
-  useEffect(
-    () =>
+  useEffect(() => {
+    const bookingFromCookies = getBookingFromCookies(); // will return {} if its empty, so we won't have errors when spreading like we would with null data
+    if (bookingFromCookies) {
       updateBooking({
-        customerId: authContextObject.customerId,
-        addressId: authContextObject.addressId,
-      }),
-    [authContextObject.customerId],
-  );
+        ...bookingFromCookies,
+      });
+    }
+
+    updateBooking({
+      customerId: authContextObject.customerId,
+      addressId: authContextObject.addressId,
+    });
+  }, [authContextObject.customerId]);
 
   let eventDate = "";
   let eventTime = "";

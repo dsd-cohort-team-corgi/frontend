@@ -62,13 +62,13 @@ export default function AuthCallback() {
     refetchOnWindowFocus: false,
     enabled: pollingEnabled,
   });
+
   useEffect(() => {
-    // Fail fast if no tokens in URL
     if (!hasHashTokens()) {
       setMessageToUser(
         "Signin failed. No valid access_token or error exists for Supabase to process the login. Redirecting...",
       );
-      setTimeout(handleRedirect, 1500);
+      setTimeout(handleRedirect, 3000);
       return;
     }
 
@@ -86,7 +86,7 @@ export default function AuthCallback() {
     return () => {
       subscription.unsubscribe();
     };
-  }, [router]);
+  }, []);
 
   useEffect(() => {
     // When polling yields a session, redirect
