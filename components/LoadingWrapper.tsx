@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import LoadingScreen from "./LoadingScreen";
-import supabase from "@/lib/supabase";
+import { useAuthContext } from "@/components/context-wrappers/AuthContext";
 
 interface LoadingWrapperProps {
   children: React.ReactNode;
@@ -10,50 +10,35 @@ interface LoadingWrapperProps {
 
 function LoadingWrapper({ children }: LoadingWrapperProps) {
   const [isLoading, setIsLoading] = useState(true);
+  const { authContextObject } = useAuthContext();
+  const [authLoading, setAuthLoading] = useState(true);
 
   useEffect(() => {
-    const maxAuthWaitTime = 3000;
+    // Check if auth context has been initialized (either with user data or empty object)
+    const isAuthInitialized =
+      Object.keys(authContextObject).length > 0 ||
+      authContextObject.supabaseUserId;
 
-    const timeout = setTimeout(() => {
-      console.warn("LoadingWrapper timeout reached, proceeding anyway");
-      setIsLoading(false);
-    }, maxAuthWaitTime);
-
-    const checkSession = async () => {
-      try {
-        const {
-          data: { session },
-        } = await supabase.auth.getSession();
-        if (session?.user) {
-          console.log("LoadingWrapper: Found valid session, proceeding");
-          clearTimeout(timeout);
-          setIsLoading(false);
-        } else {
-          setTimeout(checkSession, 500);
-        }
-      } catch (error) {
-        console.warn("LoadingWrapper: Session check failed:", error);
-        clearTimeout(timeout);
+    if (isAuthInitialized !== undefined) {
+      // Add a small delay to show the loading screen briefly
+      const timer = setTimeout(() => {
         setIsLoading(false);
-      }
-    };
+        setAuthLoading(false);
+      }, 2500); // Show for at least 2.5 seconds
 
-    checkSession();
+      return () => clearTimeout(timer);
+    }
 
-    const intervalChecks = [
-      setTimeout(checkSession, 200),
-      setTimeout(checkSession, 500),
-      setTimeout(checkSession, 1000),
-      setTimeout(checkSession, 1500),
-    ];
+    // If auth is not initialized, set loading to false after a delay
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+      setAuthLoading(false);
+    }, 2500);
 
-    return () => {
-      clearTimeout(timeout);
-      intervalChecks.forEach(clearTimeout);
-    };
-  }, []);
+    return () => clearTimeout(timer);
+  }, [authContextObject]);
 
-  if (isLoading) {
+  if (isLoading || authLoading) {
     return <LoadingScreen />;
   }
 

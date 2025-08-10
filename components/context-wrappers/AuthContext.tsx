@@ -83,7 +83,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     let userMetaDataFromJWT: Record<string, any> = {};
 
     if (claimsData?.claims) {
-      // if we switch tabs, Supabase's onAuthStateChange can run, for example if its checking if session/token is still valid
+      // if we switch tabs, Supabase’s onAuthStateChange can run, for example if its checking if session/token is still valid
       // so this logic will run again
       // if the metadatacache is empty, then we know this is the 1st loop so we're freshly decoding the JWT
       userMetaDataFromJWT = claimsData.claims.user_metadata || {};
@@ -100,19 +100,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     }
 
-    // Step 2: get fresh metadata from Supabase (this is slower but more up to date)
-    const {
-      data: { user: freshUser },
-    } = await supabase.auth.getUser();
+    // Step 2: Getting fresh metadata from supabase, and updating if any of the information has changed during the session: user changing username, password. Since the JWT doesn't update during the session itself, that information would be stale
+    const { data: userData } = await supabase.auth.getUser();
+    if (userData?.user) {
+      const freshMeta = userData.user.user_metadata || {};
 
-    if (freshUser?.user_metadata) {
-      const freshMeta = freshUser.user_metadata;
-      const metaDataChanged = Object.entries(freshMeta).some(([key, value]) => {
+      const metadataChanged = Object.entries(freshMeta).some(([key, value]) => {
+        // for the 1st run the cached metadata will be empty, in that case look at the userData we just got from the decoded JWT
+        if (isMetaDataCacheEmpty) {
+          return userMetaDataFromJWT[key] !== value;
+        }
+        // if we have cached metadata then use that instead
+        // why? because I noticed when I clicked to a different website tab, and then clicked back, the context fired again twice even though the app wasn't refreshed
+        // Supabase’s onAuthStateChange or some internal refresh mechanism fires, maybe checking if the session/token is still valid or has updated
+        // which triggers the onAuthStateChange, which retriggers this logic
+        // the JWT decoder (getClaims) gives us partial info, so when getUser runs, it thinks it found new data. But in reality that data already existed in the AuthContext
+        // by using cache, we avoid this unnessary updates
+
         return cachedMetaData.current[key] !== value;
       });
 
-      if (metaDataChanged) {
+      // Only update context if metadata changed
+      // why? because any time context changes, react with rerender ALL the components that use it
+      // so all the components that call the context via its hook
+      // tldr: Updating with the same data causes unnecessary re-renders and slows down the app
+
+      if (metadataChanged) {
         updateAuthContext({
+          email: freshMeta.email,
           phoneNumber: freshMeta.phone || "",
           displayName: freshMeta.full_name || "",
           avatarUrl: freshMeta.picture || "",
@@ -120,109 +135,50 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         cachedMetaData.current = freshMeta;
       }
     }
+    // step 3: grab users address information
 
-    // Step 3: grab users address information (optional - don't fail auth if this fails)
-    try {
-      const headers = await getAuthHeaders();
+    const headers = await getAuthHeaders();
 
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/addresses/me`,
-        {
-          headers,
-          // Add timeout to prevent hanging
-          signal: AbortSignal.timeout(5000), // 5 second timeout
-        },
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/addresses/me`,
+      { headers },
+    );
+
+    if (!response.ok) {
+      console.warn(
+        "no address information was returned from the fetch call, check if you are signed in",
       );
+      return;
+    }
 
-      if (response.ok) {
-        const data = await response.json();
+    const data = await response.json();
 
-        const freshAddressData = (data && data[0]) || {};
+    const freshAddressData = (data && data[0]) || {};
 
-        const addressChanged = Object.entries(freshAddressData).some(
-          ([key, value]) => {
-            return cachedAddressData.current[key] !== value;
-          },
-        );
+    const addressChanged = Object.entries(freshAddressData).some(
+      ([key, value]) => {
+        return cachedAddressData.current[key] !== value;
+      },
+    );
 
-        if (addressChanged) {
-          updateAuthContext({
-            streetAddress1: freshAddressData.street_address_1 || "",
-            streetAddress2: freshAddressData.street_address_2 || "",
-            city: freshAddressData.city || "",
-            state: freshAddressData.state || "",
-            zip: freshAddressData.zip || "",
-            customerId: freshAddressData.customer_id || "",
-            addressId: freshAddressData.id,
-          });
-          cachedAddressData.current = freshAddressData;
-        }
-      } else {
-        console.warn(
-          `Address fetch failed with status ${response.status}: ${response.statusText}`,
-        );
-      }
-    } catch (error) {
-      // Don't fail auth if address fetch fails - just log the error
-      console.warn("Address fetch failed, but continuing with auth:", error);
+    if (addressChanged) {
+      updateAuthContext({
+        streetAddress1: freshAddressData.street_address_1 || "",
+        streetAddress2: freshAddressData.street_address_2 || "",
+        city: freshAddressData.city || "",
+        state: freshAddressData.state || "",
+        zip: freshAddressData.zip || "",
+        customerId: freshAddressData.customer_id || "",
+        addressId: freshAddressData.id,
+      });
+      cachedAddressData.current = freshAddressData;
     }
   };
 
   // ###### Grab existing session on intial render of the app #####
 
   useEffect(() => {
-    const initializeAuth = async () => {
-      try {
-        // First, check if there's already an active session
-        const {
-          data: { session: existingSession },
-        } = await supabase.auth.getSession();
-
-        if (existingSession?.user) {
-          // If we already have a session, update context immediately
-          await updateWithJWTDataOrSupabaseData();
-          // Mark auth as complete since we found an existing session
-          updateAuthContext({ hasCompletedAuthCheck: true });
-        } else {
-          // No existing session, proceed with normal initialization
-          await updateWithJWTDataOrSupabaseData();
-        }
-      } catch (error) {
-        console.error("Error during auth initialization:", error);
-        // Continue with auth even if there are errors
-      } finally {
-        // Mark that we've completed the initial auth check - this is critical!
-        updateAuthContext({ hasCompletedAuthCheck: true });
-      }
-    };
-
-    // Add a more frequent check for the first few seconds to catch OAuth callbacks
-    const quickSessionCheck = async () => {
-      try {
-        const {
-          data: { session },
-        } = await supabase.auth.getSession();
-        if (session?.user) {
-          await updateWithJWTDataOrSupabaseData();
-          updateAuthContext({ hasCompletedAuthCheck: true });
-        }
-      } catch (error) {
-        console.warn("Quick session check failed:", error);
-      }
-    };
-
-    initializeAuth();
-
-    // Check for session changes more frequently during the first few seconds
-    const quickCheck1 = setTimeout(quickSessionCheck, 100);
-    const quickCheck2 = setTimeout(quickSessionCheck, 500);
-    const quickCheck3 = setTimeout(quickSessionCheck, 1000);
-
-    return () => {
-      clearTimeout(quickCheck1);
-      clearTimeout(quickCheck2);
-      clearTimeout(quickCheck3);
-    };
+    updateWithJWTDataOrSupabaseData();
   }, [updateAuthContext]);
 
   // ### listen for auth changes after page load automatically ######
@@ -232,25 +188,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      try {
-        if (session?.user) {
-          // this will be triggered by
-          // 1. the user was logged out on page load and signed in later
-          // 2. Supabase refreshing token/session automatically, keeping the app in sync
-          await updateWithJWTDataOrSupabaseData();
-        } else {
-          // triggered by
-          // 1. User signing out manually
-          // 2. Session becoming invalid/expired
-          resetAuthContext();
-        }
-      } catch (error) {
-        console.error("Error during auth state change:", error);
-        // Continue with auth even if there are errors
-      } finally {
-        // Always mark auth check as complete
-        updateAuthContext({ hasCompletedAuthCheck: true });
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        // this will be triggered by
+        // 1. the user was logged out on page load and signed in later
+        // 2. Supabase refreshing token/session automatically, keeping the app in sync
+        updateWithJWTDataOrSupabaseData();
+      } else {
+        // triggered by
+        // 1. User signing out manually
+        // 2. Session becoming invalid/expired
+        resetAuthContext();
       }
     });
 

@@ -19,8 +19,9 @@ export default function AuthCallback() {
   const router = useRouter();
 
   useEffect(() => {
-    // Maximum time to wait for auth completion: 10 seconds
-    const maxAuthWaitTime = 10000;
+    // edge case if someone visits the raw http://localhost:3000/auth/callback page
+    // this prevents them from getting stuck forever on "Finishing signing you in..."
+    // since Supabase never receives valid tokens to process.
 
     let hasRedirected = false;
 
@@ -33,13 +34,6 @@ export default function AuthCallback() {
       router.replace(path);
     };
 
-    // Safety timeout - if auth takes too long, redirect anyway
-    const safetyTimeout = setTimeout(() => {
-      console.warn("OAuth callback timeout reached, redirecting anyway");
-      setMessageToUser("Taking longer than expected, redirecting...");
-      handleRedirect();
-    }, maxAuthWaitTime);
-
     const urlParams = new URLSearchParams(window.location.search);
     const hasAuthCode =
       urlParams.has("code") || urlParams.has("error_description");
@@ -48,7 +42,7 @@ export default function AuthCallback() {
       typeof window !== "undefined" &&
       // we're running on the browser not the server
       !hasAuthCode;
-    // if it doesn't have code or error_description, supabase won't know what to do with it, and they'll be stuck on the page with a "Finishing signing you in..." message
+    // if it doesn't have code or error_description, supabase won't know what to do with it, and they'll be stuck on the page with a "Finishing signing you in ..." message
 
     if (isAuthCallbackEmpty) {
       setMessageToUser(
@@ -76,7 +70,6 @@ export default function AuthCallback() {
         // so an event like "SIGNED_IN" that would fire when the user completes signing in
         // or an "intial_session" that hydrated in time
         // session is hydrated/ available
-        clearTimeout(safetyTimeout);
         handleRedirect();
       } else {
         if (!isAuthCallbackEmpty) {
@@ -102,7 +95,6 @@ export default function AuthCallback() {
           } = await supabaseClient.auth.getSession();
 
           if (delayedSession) {
-            clearTimeout(safetyTimeout);
             handleRedirect();
           } else {
             if (!isAuthCallbackEmpty) {
@@ -117,10 +109,7 @@ export default function AuthCallback() {
       }
     });
 
-    return () => {
-      subscription.unsubscribe();
-      clearTimeout(safetyTimeout);
-    };
+    return () => subscription.unsubscribe();
   }, [router]);
 
   // on page load, Supabase will automatically look at the URL hash and automagically set a session in cookies
@@ -134,5 +123,5 @@ export default function AuthCallback() {
 }
 
 // even though we're subscribed to auth changes in the header (aka if the session changes) we still need this because:
-// It's the return URI Supabase redirects to after Google signs in the user
+// It’s the return URI Supabase redirects to after Google signs in the user
 // The Supabase client-side session/auth-change listener in the layout only sees the session after that cookie is set
