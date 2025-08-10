@@ -73,7 +73,6 @@ function VoiceInput() {
   const showImageDropzone = action === "clarify";
   const showGreeting = !response && !isListening;
   const showInputUI = !shouldShowServices;
-  const showAiMessage = response && !aiThinking;
 
   return (
     <div className="flex flex-col items-center justify-center space-y-4">
@@ -87,9 +86,9 @@ function VoiceInput() {
         inProgressBubbles={inProgressBubbles}
       />
 
-      {showAiMessage && (
+      {response && (
         <div className="mt-4">
-          <div className="my-4 flex items-center justify-center">
+          <div className="my-2 flex items-center justify-center">
             <img
               src="/bumi.png"
               width={30}

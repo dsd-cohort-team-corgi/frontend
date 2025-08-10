@@ -24,8 +24,8 @@ function ServiceSelection({
   }
 
   return (
-    <div className="rounded-2xl bg-slate-900/70 p-3">
-      <div className="space-y-2">
+    <div>
+      <div className="space-y-2 rounded-2xl bg-slate-900/70 p-4 mb-4">
         {services.map((service, index) => {
           const timeFromNow = convertDateToTimeFromNow(service.available_time);
           const timeUnitsIgnore = ["day", "week", "month", "year"];
@@ -43,8 +43,8 @@ function ServiceSelection({
           return (
             <section key={`service-${service.id || index}-${service.name}`}>
               <div className="flex justify-between">
-                <span className="font-medium">{service.name}</span>
-                <span> ${service.price} </span>
+                <span className="font-medium text-white">{service.name}</span>
+                <span className="text-white"> ${service.price} </span>
               </div>
               <div className="flex justify-between text-sm text-slate-300">
                 <span>{service.provider}</span>
@@ -75,20 +75,21 @@ function ServiceSelection({
             </section>
           );
         })}
-
-        {providerInfo ? (
-          <CheckoutButton
-            providerInfo={providerInfo}
-            className="bg-white font-bold text-black"
-            text={`Book Service $${providerInfo.price}`}
-          />
-        ) : (
-          <CheckoutButton
-            providerInfo={{} as ProviderInfo | ServiceRecommendation}
-            disabled
-          />
-        )}
       </div>
+
+      {providerInfo ? (
+        <CheckoutButton
+          providerInfo={providerInfo}
+          className="bg-white font-bold text-black w-full"
+          text={`Book Service $${providerInfo.price}`}
+        />
+      ) : (
+        <CheckoutButton
+          className="bg-white font-bold text-black w-full"
+          providerInfo={{} as ProviderInfo | ServiceRecommendation}
+          disabled
+        />
+      )}
     </div>
   );
 }

@@ -178,7 +178,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // ###### Grab existing session on intial render of the app #####
 
   useEffect(() => {
-    updateWithJWTDataOrSupabaseData();
+    const initializeAuth = async () => {
+      await updateWithJWTDataOrSupabaseData();
+      // Mark that we've completed the initial auth check
+      updateAuthContext({ hasCompletedAuthCheck: true });
+    };
+
+    initializeAuth();
   }, [updateAuthContext]);
 
   // ### listen for auth changes after page load automatically ######
@@ -188,17 +194,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (session?.user) {
         // this will be triggered by
         // 1. the user was logged out on page load and signed in later
         // 2. Supabase refreshing token/session automatically, keeping the app in sync
-        updateWithJWTDataOrSupabaseData();
+        await updateWithJWTDataOrSupabaseData();
+        updateAuthContext({ hasCompletedAuthCheck: true });
       } else {
         // triggered by
         // 1. User signing out manually
         // 2. Session becoming invalid/expired
         resetAuthContext();
+        updateAuthContext({ hasCompletedAuthCheck: true });
       }
     });
 

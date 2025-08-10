@@ -23,27 +23,35 @@ function UpcomingService({
     serviceDateAndTime = formatDateTimeString(start_time ?? "");
   }
   return (
-    <div className="mb-4 flex-row items-center justify-between md:flex">
-      <div className="flex flex-row items-center justify-between gap-2 md:gap-4">
-        {/* using basis so icons don't shrint in small screens */}
-        <div className="flex h-10 basis-[45px] items-center justify-center rounded-full bg-blue-100">
+    <div className="flex items-center justify-between p-4 rounded-xl bg-white border border-gray-200 hover:border-blue-300 hover:shadow-md transition-all duration-200">
+      <div className="flex items-center gap-4">
+        <div className="flex size-10 items-center justify-center rounded-full bg-gradient-to-br from-blue-100 to-blue-200 shadow-sm">
           <Calendar color="#2563eb" />
         </div>
-        <div className="text-right md:text-left">
-          <h3 className="text-lg font-bold lg:text-xl">{service_title}</h3>
-          <p className="lg:text-lg">{provider_company_name}</p>
-          {/* eslint-disable tailwindcss/no-unnecessary-arbitrary-value */}
-          <p className="text-pretty text-xs text-light-font-color lg:text-base">
+        <div className="space-y-1">
+          <h3 className="text-base font-semibold text-gray-900">
+            {service_title}
+          </h3>
+          <p className="text-sm text-gray-700 font-medium">
+            {provider_company_name}
+          </p>
+          <p className="text-sm text-gray-500 flex items-center gap-2">
+            <span>📅</span>
             {serviceDateAndTime?.datePart} at {serviceDateAndTime?.timePart}
           </p>
         </div>
       </div>
-      <div className="flex items-center justify-end rounded-lg py-[2px] text-right text-[#2563eb] md:text-left lg:gap-4">
-        <div className="flex items-center gap-1 rounded-lg bg-blue-100 px-2 py-[2px] text-right md:text-left">
+      <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 px-3 py-2 rounded-full bg-blue-50 text-blue-700 font-medium text-sm">
           <CircleCheck size={16} color="#2563eb" />
-          <span>{status}</span>
+          <span className="capitalize">{status}</span>
         </div>
-        <ChevronDown color="#62748e" />
+        <button
+          type="button"
+          className="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200"
+        >
+          <ChevronDown color="#6b7280" />
+        </button>
       </div>
     </div>
   );

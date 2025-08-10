@@ -4,6 +4,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Card, CardBody } from "@heroui/react";
+import ConfettiExplosion from "react-confetti-explosion";
 import { useAuthContext } from "@/components/context-wrappers/AuthContext";
 import Check from "@/components/icons/Check";
 import { useApiQuery } from "@/lib/api-client";
@@ -58,12 +59,13 @@ interface ProviderProps {
 export default function Page() {
   const { authContextObject } = useAuthContext();
   const [authLoading, setAuthLoading] = useState(true);
+  const [showConfetti, setShowConfetti] = useState(false);
   const pathName = usePathname();
   const bookingId = pathName.split("/")[2];
   const router = useRouter();
   const { resetBooking } = useBooking();
 
-  useEffect(() => resetBooking(), []);
+  useEffect(() => resetBooking(), [resetBooking]);
   // if they have reached this page, their booking was successful. Empty the booking context
   // If they backtrack to the providers page to check out another service, the useEffect will fire and refill the booking context with the basic provider information
 
@@ -76,6 +78,14 @@ export default function Page() {
       setAuthLoading(false);
     }
   }, [authContextObject]);
+
+  useEffect(() => {
+    // Trigger confetti after a short delay for better effect
+    const timer = setTimeout(() => {
+      setShowConfetti(true);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, []);
 
   const {
     data: bookingData,
@@ -108,8 +118,14 @@ export default function Page() {
 
   if (bookingIsLoading || providerIsLoading || authLoading) {
     return (
-      <div className="m-auto w-4/5 max-w-[500px]">
-        <LoadingSkeleton />
+      <div className="min-h-screen bg-gray-50 py-8">
+        <div className="m-auto w-4/5 max-w-[600px]">
+          <Card className="border border-gray-200 bg-white shadow-none">
+            <CardBody className="p-8">
+              <LoadingSkeleton />
+            </CardBody>
+          </Card>
+        </div>
       </div>
     );
   }
@@ -134,88 +150,165 @@ export default function Page() {
   */
 
   return (
-    <Card className="m-auto w-4/5 max-w-[500px]">
-      <CardBody className="m-auto w-[90%] text-center">
-        {/* Header */}
-        <header className="mb-4 flex flex-col items-center gap-2">
-          <div className="bg-green-200 flex h-10 w-10 flex-row items-center justify-center rounded-full text-center">
-            <Check color="#187a24" />
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="m-auto w-4/5 max-w-[600px]">
+        {/* Confetti Effect */}
+        {showConfetti && (
+          <div className="fixed inset-0 pointer-events-none z-50">
+            <ConfettiExplosion
+              force={0.8}
+              duration={6000}
+              particleCount={200}
+              width={1600}
+              colors={["#10B981", "#3B82F6", "#8B5CF6", "#F59E0B", "#EF4444"]}
+            />
           </div>
-          <h1 className="text-xl font-black lg:text-2xl">Booking Confirmed</h1>
-          <p className="xs text-light-font-color lg:text-sm">
-            ID: {bookingData?.id}
-          </p>
-        </header>
-        {/* Appointment Card */}
-        <Card className="mb-4 bg-[#ededed]">
-          <CardBody className="flex flex-row items-center gap-4">
-            <Calendar color="#2563eb" size={18} />
-            <div className="flex flex-col">
-              {serviceDateAndTime ? (
-                <>
-                  <p>{serviceDateAndTime.datePart}</p>
-                  <p className="sm text-light-font-color">
-                    {serviceDateAndTime.timePart}
-                  </p>
-                </>
-              ) : (
-                <p>There was an error getting the booking date</p>
-              )}
+        )}
+
+        {/* Main Card */}
+        <Card className="border border-gray-200 bg-white shadow-none">
+          <CardBody className="p-8">
+            {/* Header */}
+            <header className="mb-8 flex flex-col items-center gap-4">
+              <div className="relative">
+                <div className="bg-green-500 flex h-16 w-16 flex-row items-center justify-center rounded-full text-center">
+                  <Check color="green" size={48} strokeWidth={4} />
+                </div>
+              </div>
+              <div className="text-center">
+                <h1 className="text-2xl font-bold text-gray-900 lg:text-3xl">
+                  Booking Confirmed
+                </h1>
+                <p className="text-gray-600 mt-2 text-sm">
+                  Your service has been successfully scheduled
+                </p>
+                <p className="text-xs text-gray-500 mt-1 font-mono">
+                  ID: {bookingData?.id}
+                </p>
+              </div>
+            </header>
+
+            {/* Appointment Card */}
+            <Card className="mb-6 bg-blue-50/30 border border-blue-100/50 shadow-none">
+              <CardBody className="p-5">
+                <div className="flex flex-row items-center gap-4">
+                  <div className="bg-blue-500/80 p-2 rounded-full">
+                    <Calendar color="white" size={18} />
+                  </div>
+                  <div className="flex flex-col">
+                    <h3 className="font-medium text-gray-700 text-sm">
+                      Appointment
+                    </h3>
+                    {serviceDateAndTime ? (
+                      <>
+                        <p className="text-lg font-semibold text-gray-900">
+                          {serviceDateAndTime.datePart}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          {serviceDateAndTime.timePart}
+                        </p>
+                      </>
+                    ) : (
+                      <p className="text-red-500">
+                        There was an error getting the booking date
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </CardBody>
+            </Card>
+
+            {/* Service and Address Card */}
+            <Card className="mb-6 bg-purple-50/30 border border-purple-100/50 shadow-none">
+              <CardBody className="p-5">
+                <div className="flex flex-row items-start gap-4">
+                  <div className="bg-purple-500/80 p-2 rounded-full mt-1">
+                    <MapPin color="white" size={18} />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-medium text-gray-700 text-sm mb-2">
+                      Service & Location
+                    </h3>
+                    <p className="text-lg font-semibold text-gray-900 mb-2">
+                      {service ? service.service_title : "Service not found"}
+                    </p>
+                    <div className="bg-white/80 p-3 rounded border border-gray-200/50">
+                      <p className="text-sm text-gray-700">
+                        {`${authContextObject.streetAddress1}`}
+                        {authContextObject.streetAddress2 &&
+                          `, ${authContextObject.streetAddress2}`}
+                        {`, ${authContextObject.city}, ${authContextObject.state} ${authContextObject.zip}`}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </CardBody>
+            </Card>
+
+            {/* Provider Card */}
+            <Card className="mb-6 bg-emerald-50/30 border border-emerald-100/50 shadow-none">
+              <CardBody className="p-5">
+                <div className="flex flex-row items-center justify-between gap-4">
+                  <div className="flex flex-row items-center gap-4">
+                    <div className="bg-emerald-500/80 p-2 rounded-full">
+                      <Phone color="white" size={18} />
+                    </div>
+                    <div>
+                      <h3 className="font-medium text-gray-700 text-sm">
+                        Provider
+                      </h3>
+                      <p className="text-lg font-semibold text-gray-900">
+                        {providerData?.company_name || "Company Name Not Found"}
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        {providerData?.phone_number}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-xs text-gray-500">Total Price</p>
+                    <p className="text-xl font-bold text-gray-900">
+                      ${service?.pricing}
+                    </p>
+                  </div>
+                </div>
+              </CardBody>
+            </Card>
+
+            {/* Action Buttons */}
+            <div className="space-y-3 mb-8">
+              <Link href={`/api/generate-ics/${bookingId}`}>
+                <StyledAsButton
+                  className="w-full bg-green-600/90 text-white font-medium py-3 text-base hover:bg-green-600 transition-colors duration-200"
+                  label="Add To Calendar"
+                  startContent={<Calendar size={18} />}
+                />
+              </Link>
+
+              <StyledAsButton
+                endContent={<ArrowRight size={16} />}
+                label="View My Bookings"
+                className="w-full bg-gray-100/80 text-gray-700 font-medium py-3 text-base border border-gray-200/60 hover:bg-gray-200/80 transition-colors duration-200"
+                onPress={() => router.push("/")}
+              />
             </div>
-          </CardBody>
-        </Card>
-        {/* Service and Address Card */}
-        <Card className="mb-4 bg-[#ededed]">
-          <CardBody className="flex flex-row items-center gap-4">
-            <MapPin color="#2563eb" size={20} />
-            <div>
-              <p>{service ? service.service_title : "Service not found"}</p>
-              <p>
-                {`${authContextObject.streetAddress1},
-                ${authContextObject.streetAddress2} ${authContextObject.city},
-                ${authContextObject.state} ${authContextObject.zip}`}
+
+            {/* Next Steps Info */}
+            <div className="bg-blue-50/40 rounded-lg p-5 border border-blue-200/50">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="bg-blue-500/70 w-2 h-2 rounded-full" />
+                <h3 className="font-medium text-blue-800/80 text-base">
+                  What&apos;s next?
+                </h3>
+              </div>
+              <p className="text-blue-700/80 text-sm leading-relaxed">
+                You&apos;ll receive real-time updates when your provider is on
+                the way. Sit back and relax - we&apos;ve got everything covered!
               </p>
             </div>
           </CardBody>
         </Card>
-        {/* Provider Card */}
-        <Card className="mb-4 bg-[#ededed]">
-          <CardBody className="flex flex-row items-center justify-between gap-4">
-            <div className="flex flex-row items-center justify-around gap-4">
-              <Phone color="#2563eb" size={20} />
-              <div>
-                <p>{providerData?.company_name || "Company Name Not Found"}</p>
-                <p className="sm text-light-font-color">
-                  {providerData?.phone_number}
-                </p>
-              </div>
-            </div>
-            <div>
-              <p className="font-black">${service?.pricing}</p>
-            </div>
-          </CardBody>
-        </Card>
-        <Link className="mb-2" href={`/api/generate-ics/${bookingId}`}>
-          <StyledAsButton
-            className="w-full"
-            label="Add To Calandar"
-            startContent={<Calendar size={18} />}
-          />
-        </Link>
-        <StyledAsButton
-          endContent={<ArrowRight size={16} />}
-          label="View My Bookings"
-          className="mb-2 bg-[#ededed] text-black"
-          onPress={() => router.push("/")}
-        />
-        <p className="mb-8 rounded-lg bg-blue-100 p-4">
-          {/* have to use &apos; in place of an apostrophe for linting rules */}
-          <span className="text-primary">What&apos;s next? </span>
-          <span>
-            You&apos;ll get updates when your provider is on the way.{" "}
-          </span>
-        </p>
-      </CardBody>
-    </Card>
+      </div>
+    </div>
   );
 }

@@ -23,6 +23,7 @@ declare global {
     state?: string;
     zip?: string;
     addressId?: string;
+    hasCompletedAuthCheck?: boolean;
   };
   // all are optional, because the auth context will start as a blank object
 

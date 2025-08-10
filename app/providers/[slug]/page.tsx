@@ -129,7 +129,7 @@ export default function Page({ params }: { params: { slug: string } }) {
       {/* Chip container */}
       {/* Conditionally render if there is a serice object */}
       {serviceObject?.label && (
-        <div className="mb-4 flex gap-1 overflow-x-scroll">
+        <div className="mb-4 flex gap-1 overflow-hidden">
           {chipServicesArray.map((service, idx) => (
             <Chip
               onClick={() => {
@@ -157,11 +157,12 @@ export default function Page({ params }: { params: { slug: string } }) {
           setSearchValue(e.target.value);
           handleSearchBarFilter(e.target.value);
         }}
+        placeholder="Search for a provider"
         value={searchValue}
         endContent={
           <Image src={searchIcon} alt="Search Icon" height={25} width={25} />
         }
-        className="mx-auto my-4 max-w-5xl rounded-xl border-1 border-secondary-font-color"
+        className="mx-auto my-4 max-w-5xl rounded-xl border-1 border-gray-200 p-4"
       />
       <p className="mb-4">
         {filteredCompanyData?.length ?? 0} Providers Available
@@ -172,17 +173,17 @@ export default function Page({ params }: { params: { slug: string } }) {
             <Card
               classNames={{ header: "pb-1", body: "py-0" }}
               key={id}
-              className="mx-auto mb-4 max-w-5xl border-1 border-secondary-font-color"
+              className="mx-auto mb-4 max-w-5xl border-0 border-secondary-font-color p-2"
             >
               {/* Temp links back to same page until we decide routing for unique providers */}
               <Link href={`/providers/${params.slug}/${id}`}>
-                <CardHeader className="text-xl lg:text-3xl">
+                <CardHeader className="text-lg lg:text-2xl">
                   {company_name || "Company Name Not Found"}
                 </CardHeader>
-                <CardBody className="flex flex-row items-center gap-1">
+                <CardBody className="flex flex-row items-center gap-1 mb-4">
                   <Image src={star} alt="star icon" width={22} height={22} />
                   <span className="font-black lg:text-xl">{rating}</span>
-                  <span className="text-secondary-font-color lg:text-xl">
+                  <span className="text-secondary-font-color lg:text-md">
                     {numberOfReviews ? (
                       <>({numberOfReviews} reviews)</>
                     ) : (
@@ -190,11 +191,11 @@ export default function Page({ params }: { params: { slug: string } }) {
                     )}
                   </span>
                 </CardBody>
-                <CardFooter className="flex gap-1 overflow-x-scroll">
+                <CardFooter className="flex gap-1">
                   {services.map((service) => (
                     <Chip
                       key={`${company_name}cardChip-${service.service_title}-${service.id}`}
-                      className="lg:text-lg"
+                      className="lg:text-sm bg-gray-100"
                     >
                       {service.service_title}
                     </Chip>

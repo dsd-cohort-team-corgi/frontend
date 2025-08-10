@@ -19,10 +19,13 @@ import { useApiQuery } from "@/lib/api-client";
 import UpcomingService from "@/components/UpcomingService";
 import LeaveReview from "@/components/LeaveReview";
 import Truck from "@/components/icons/Truck";
+import MessageSquare from "@/components/icons/MessageSquare";
 
 interface UserSession {
   id: string;
   email: string;
+  displayName?: string;
+  firstName?: string;
 }
 export interface BookingItem {
   provider_first_name: string;
@@ -70,55 +73,204 @@ function AuthenticatedHero({ userSession }: { userSession: UserSession }) {
       );
       setBookingStatuses(data?.upcoming_bookings);
     }
-  }, [dataUpdatedAt]);
+  }, [dataUpdatedAt, bookingStatuses, data?.upcoming_bookings]);
 
   if (isLoading) {
-    return <h1>Grabbing Booking Details...</h1>;
+    return (
+      <Container>
+        <div className="mb-8 text-center md:text-left">
+          <div className="mb-6 relative group">
+            {/* Loading skeleton background */}
+            <div className="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl opacity-60 -z-10 animate-pulse" />
+            <div className="py-4 rounded-2xl">
+              {/* Loading skeleton for title */}
+              <div className="mb-3">
+                <div className="h-8 bg-gray-300 rounded-lg animate-pulse mb-2 md:h-10 lg:h-12" />
+                <div className="h-6 bg-gray-300 rounded-lg animate-pulse w-3/4 md:h-8 lg:h-10" />
+              </div>
+              {/* Loading skeleton for subtitle */}
+              <div className="h-5 bg-gray-300 rounded-lg animate-pulse w-2/3 md:h-6" />
+            </div>
+          </div>
+        </div>
+
+        {/* Loading skeleton for upcoming services */}
+        <div className="lg:p-2 shadow-lg border-0 bg-gradient-to-br from-white to-gray-50 rounded-xl">
+          <div className="p-4 md:text-md lg:pt-6 lg:pb-4">
+            <div className="space-y-2">
+              <div className="h-6 bg-gray-300 rounded-lg animate-pulse w-1/3 md:h-7" />
+              <div className="h-4 bg-gray-300 rounded-lg animate-pulse w-1/2 md:h-5" />
+            </div>
+          </div>
+          <div className="px-4 pb-4">
+            <div className="space-y-4">
+              {[1, 2, 3].map((i) => (
+                <div
+                  key={i}
+                  className="flex items-center space-x-4 p-4 bg-white rounded-lg border border-gray-100"
+                >
+                  <div className="size-12 bg-gray-300 rounded-full animate-pulse" />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-4 bg-gray-300 rounded-lg animate-pulse w-3/4" />
+                    <div className="h-3 bg-gray-300 rounded-lg animate-pulse w-1/2" />
+                  </div>
+                  <div className="h-8 w-20 bg-gray-300 rounded-lg animate-pulse" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </Container>
+    );
   }
 
   if (error) {
-    return <h1>Something went wrong {error.message}</h1>;
+    return (
+      <Container>
+        <div className="mb-8 text-center md:text-left">
+          <div className="mb-6 relative group">
+            {/* Error state background */}
+            <div className="absolute inset-0 bg-gradient-to-br from-red-50 to-red-100 rounded-2xl opacity-60 -z-10" />
+            <div className="py-4 rounded-2xl">
+              <div className="mb-3">
+                <h1 className="text-2xl font-bold text-red-800 md:text-3xl lg:text-4xl leading-tight">
+                  ⚠️ Something went wrong
+                </h1>
+                <p className="text-lg text-red-600 md:text-xl mt-2">
+                  {error.message || "Unable to load your booking details"}
+                </p>
+              </div>
+              <p className="text-base text-red-500">
+                Please try refreshing the page or contact support if the problem
+                persists.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Placeholder for upcoming services section */}
+        <div className="lg:p-2 shadow-lg border-0 bg-gradient-to-br from-white to-gray-50 rounded-xl">
+          <div className="p-4 md:text-md lg:pt-6 lg:pb-4">
+            <div className="space-y-2">
+              <h2 className="font-bold lg:text-xl text-gray-400">
+                Upcoming Services
+              </h2>
+              <p className="text-sm text-gray-400">Unable to load</p>
+            </div>
+          </div>
+          <div className="px-4 pb-4">
+            <div className="text-center py-8">
+              <p className="text-gray-400 text-lg">
+                Service information unavailable
+              </p>
+            </div>
+          </div>
+        </div>
+      </Container>
+    );
   }
   return (
     <Container>
-      <div className="mb-4 text-pretty text-left text-lg md:text-2xl lg:text-3xl">
-        <h1>
-          👋 Welcome back,{" "}
-          <span className="font-bold">{userSession.email}</span>
-        </h1>
-        <p>Book a service or manage your bookings</p>
+      <div className="mb-8 text-center md:text-left">
+        <div className="mb-6 relative group">
+          {/* Subtle background pattern */}
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl opacity-60 -z-10 transition-all duration-300 group-hover:opacity-80 group-hover:scale-[1.02]" />
+          <div className="py-4 rounded-2xl transition-all duration-300">
+            <h1 className="mb-3 text-2xl font-bold text-gray-900 md:text-3xl lg:text-4xl leading-tight">
+              👋 Welcome back,{" "}
+              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                {userSession.displayName ||
+                  userSession.firstName ||
+                  userSession.email?.split("@")[0] ||
+                  "there"}
+              </span>
+            </h1>
+            <p className="text-lg text-gray-600 md:text-2xl leading-relaxed">
+              Ready to book your next service or manage your bookings?
+            </p>
+          </div>
+        </div>
       </div>
-      {/* {data?.completed_needs_review && <LeaveReview />} */}
-      {data?.completed_needs_review.map(
-        ({ service_title, provider_company_name, start_time }) => (
-          <LeaveReview
-            key={`${provider_company_name}-${start_time}`}
-            service_title={service_title}
-            company_name={provider_company_name}
-            start_time={start_time}
-            customer_id={TEMP_CUSTOMER_ID}
-            provider_id={TEMP_PROVIDER_ID}
-          />
-        ),
-      )}
-      <UpcomingServicesCard className="lg:px-6">
-        <CardHeader className="flex flex-row items-start justify-between text-pretty p-4 md:text-lg lg:pt-8">
-          <h2 className="font-black lg:text-xl">
-            Your Upcoming Services ({data?.upcoming_bookings.length ?? 0})
-          </h2>
-          <p className="text-nowrap">View All</p>
+      {data?.completed_needs_review &&
+        data.completed_needs_review.length > 0 && (
+          <UpcomingServicesCard className="lg:p-2 shadow-lg border-0 bg-gradient-to-br from-green-50 to-emerald-50 mb-6">
+            <CardHeader className="flex flex-row items-start justify-between text-pretty p-4 md:text-md lg:pt-6 lg:pb-4">
+              <div className="space-y-2">
+                <h2 className="font-bold lg:text-xl text-gray-900">
+                  Services Completed ({data.completed_needs_review.length})
+                </h2>
+                <p className="text-sm text-gray-600 font-medium">
+                  Share your experience and help others choose
+                </p>
+              </div>
+              <div className="flex items-center gap-2 text-green-600">
+                <MessageSquare color="#187a24" />
+              </div>
+            </CardHeader>
+            <CardBody className="px-4 pb-4">
+              <div className="space-y-4">
+                {data.completed_needs_review.map(
+                  ({ service_title, provider_company_name, start_time }) => (
+                    <LeaveReview
+                      key={`${provider_company_name}-${start_time}`}
+                      service_title={service_title}
+                      company_name={provider_company_name}
+                      start_time={start_time}
+                      customer_id={TEMP_CUSTOMER_ID}
+                      provider_id={TEMP_PROVIDER_ID}
+                    />
+                  ),
+                )}
+              </div>
+            </CardBody>
+          </UpcomingServicesCard>
+        )}
+      <UpcomingServicesCard className="lg:p-2 shadow-lg border-0 bg-gradient-to-br from-white to-gray-50">
+        <CardHeader className="flex flex-row items-start justify-between text-pretty p-4 md:text-md lg:pt-6 lg:pb-4">
+          <div className="space-y-2">
+            <h2 className="font-bold lg:text-xl text-gray-900">
+              Your Upcoming Services ({data?.upcoming_bookings.length ?? 0})
+            </h2>
+            <p className="text-sm text-gray-600 font-medium">
+              Stay on top of your scheduled appointments
+            </p>
+          </div>
+          <button
+            type="button"
+            className="text-nowrap text-blue-600 hover:text-blue-700 font-semibold transition-colors duration-200 hover:underline"
+          >
+            View All
+          </button>
         </CardHeader>
-        <CardBody>
-          {data?.upcoming_bookings.map(
-            ({ provider_company_name, status, start_time, service_title }) => (
-              <UpcomingService
-                key={provider_company_name}
-                provider_company_name={provider_company_name}
-                status={status}
-                start_time={start_time}
-                service_title={service_title}
-              />
-            ),
+        <CardBody className="px-4 pb-4">
+          {data?.upcoming_bookings.length === 0 ? (
+            <div className="text-center py-8">
+              <p className="text-gray-500 text-lg">
+                No upcoming services scheduled
+              </p>
+              <p className="text-gray-400 text-sm mt-2">
+                Book your first service to get started!
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {data?.upcoming_bookings.map(
+                ({
+                  provider_company_name,
+                  status,
+                  start_time,
+                  service_title,
+                }) => (
+                  <UpcomingService
+                    key={provider_company_name}
+                    provider_company_name={provider_company_name}
+                    status={status}
+                    start_time={start_time}
+                    service_title={service_title}
+                  />
+                ),
+              )}
+            </div>
           )}
         </CardBody>
       </UpcomingServicesCard>
@@ -189,6 +341,8 @@ const renderHero = (authContextObject: AuthDetailsType) => {
         userSession={{
           id: authContextObject.supabaseUserId,
           email: authContextObject.email || "",
+          displayName: authContextObject.displayName,
+          firstName: authContextObject.firstName,
         }}
       />
     );

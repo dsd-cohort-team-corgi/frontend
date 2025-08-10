@@ -91,7 +91,7 @@ export default function Page() {
       paymentIntentId: undefined,
       // if they go from /checkout back to this page, perhaps to change the time or day we want them to keep all their selected information except for paymentIntentId
     });
-  }, [providerInfo]);
+  }, [providerInfo, updateBooking]);
 
   if (!providerInfo) return <div>Loading...</div>;
 
@@ -185,7 +185,7 @@ export default function Page() {
 
       {/* ################# CALENDAR ################ */}
 
-      <section className="order-3 mb-6 w-full rounded-3xl border-1 border-light-accent bg-white pl-4 pt-4 lg:w-[calc(50%-12px)] xl:order-4">
+      <section className="order-3 mb-6 w-full rounded-3xl border-1 border-light-accent bg-white p-4 lg:w-[calc(50%-12px)] xl:order-4">
         <h4 className="my-4 text-2xl text-secondary-font-color">
           Book Service
         </h4>
@@ -207,6 +207,7 @@ export default function Page() {
           </span>
         )}
         <CheckoutButton
+          className="font-bold w-full"
           providerInfo={providerInfo}
           disabled={!booking.serviceId || !booking.time || !booking.date}
         />

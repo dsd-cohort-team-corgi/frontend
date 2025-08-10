@@ -31,7 +31,7 @@ const config: Config = {
         sans: ["var(--font-dm-sans)"],
       },
       animation: {
-        "loading-bar": "loading-bar 2s ease-in-out infinite",
+        "loading-bar": "loading-bar 0.8s ease-in-out infinite",
       },
       keyframes: {
         "loading-bar": {

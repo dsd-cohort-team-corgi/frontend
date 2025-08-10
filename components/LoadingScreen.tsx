@@ -13,7 +13,6 @@ function LoadingScreen() {
             alt="Wipe Right Logo"
             width={120}
             height={120}
-            className="animate-pulse"
             priority
           />
         </div>

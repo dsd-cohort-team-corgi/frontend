@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardBody, CardHeader, useDisclosure } from "@heroui/react";
+import { useDisclosure } from "@heroui/react";
 import { useState, useEffect } from "react";
 import MessageSquare from "./icons/MessageSquare";
 import StyledAsButton from "./StyledAsButton";
@@ -40,30 +40,29 @@ function LeaveReview({
 
   return (
     <>
-      <Card className="bg-green-100 mb-4 lg:px-4">
-        <CardHeader>
-          {" "}
-          <MessageSquare color="#187a24" />
-          <span className="ml-2 text-lg font-semibold lg:text-xl">
-            Share Your Experience
-          </span>
-        </CardHeader>
-        <CardBody className="md:flex md:flex-row md:justify-between lg:text-lg">
-          <div>
-            <h3 className="font-semibold">{service_title}</h3>
-            <p>{company_name}</p>
-            <p className="text-light-font-color">
-              Completed on {dateFromStartTime.datePart}
+      <div className="flex items-center justify-between p-4 rounded-xl bg-white border border-gray-200 hover:border-green-300 hover:shadow-md transition-all duration-200">
+        <div className="flex items-center gap-4">
+          <div className="flex size-10 items-center justify-center rounded-full bg-gradient-to-br from-green-100 to-green-200 shadow-sm">
+            <MessageSquare color="#16a34a" />
+          </div>
+          <div className="space-y-1">
+            <h3 className="text-base font-semibold text-gray-900">
+              {service_title}
+            </h3>
+            <p className="text-sm text-gray-700 font-medium">{company_name}</p>
+            <p className="text-sm text-gray-500 flex items-center gap-2">
+              <span>✅</span>
+              Completed {dateFromStartTime.datePart}
             </p>
           </div>
-          <StyledAsButton
-            startContent={<Star size={isMobile ? 16 : 20} />}
-            label="Leave Review"
-            className="my-4 bg-[#187a24] lg:text-lg"
-            onPress={onOpen}
-          />
-        </CardBody>
-      </Card>
+        </div>
+        <StyledAsButton
+          startContent={<Star size={isMobile ? 16 : 18} />}
+          label="Leave Review"
+          className="bg-green-600 hover:bg-green-700 text-white text-sm px-4 py-2 h-10 font-medium transition-colors duration-200"
+          onPress={onOpen}
+        />
+      </div>
       <ReviewModal
         isOpen={isOpen}
         onOpenChange={onOpenChange}
