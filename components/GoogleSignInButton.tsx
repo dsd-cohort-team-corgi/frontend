@@ -29,11 +29,21 @@ export default function GoogleSignInButton() {
     document.cookie = `redirectPath=${window.location.pathname}; path=/; max-age=300`;
     console.log("About to sign out...");
 
-    // lets make sure we're entirely signed out for a fresh log in
-    // this will avoid errors with supabase accidently using an invalid old session for api calls
-    // auth.signOut logs out of client
-    await supabaseClient.auth.signOut({ scope: "global" });
+    try {
+      // lets make sure we're entirely signed out for a fresh log in
+      // this will avoid errors with supabase accidently using an invalid old session for api calls
+      // auth.signOut logs out of client
+      const signOutResult = await supabaseClient.auth.signOut({
+        scope: "global",
+      });
+      console.log("Sign out result:", signOutResult);
+      console.log("Sign out complete, about to start OAuth...");
+    } catch (error) {
+      console.error("Sign out error:", error);
+    }
     // auth.signInWithOAuth logs out on server
+
+    console.log("Starting OAuth...");
 
     const result = await supabaseClient.auth.signInWithOAuth({
       provider: "google",
