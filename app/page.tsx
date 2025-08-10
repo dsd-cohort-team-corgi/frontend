@@ -47,7 +47,7 @@ function AuthenticatedHero({ userSession }: { userSession: UserSession }) {
   const { data, dataUpdatedAt, error, isLoading } = useApiQuery<BookingsData>(
     ["customers", "customerId", "dashboard"],
     `/customers/${TEMP_CUSTOMER_ID}/dashboard`,
-    { refetchInterval: 500, refetchIntervalInBackGround: false },
+    { refetchInterval: 1000, refetchIntervalInBackGround: false },
   );
 
   // sets booking statuses to initial data for comparisons

@@ -71,23 +71,24 @@ function VoiceInput() {
   const shouldShowServices = services.length > 0;
   const action = response?.action;
   const showImageDropzone = action === "clarify";
+  const showGreeting = !response && !isListening;
+  const showInputUI = !shouldShowServices;
+  const showAiMessage = response && !aiThinking;
 
   return (
-    <div className="mt-10 flex flex-col items-center justify-center space-y-4">
+    <div className="flex flex-col items-center justify-center space-y-4">
+      {showGreeting && (
+        <div className="text-white text-center text-xl">
+          How can I help you today?
+        </div>
+      )}
       <UserTextBubbles
         finishedBubbles={finishedBubbles}
         inProgressBubbles={inProgressBubbles}
       />
-      <InputUi
-        aiThinking={aiThinking || isUploading}
-        isListening={isListening}
-        toggleListening={toggleListening}
-        showImageDropzone={showImageDropzone}
-        onImageUpload={uploadImage}
-      />
 
-      {response && (
-        <div className="">
+      {showAiMessage && (
+        <div className="mt-4">
           <div className="my-4 flex items-center justify-center">
             <img
               src="/bumi.png"
@@ -96,12 +97,12 @@ function VoiceInput() {
               className="mr-2 rounded-full bg-primary"
               alt="a happy corgi with its tongue lolling out of its mouth"
             />
-            <h3 className="text-green-800 text-center text-small">
-              Bumi says:
-            </h3>
+            <h3 className="text-white text-center text-small">Bumi says:</h3>
           </div>
           <div className="space-y-4">
-            <p className="text-white">{response.ai_message}</p>
+            <p className="text-white text-center text-xl">
+              {response.ai_message}
+            </p>
 
             {shouldShowServices && (
               <ServiceSelection
@@ -112,6 +113,16 @@ function VoiceInput() {
             )}
           </div>
         </div>
+      )}
+
+      {showInputUI && (
+        <InputUi
+          aiThinking={aiThinking || isUploading}
+          isListening={isListening}
+          toggleListening={toggleListening}
+          showImageDropzone={showImageDropzone}
+          onImageUpload={uploadImage}
+        />
       )}
 
       {isTestMode && (

@@ -132,7 +132,7 @@ export default function useVoiceRecognition({
           textsAfterLastApiRef.current = "";
           //   Clear after sending
         });
-    }, 3000); // 3 seconds of silence
+    }, 2000); // 2 seconds of silence
   };
 
   const createRecognition = () => {

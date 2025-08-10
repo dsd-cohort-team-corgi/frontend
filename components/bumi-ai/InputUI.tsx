@@ -60,7 +60,7 @@ export default function MicUi({
 
   const getButtonClassName = () => {
     if (isListening) {
-      return "bg-slate-800 text-slate-400";
+      return "bg-gray-900 text-white animate-pulse";
     }
 
     if (isDragActive) {
@@ -71,7 +71,8 @@ export default function MicUi({
   };
 
   const getContainerClassName = () => {
-    const baseClass = "w-full transition-all duration-200";
+    const baseClass =
+      "w-full transition-all duration-200 flex flex-col items-center justify-center";
 
     if (isDragActive) {
       return `${baseClass} border-2 border-dashed border-blue-400 rounded-lg p-4 bg-blue-50`;
@@ -114,7 +115,9 @@ export default function MicUi({
 
       {aiThinking && <LoadingMessage text="Hmm, let me think" />}
       {!aiThinking && isListening && (
-        <span className="block">I&apos;m listening...</span>
+        <span className="block text-gray-400 text-sm mb-4 mt-4">
+          I&apos;m listening...
+        </span>
       )}
 
       {!aiThinking && (
@@ -125,7 +128,7 @@ export default function MicUi({
         />
       )}
       {!aiThinking && !isListening && (
-        <span className="block">{helperText}</span>
+        <span className="block text-gray-400 text-sm mt-4">{helperText}</span>
       )}
     </div>
   );

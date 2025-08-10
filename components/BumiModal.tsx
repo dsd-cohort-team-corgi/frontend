@@ -50,7 +50,7 @@ const ModalContainer = styled.div`
   backdrop-filter: blur(16px);
   border-radius: 24px;
   padding: 40px 40px 40px 40px;
-  padding-top: 155px;
+  padding-top: 130px;
   animation: modalSlideIn 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 
   @keyframes modalSlideIn {
