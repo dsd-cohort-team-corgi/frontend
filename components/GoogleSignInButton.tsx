@@ -27,6 +27,7 @@ export default function GoogleSignInButton() {
     if (typeof window === "undefined") return;
 
     document.cookie = `redirectPath=${window.location.pathname}; path=/; max-age=300`;
+    console.log("About to sign out...");
 
     // lets make sure we're entirely signed out for a fresh log in
     // this will avoid errors with supabase accidently using an invalid old session for api calls
@@ -44,6 +45,9 @@ export default function GoogleSignInButton() {
         },
       },
     });
+
+    console.log("OAuth result:", result);
+    if (result.error) console.error("Login failed:", result.error);
 
     // When a user clicks on the login to google button:
     // 1. Supabase redirects the browser to Google's oauth endpoint
