@@ -3,9 +3,10 @@
 // This must be a client component, because Supabase sets the session from a fragment URL (#access_token=...) which is only accessible in the browser
 //   const router = useRouter();
 // if we want to redirect the user
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import supabaseClient from "@/lib/supabase";
+import { useQuery } from "@tanstack/react-query";
 
 // needs to be a page.tsx not a route.ts because supabaseClient.auth.getSession() is using client side logic
 // otherwise they'll be an error because route.ts is just for api handlers
