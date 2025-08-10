@@ -3,9 +3,16 @@
 import React from "react";
 import supabaseClient from "@/lib/supabase";
 import StyledAsButton from "./StyledAsButton";
+import { setBookingCookies } from "@/utils/cookies/bookingCookies";
+import { setCookie } from "@/utils/cookies/cookies";
+import { useBooking } from "./context-wrappers/BookingContext";
 
 export default function GoogleSignInButton() {
   // Save the current path before loging so they get sent back to the right page
+
+  const { booking } = useBooking();
+  const cookieExpirationInDays = 0.0034722;
+  // ~ 5 minutes
 
   const handleLoginWithSupabase = async () => {
     console.log("=== DEBUG INFO ===");
@@ -25,9 +32,20 @@ export default function GoogleSignInButton() {
     // so the window object is available, avoiding hydration errors
 
     if (typeof window === "undefined") return;
+    // Save current path for redirect after login
+    setCookie(
+      "redirectPath",
+      window.location.pathname,
+      cookieExpirationInDays,
+      "/",
+    );
+    // "/" is the fallback if the cookies have been cleared, or expired, or if the callback code fails to read the cookie
 
-    document.cookie = `redirectPath=${window.location.pathname}; path=/; max-age=300`;
-    console.log("About to sign out...");
+    if (booking) {
+      // Save booking details in cookies for use after login
+      // booking is not needed for the header login
+      setBookingCookies(booking, cookieExpirationInDays);
+    }
 
     try {
       // Add timeout to prevent hanging
