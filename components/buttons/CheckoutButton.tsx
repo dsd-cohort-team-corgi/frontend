@@ -26,7 +26,13 @@ export default function CheckoutButton({
   const { booking, updateBooking } = useBooking();
   const router = useRouter();
 
-  const { isOpen: signInIsOpen, onOpen: signInOnOpen } = useDisclosure();
+  console.log("booking", booking);
+
+  const {
+    isOpen: signInIsOpen,
+    onOpen: signInOnOpen,
+    onClose: signInIsClosed,
+  } = useDisclosure();
   const {
     isOpen: completeProfileIsOpen,
     onOpenChange: completeProfileOnOpenChange,
@@ -35,17 +41,20 @@ export default function CheckoutButton({
 
   useEffect(() => {
     if (providerInfo && "first_name" in providerInfo) {
-      // providerInfo is a ProviderInfo object
+      const redirectUrl = window.location.pathname;
+      // providerInfo is a ProviderInfo object, aka they are coming from the provider's page
+      // because ServiceRecommendation does not have "first_name"
       updateBooking({
         companyName: providerInfo?.company_name,
         firstName: providerInfo?.first_name,
         lastName: providerInfo?.last_name,
         providerId: providerInfo?.id,
+        redirectPath: redirectUrl,
         paymentIntentId: undefined,
         // if they go from /checkout back to this page, perhaps to change the time or day we want them to keep all their selected information except for paymentIntentId
       });
     } else {
-      // providerInfo is a ServiceRecommendation object
+      // providerInfo is a ServiceRecommendation object, they are coming from bumi ai
       const priceToNumber = Number(providerInfo?.price);
       console.log("providerInfo.available_time", providerInfo.available_time);
       updateBooking({
@@ -58,6 +67,7 @@ export default function CheckoutButton({
         paymentIntentId: undefined,
         providerId: providerInfo.provider_id,
         availableTime: providerInfo.available_time,
+        redirectPath: "/checkout",
       });
     }
   }, [providerInfo]);
@@ -91,7 +101,11 @@ export default function CheckoutButton({
 
   return (
     <section>
-      <SignInModal isOpen={signInIsOpen} onOpenChange={signInOnOpen} />
+      <SignInModal
+        isOpen={signInIsOpen}
+        onOpenChange={signInOnOpen}
+        signInIsClosed={signInIsClosed}
+      />
       <CompleteProfileModal
         isOpen={completeProfileIsOpen}
         onOpenChange={completeProfileOnOpenChange}

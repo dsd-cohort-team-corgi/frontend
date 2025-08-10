@@ -6,14 +6,14 @@ import { Leaf } from "lucide-react";
 import { useBooking } from "@/components/context-wrappers/BookingContext";
 
 type IconServiceTimeType = {
-  description: string;
+  title: string;
   time: number;
   price: number;
   id: string;
 };
 
 export default function IconServiceTime({
-  description,
+  title,
   time,
   price,
   id,
@@ -42,7 +42,7 @@ export default function IconServiceTime({
     } else {
       updateBooking({
         serviceId: id,
-        description,
+        serviceTitle: title,
         serviceDuration: time,
         price: String(price),
         paymentIntentId: undefined,
@@ -72,7 +72,7 @@ export default function IconServiceTime({
       </span>
 
       <div className="flex min-w-0 flex-1 flex-col flex-wrap sm:flex-row lg:flex-col xl:flex-row">
-        <p className="font-bold">{description}</p>
+        <p className="font-bold">{title}</p>
         <span
           className={`min-w-0 text-secondary-font-color sm:ml-2 ${booking.serviceId === id && "text-white"}`}
         >

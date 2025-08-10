@@ -7,19 +7,37 @@ import {
   ModalBody,
   ModalFooter,
 } from "@heroui/react";
+import { useBooking } from "@/components/context-wrappers/BookingContext";
 import GoogleSignInButton from "./GoogleSignInButton";
+import convertToWeekDayYearTime from "@/utils/convertToWeekDayYearTIme";
+import convertDateToWeekDayYear from "@/utils/convertDateToWeekDayYear";
 
 type LoginPageType = {
   isOpen: boolean;
   onOpenChange: () => void;
+  signInIsClosed: () => void;
 };
 // https://developers.google.com/identity/gsi/web/guides/display-button#javascript
 // https://www.npmjs.com/package/@react-oauth/google
 
-export default function LoginPage({ isOpen, onOpenChange }: LoginPageType) {
+export default function LoginPage({
+  isOpen,
+  onOpenChange,
+  signInIsClosed,
+}: LoginPageType) {
+  const { booking } = useBooking();
+
+  let timeFormatted = "";
+  if (booking.availableTime) {
+    timeFormatted = convertToWeekDayYearTime(booking.availableTime);
+  } else {
+    timeFormatted = `${convertDateToWeekDayYear(booking?.date)} ${booking.time}`;
+  }
+
   return (
     <Modal
       isOpen={isOpen}
+      onClose={signInIsClosed}
       placement="top-center"
       onOpenChange={onOpenChange}
       classNames={{
@@ -44,19 +62,19 @@ export default function LoginPage({ isOpen, onOpenChange }: LoginPageType) {
                 <span className="font-semibold text-secondary-font-color">
                   Service:
                 </span>{" "}
-                <span>Lawn Mowing</span>
+                <span>{booking.serviceTitle || ""}</span>
               </div>
               <div>
                 <span className="font-semibold text-secondary-font-color">
                   Date:
                 </span>
-                <span> Monday, July .... </span>
+                <span>{` ${timeFormatted}`}</span>
               </div>
               <div>
                 <span className="font-semibold text-secondary-font-color">
                   Total:
                 </span>{" "}
-                <span className="font-bold"> $65</span>
+                <span className="font-bold"> {`$${booking.price}`}</span>
               </div>
             </ModalBody>
             <ModalFooter className="flex-col items-center">

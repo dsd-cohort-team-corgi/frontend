@@ -12,6 +12,7 @@ import convertDateToTimeFromNow from "@/utils/convertDateToTimeFromNow";
 import Calendar from "@/components/Calendar/Calendar";
 import { useBooking } from "@/components/context-wrappers/BookingContext";
 import CheckoutButton from "@/components/buttons/CheckoutButton";
+import { getBookingFromCookies } from "@/utils/cookies/bookingCookies";
 
 // https://nextjs.org/docs/app/api-reference/file-conventions/dynamic-routes#convention
 // the docs are showing the Next.JS 15 behavior where params is a promise
@@ -83,15 +84,34 @@ export default function Page() {
   }, [booking.serviceId, providerInfo?.services]);
 
   useEffect(() => {
-    updateBooking({
-      companyName: providerInfo?.company_name,
-      firstName: providerInfo?.first_name,
-      lastName: providerInfo?.last_name,
-      providerId: providerInfo?.id,
-      paymentIntentId: undefined,
+    const bookingFromCookies = getBookingFromCookies(); // will return {} if its empty, so we won't have errors when spreading like we would with null data
+
+    if (providerInfo) {
+      // providerInfo will take a second to load, so wait for it
+
       // if they go from /checkout back to this page, perhaps to change the time or day we want them to keep all their selected information except for paymentIntentId
-    });
-  }, [providerInfo, updateBooking]);
+
+      if (bookingFromCookies.providerId !== providerId) {
+        // this check ensures we don't use cookies that don't match our current provider
+        // although we could delete the cookies now, I decided against it because they'll expire soon or be deleted when the user clicks the continue to booking button. Aka avoids a function call
+        updateBooking({
+          companyName: providerInfo?.company_name,
+          firstName: providerInfo?.first_name,
+          lastName: providerInfo?.last_name,
+          providerId: providerInfo?.id,
+          paymentIntentId: undefined,
+        });
+      }
+      updateBooking({
+        ...bookingFromCookies,
+        companyName: providerInfo?.company_name,
+        firstName: providerInfo?.first_name,
+        lastName: providerInfo?.last_name,
+        providerId: providerInfo?.id,
+        paymentIntentId: undefined,
+      });
+    }
+  }, [providerInfo]);
 
   if (!providerInfo) return <div>Loading...</div>;
 
@@ -175,7 +195,7 @@ export default function Page() {
         {providerInfo.services.map((service, index) => (
           <IconServiceTime
             key={`${service.service_description} ${service.duration} ${index}`}
-            description={service.service_title}
+            title={service.service_title}
             time={service.duration}
             price={service.pricing}
             id={service.id}
@@ -203,7 +223,7 @@ export default function Page() {
           <span className="block font-bold"> Please select a service</span>
         ) : (
           <span className="block font-bold">
-            {`${booking?.description} (${booking.serviceDuration} mins) - $${booking?.price}`}
+            {`${booking?.serviceTitle} (${booking.serviceDuration} mins) - $${booking?.price}`}
           </span>
         )}
         <CheckoutButton

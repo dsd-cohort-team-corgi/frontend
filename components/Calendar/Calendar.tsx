@@ -1,10 +1,10 @@
 "use client";
 
-import { format } from "date-fns";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import AvailableTimeSlots from "./AvailableTimeSlots";
 import { useBooking } from "@/components/context-wrappers/BookingContext";
+import convertDateToWeekDayYear from "@/utils/convertDateToWeekDayYear";
 
 type CalendarType = {
   providersAppointments: Appointment[];
@@ -57,7 +57,7 @@ export default function Calendar({
       <div className="mt-8">
         <span className="">
           {booking.date instanceof Date
-            ? format(booking.date, "EEEE, MMMM d, yyyy")
+            ? convertDateToWeekDayYear(booking.date)
             : "Select a day and time"}
         </span>
         {booking.date && (
