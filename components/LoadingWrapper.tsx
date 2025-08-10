@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import LoadingScreen from "./LoadingScreen";
-import { useAuthContext } from "@/components/context-wrappers/AuthContext";
+import supabase from "@/lib/supabase";
 
 interface LoadingWrapperProps {
   children: React.ReactNode;
@@ -10,40 +10,48 @@ interface LoadingWrapperProps {
 
 function LoadingWrapper({ children }: LoadingWrapperProps) {
   const [isLoading, setIsLoading] = useState(true);
-  const { authContextObject } = useAuthContext();
 
   useEffect(() => {
-    const maxAuthWaitTime = 8000; // 8 seconds max wait for auth
+    const maxAuthWaitTime = 3000;
 
     const timeout = setTimeout(() => {
-      console.warn(
-        "LoadingWrapper timeout reached, proceeding without auth completion",
-      );
+      console.warn("LoadingWrapper timeout reached, proceeding anyway");
       setIsLoading(false);
     }, maxAuthWaitTime);
 
-    const checkAuthStatus = () => {
-      const hasUserId = authContextObject.supabaseUserId;
-      const hasCompletedAuthCheck =
-        authContextObject.hasCompletedAuthCheck !== undefined;
-
-      if (hasUserId || hasCompletedAuthCheck) {
+    const checkSession = async () => {
+      try {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+        if (session?.user) {
+          console.log("LoadingWrapper: Found valid session, proceeding");
+          clearTimeout(timeout);
+          setIsLoading(false);
+        } else {
+          setTimeout(checkSession, 500);
+        }
+      } catch (error) {
+        console.warn("LoadingWrapper: Session check failed:", error);
         clearTimeout(timeout);
         setIsLoading(false);
       }
     };
 
-    // Check immediately
-    checkAuthStatus();
+    checkSession();
 
-    // Check again after a short delay to catch any immediate updates
-    const immediateCheck = setTimeout(checkAuthStatus, 100);
+    const intervalChecks = [
+      setTimeout(checkSession, 200),
+      setTimeout(checkSession, 500),
+      setTimeout(checkSession, 1000),
+      setTimeout(checkSession, 1500),
+    ];
 
     return () => {
       clearTimeout(timeout);
-      clearTimeout(immediateCheck);
+      intervalChecks.forEach(clearTimeout);
     };
-  }, [authContextObject]);
+  }, []);
 
   if (isLoading) {
     return <LoadingScreen />;
