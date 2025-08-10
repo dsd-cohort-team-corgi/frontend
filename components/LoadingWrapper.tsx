@@ -13,18 +13,36 @@ function LoadingWrapper({ children }: LoadingWrapperProps) {
   const { authContextObject } = useAuthContext();
 
   useEffect(() => {
-    // Check if auth context has been initialized
-    // We consider it initialized when we have either:
-    // 1. A user ID (meaning user is logged in)
-    // 2. An empty context but auth check has completed (meaning user is not logged in)
-    const hasUserId = authContextObject.supabaseUserId;
-    const hasCompletedAuthCheck =
-      authContextObject.hasCompletedAuthCheck !== undefined;
+    const maxAuthWaitTime = 8000; // 8 seconds max wait for auth
 
-    // If we have a user ID or we've completed the auth check, we're ready
-    if (hasUserId || hasCompletedAuthCheck) {
+    const timeout = setTimeout(() => {
+      console.warn(
+        "LoadingWrapper timeout reached, proceeding without auth completion",
+      );
       setIsLoading(false);
-    }
+    }, maxAuthWaitTime);
+
+    const checkAuthStatus = () => {
+      const hasUserId = authContextObject.supabaseUserId;
+      const hasCompletedAuthCheck =
+        authContextObject.hasCompletedAuthCheck !== undefined;
+
+      if (hasUserId || hasCompletedAuthCheck) {
+        clearTimeout(timeout);
+        setIsLoading(false);
+      }
+    };
+
+    // Check immediately
+    checkAuthStatus();
+
+    // Check again after a short delay to catch any immediate updates
+    const immediateCheck = setTimeout(checkAuthStatus, 100);
+
+    return () => {
+      clearTimeout(timeout);
+      clearTimeout(immediateCheck);
+    };
   }, [authContextObject]);
 
   if (isLoading) {

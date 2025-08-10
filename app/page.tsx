@@ -49,7 +49,7 @@ function AuthenticatedHero({ userSession }: { userSession: UserSession }) {
   >([]);
   const { data, dataUpdatedAt, error, isLoading } = useApiQuery<BookingsData>(
     ["customers", "customerId", "dashboard"],
-    `/customers/${TEMP_CUSTOMER_ID}/dashboard`,
+    `/customers/${userSession.id}/dashboard`,
     { refetchInterval: 1000, refetchIntervalInBackGround: false },
   );
 
