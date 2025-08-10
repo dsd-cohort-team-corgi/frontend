@@ -175,7 +175,7 @@ export default function Page() {
         {providerInfo.services.map((service, index) => (
           <IconServiceTime
             key={`${service.service_description} ${service.duration} ${index}`}
-            description={service.service_title}
+            title={service.service_title}
             time={service.duration}
             price={service.pricing}
             id={service.id}

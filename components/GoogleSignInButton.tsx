@@ -32,19 +32,27 @@ export default function GoogleSignInButton() {
     // so the window object is available, avoiding hydration errors
 
     if (typeof window === "undefined") return;
-    // Save current path for redirect after login
-    setCookie(
-      "redirectPath",
-      window.location.pathname,
-      cookieExpirationInDays,
-      "/",
-    );
     // "/" is the fallback if the cookies have been cleared, or expired, or if the callback code fails to read the cookie
 
-    if (booking) {
+    if (booking && booking.redirectUrl) {
       // Save booking details in cookies for use after login
-      // booking is not needed for the header login
+      // if statement because booking is not needed for the navbar login
       setBookingCookies(booking, cookieExpirationInDays);
+      setCookie(
+        "redirectPath",
+        booking?.redirectUrl,
+        // ex: /checkout, /provider/category/providerid
+        cookieExpirationInDays,
+        "/",
+      );
+    } else {
+      setCookie(
+        "redirectPath",
+        window.location.pathname,
+        // ex: when clicking on the navbar login, this is wherever they were at
+        cookieExpirationInDays,
+        "/",
+      );
     }
 
     try {

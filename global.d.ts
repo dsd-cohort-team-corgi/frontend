@@ -38,6 +38,7 @@ declare global {
     customerId?: string;
     providerId?: string;
     addressId?: string;
+    serviceTitle?: string;
     companyName?: string;
     firstName?: string;
     lastName?: string;
@@ -50,6 +51,7 @@ declare global {
     date?: Date;
     availableTime?: string;
     serviceNotes?: string;
+    redirectUrl?: string;
   };
 
   interface ProviderService {

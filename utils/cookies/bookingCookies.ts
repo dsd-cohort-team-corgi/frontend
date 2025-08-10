@@ -1,15 +1,5 @@
 import { removeCookie, getCookie, setCookie } from "./cookies";
-
-const cookieMappings: { key: keyof BookingDetailsType; cookieName: string }[] =
-  [
-    { key: "price", cookieName: "booking_price" },
-    { key: "providerId", cookieName: "booking_provider_id" },
-    { key: "serviceId", cookieName: "booking_service_id" },
-    { key: "date", cookieName: "booking_date" },
-    { key: "time", cookieName: "booking_time" },
-    { key: "description", cookieName: "booking_description" },
-    { key: "serviceDuration", cookieName: "booking_duration" },
-  ];
+import { cookieMappings } from "@/utils/cookies/CookiesMapFromBookingDetails";
 
 export function deleteBookingCookies() {
   cookieMappings.forEach(({ cookieName }) => {
