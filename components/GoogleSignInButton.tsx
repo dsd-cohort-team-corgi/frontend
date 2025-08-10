@@ -32,12 +32,12 @@ export default function GoogleSignInButton() {
     try {
       // Add timeout to prevent hanging
       const signOutPromise = supabaseClient.auth.signOut({ scope: "global" });
-      const timeoutPromise = new Promise((_, reject) =>
+      const timeoutPromise = new Promise((_, reject) => {
         setTimeout(
           () => reject(new Error("Sign out timeout after 5 seconds")),
           5000,
-        ),
-      );
+        );
+      });
 
       const signOutResult = await Promise.race([
         signOutPromise,
