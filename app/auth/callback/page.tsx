@@ -5,10 +5,10 @@
 // if we want to redirect the user
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import supabaseClient from "@/lib/supabase";
 import { useQuery } from "@tanstack/react-query";
+import supabaseClient from "@/lib/supabase";
 
-import { getCookie, removeCookie } from "@/utils/cookies/cookies";
+import { getCookie } from "@/utils/cookies/cookies";
 
 // needs to be a page.tsx not a route.ts because supabaseClient.auth.getSession() is using client side logic
 // otherwise they'll be an error because route.ts is just for api handlers
@@ -43,7 +43,7 @@ export default function AuthCallback() {
 
   const hasHashTokens = () => {
     if (typeof window === "undefined") return false;
-    const hash = window.location.hash;
+    const { hash } = window.location;
     return hash.includes("access_token") || hash.includes("error");
   };
 
@@ -69,14 +69,15 @@ export default function AuthCallback() {
         "Signin failed. No valid access_token or error exists for Supabase to process the login. Redirecting...",
       );
       setTimeout(handleRedirect, 3000);
-      return;
+      return () => {};
+      // this way the 2 returns always return a function, eslint wasn't happy this first one used to return nothing but the second one was a cleanup return
     }
 
     // Subscribe to auth state changes for edge cases
     const {
       data: { subscription },
-    } = supabaseClient.auth.onAuthStateChange((event, session) => {
-      if (session) {
+    } = supabaseClient.auth.onAuthStateChange((event, authSession) => {
+      if (authSession) {
         setMessageToUser("Signed in! Redirecting...");
         setPollingEnabled(false); // <-- STOP react-query polling, no need to keep checking
         handleRedirect();

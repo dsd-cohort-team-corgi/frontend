@@ -9,7 +9,6 @@ import {
 } from "@heroui/react";
 import { useBooking } from "@/components/context-wrappers/BookingContext";
 import GoogleSignInButton from "./GoogleSignInButton";
-import formatDateTimeString from "@/utils/formatDateTimeString";
 import convertToWeekDayYearTime from "@/utils/convertToWeekDayYearTIme";
 import convertDateToWeekDayYear from "@/utils/convertDateToWeekDayYear";
 
@@ -32,9 +31,7 @@ export default function LoginPage({
   if (booking.availableTime) {
     timeFormatted = convertToWeekDayYearTime(booking.availableTime);
   } else {
-    if (booking.date && booking.time) {
-      timeFormatted = `${convertDateToWeekDayYear(booking?.date)} ${booking.time}`;
-    }
+    timeFormatted = `${convertDateToWeekDayYear(booking?.date)} ${booking.time}`;
   }
 
   return (
