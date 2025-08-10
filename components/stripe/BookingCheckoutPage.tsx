@@ -78,7 +78,7 @@ export default function BookingCheckoutPage() {
 
         <section className="mt-5 flex justify-between">
           <div>
-            <span className="block font-semibold"> {booking.description}</span>
+            <span className="block font-semibold"> {booking.serviceTitle}</span>
 
             <span className="block text-sm text-secondary-font-color">
               {`${booking.serviceDuration || ""} mins`}

@@ -51,7 +51,7 @@ declare global {
     date?: Date;
     availableTime?: string;
     serviceNotes?: string;
-    redirectUrl?: string;
+    redirectPath?: string;
   };
 
   interface ProviderService {

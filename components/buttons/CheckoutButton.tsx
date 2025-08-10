@@ -26,6 +26,8 @@ export default function CheckoutButton({
   const { booking, updateBooking } = useBooking();
   const router = useRouter();
 
+  console.log("booking", booking);
+
   const {
     isOpen: signInIsOpen,
     onOpen: signInOnOpen,
@@ -47,7 +49,7 @@ export default function CheckoutButton({
         firstName: providerInfo?.first_name,
         lastName: providerInfo?.last_name,
         providerId: providerInfo?.id,
-        redirectUrl: redirectUrl,
+        redirectPath: redirectUrl,
         paymentIntentId: undefined,
         // if they go from /checkout back to this page, perhaps to change the time or day we want them to keep all their selected information except for paymentIntentId
       });
@@ -65,7 +67,7 @@ export default function CheckoutButton({
         paymentIntentId: undefined,
         providerId: providerInfo.provider_id,
         availableTime: providerInfo.available_time,
-        redirectUrl: "/checkout",
+        redirectPath: "/checkout",
       });
     }
   }, [providerInfo]);
