@@ -33,6 +33,7 @@ type RequestCopyType = {
 
 type UseVoiceRecognitionOptions = {
   onApiResponse: (data: ChatResponse) => void;
+  onBeforeApiCall?: (text: string) => boolean | void; // Return true to prevent API call, false/undefined to continue
   apiEndPath: string;
   setErrorMessage: React.Dispatch<React.SetStateAction<string>>;
   setRequestCopy: React.Dispatch<React.SetStateAction<RequestCopyType | null>>;
@@ -42,6 +43,7 @@ type UseVoiceRecognitionOptions = {
 
 export default function useVoiceRecognition({
   onApiResponse,
+  onBeforeApiCall,
   apiEndPath,
   setErrorMessage,
   setRequestCopy,
@@ -85,6 +87,19 @@ export default function useVoiceRecognition({
       if (!textToSend) {
         console.warn("No text accumulated to send");
         return;
+      }
+
+      // Check if we should intercept this text before API call
+      if (onBeforeApiCall) {
+        const shouldPreventApiCall = onBeforeApiCall(textToSend);
+        if (shouldPreventApiCall === true) {
+          // Prevent API call, reset state, and return
+          textsAfterLastApiRef.current = "";
+          setInProgressBubbles("");
+          liveTranscriptRef.current = "";
+          if (silenceTimer.current) clearTimeout(silenceTimer.current);
+          return;
+        }
       }
 
       setAiThinking(true);
