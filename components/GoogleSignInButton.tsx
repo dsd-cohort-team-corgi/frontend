@@ -30,16 +30,24 @@ export default function GoogleSignInButton() {
     console.log("About to sign out...");
 
     try {
-      // lets make sure we're entirely signed out for a fresh log in
-      // this will avoid errors with supabase accidently using an invalid old session for api calls
-      // auth.signOut logs out of client
-      const signOutResult = await supabaseClient.auth.signOut({
-        scope: "global",
-      });
+      // Add timeout to prevent hanging
+      const signOutPromise = supabaseClient.auth.signOut({ scope: "global" });
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(
+          () => reject(new Error("Sign out timeout after 5 seconds")),
+          5000,
+        ),
+      );
+
+      const signOutResult = await Promise.race([
+        signOutPromise,
+        timeoutPromise,
+      ]);
       console.log("Sign out result:", signOutResult);
       console.log("Sign out complete, about to start OAuth...");
     } catch (error) {
       console.error("Sign out error:", error);
+      console.log("Continuing with OAuth despite sign out error...");
     }
     // auth.signInWithOAuth logs out on server
 
