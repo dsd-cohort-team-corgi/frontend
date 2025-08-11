@@ -15,14 +15,14 @@ import {
 import listOfServices from "@/data/services";
 import LoadingSkeleton from "@/components/LoadingSkeleton";
 import searchIcon from "../../../public/searchIcon.svg";
-import star from "../../../public/star.svg";
 import { useApiQuery } from "@/lib/api-client";
+import StarRatingReview from "@/components/ProviderOverallRatingInfo";
 
 interface CompanyListInterface {
   id: string;
   company_name: string;
-  rating: number;
-  numberOfReviews: number;
+  average_rating: number;
+  review_count: number;
   services: {
     id: string;
     service_title: string;
@@ -169,7 +169,7 @@ export default function Page({ params }: { params: { slug: string } }) {
       </p>
       {filteredCompanyData &&
         filteredCompanyData.map(
-          ({ id, company_name, rating, numberOfReviews, services }) => (
+          ({ id, company_name, average_rating, review_count, services }) => (
             <Card
               classNames={{ header: "pb-1", body: "py-0" }}
               key={id}
@@ -181,11 +181,12 @@ export default function Page({ params }: { params: { slug: string } }) {
                   {company_name || "Company Name Not Found"}
                 </CardHeader>
                 <CardBody className="flex flex-row items-center gap-1 mb-4">
-                  <Image src={star} alt="star icon" width={22} height={22} />
-                  <span className="font-black lg:text-xl">{rating}</span>
                   <span className="text-secondary-font-color lg:text-md">
-                    {numberOfReviews ? (
-                      <>({numberOfReviews} reviews)</>
+                    {review_count ? (
+                      <StarRatingReview
+                        numberOfReviews={review_count}
+                        providerRating={average_rating}
+                      />
                     ) : (
                       "Be the first to review!"
                     )}
