@@ -46,6 +46,7 @@ export default function LoginPage({
         base: "max-w-[500px]",
         // default version was too small and had a max-w-m
       }}
+      style={{ zIndex: 60 }}
     >
       <ModalContent>
         {() => (
