@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Form, Input } from "@heroui/react";
+import { useQueryClient } from "@tanstack/react-query";
 import StyledAsButton from "@/components/StyledAsButton";
 import User from "@/components/icons/User";
 import Phone from "@/components/icons/Phone";
@@ -17,7 +18,6 @@ import { useAuthContext } from "@/components/context-wrappers/AuthContext";
 import { useApiMutation } from "@/lib/api-client";
 import formatPhoneNumber from "@/utils/phone/formatPhoneNum";
 import filterPhoneInput from "@/utils/phone/filterPhoneInput";
-import { useQueryClient } from "@tanstack/react-query";
 import { usStates } from "@/data/usStates";
 import {
   CustomerPayload,
@@ -138,7 +138,7 @@ export default function CompleteProfileModal() {
     // if there is not a supabaseUserId then the users not signed in
     if (!authContextObject.supabaseUserId || !profileRef.current) return;
 
-    let userJustSignedIn = getCookie("just_signed_in");
+    const userJustSignedIn = getCookie("just_signed_in");
 
     if (!userJustSignedIn) {
       //  we only want this check to run once, when they just signed in
@@ -181,8 +181,8 @@ export default function CompleteProfileModal() {
   });
 
   return (
-    <section>
-      <h1 className="text-center text-2xl font-semibold mb-4">
+    <section className="mx-auto w-[90%] max-w-5xl">
+      <h1 className="text-center text-2xl font-semibold mb-6">
         Create an account{" "}
       </h1>
       <hr />
@@ -194,9 +194,9 @@ export default function CompleteProfileModal() {
           handleSubmit();
         }}
       >
-        {/* ################### First Name  ################*/}
+        {/* ################### First Name  ################ */}
 
-        <div className="sm:flex justify-between w-full">
+        <div className="sm:flex justify-between w-full gap-2">
           <Input
             isDisabled={isPending}
             onChange={(e) =>
@@ -215,7 +215,7 @@ export default function CompleteProfileModal() {
             label="First Name"
           />
 
-          {/* ################### Last Name  ################*/}
+          {/* ################### Last Name  ################ */}
 
           <Input
             isDisabled={isPending}
@@ -236,64 +236,64 @@ export default function CompleteProfileModal() {
           />
         </div>
 
-        {/* ################### Phone ################*/}
+        {/* ################### Phone ################ */}
+        <div className="sm:flex justify-between w-full gap-2">
+          <Input
+            isDisabled={isPending}
+            value={profileData.phoneNumber}
+            onChange={handlePhoneChange}
+            onBlur={handlePhoneBlur}
+            description="For service updates and provider contact"
+            placeholder="xxx-xxx-xxxx"
+            startContent={<Phone size={18} color="#62748e" />}
+            isRequired
+            name="phone_number"
+            type="tel"
+            errorMessage="Please enter a valid phone number"
+            label="Phone Number"
+            pattern="\d{3}-\d{3}-\d{4}"
+          />
 
-        <Input
-          isDisabled={isPending}
-          value={profileData.phoneNumber}
-          onChange={handlePhoneChange}
-          onBlur={handlePhoneBlur}
-          description="For service updates and provider contact"
-          placeholder="xxx-xxx-xxxx"
-          startContent={<Phone size={18} color="#62748e" />}
-          isRequired
-          name="phone_number"
-          type="tel"
-          errorMessage="Please enter a valid phone number"
-          label="Phone Number"
-          pattern="\d{3}-\d{3}-\d{4}"
-        />
+          {/* ################### Address 1 ################ */}
 
-        {/* ################### Address 1 ################*/}
+          <Input
+            isDisabled={isPending}
+            onChange={(e) =>
+              setProfileData((prev) => ({
+                ...prev,
+                streetAddress1: e.target.value,
+              }))
+            }
+            value={profileData.streetAddress1}
+            placeholder="123 Main Street"
+            startContent={<MapPin size={18} color="#62748e" />}
+            isRequired
+            name="street_address_1"
+            type="text"
+            errorMessage="Please enter a valid street address"
+            label="Service Address"
+          />
+        </div>
+        {/* ################### Address 2  ################ */}
+        <div className="sm:flex justify-between w-full gap-2">
+          <Input
+            isDisabled={isPending}
+            onChange={(e) =>
+              setProfileData((prev) => ({
+                ...prev,
+                streetAddress1: e.target.value,
+              }))
+            }
+            value={profileData.streetAddress2}
+            placeholder="Apt 4b"
+            startContent={<MapPin size={18} color="#62748e" />}
+            name="street_address_2"
+            type="text"
+            errorMessage="Please enter a valid street address"
+            label="Service Address 2"
+          />
 
-        <Input
-          isDisabled={isPending}
-          onChange={(e) =>
-            setProfileData((prev) => ({
-              ...prev,
-              streetAddress1: e.target.value,
-            }))
-          }
-          value={profileData.streetAddress1}
-          placeholder="123 Main Street"
-          startContent={<MapPin size={18} color="#62748e" />}
-          isRequired
-          name="street_address_1"
-          type="text"
-          errorMessage="Please enter a valid street address"
-          label="Service Address"
-        />
-
-        {/* ################### Address 2  ################*/}
-
-        <Input
-          isDisabled={isPending}
-          onChange={(e) =>
-            setProfileData((prev) => ({
-              ...prev,
-              streetAddress1: e.target.value,
-            }))
-          }
-          value={profileData.streetAddress2}
-          placeholder="Apt 4b"
-          startContent={<MapPin size={18} color="#62748e" />}
-          name="street_address_2"
-          type="text"
-          errorMessage="Please enter a valid street address"
-          label="Service Address 2"
-        />
-        <div className="w-full lg:flex lg:gap-2">
-          {/* ################### City ################*/}
+          {/* ################### City ################ */}
 
           <Input
             isDisabled={isPending}
@@ -310,57 +310,57 @@ export default function CompleteProfileModal() {
             type="text"
             errorMessage="Please enter a valid city"
             label="City"
-            className="md:flex-1"
           />
-          <div className="flex">
-            {/* ################### State  ################*/}
-
-            <Input
-              isDisabled={isPending}
-              onChange={(e) =>
-                setProfileData((prev) => ({
-                  ...prev,
-                  state: e.target.value,
-                }))
-              }
-              value={profileData.state?.toLowerCase()}
-              placeholder="California"
-              isRequired
-              name="state"
-              type="text"
-              errorMessage="Please enter a valid state"
-              label="State"
-              list="stateList"
-              id="state"
-            />
-            <datalist id="stateList">
-              {usStates.map((state) => (
-                <option key={state} value={state}>
-                  {state}
-                </option>
-              ))}
-            </datalist>
-
-            {/* ################### Zip ################*/}
-
-            <Input
-              isDisabled={isPending}
-              onChange={(e) =>
-                setProfileData((prev) => ({
-                  ...prev,
-                  zip: e.target.value,
-                }))
-              }
-              value={profileData.zip}
-              placeholder="94102"
-              isRequired
-              name="zip"
-              type="number"
-              errorMessage="Please enter a valid zip code"
-              label="Zip"
-            />
-          </div>
         </div>
+        <div className="sm:flex justify-between w-full gap-2">
+          {/* ################### State  ################ */}
+
+          <Input
+            isDisabled={isPending}
+            onChange={(e) =>
+              setProfileData((prev) => ({
+                ...prev,
+                state: e.target.value,
+              }))
+            }
+            value={profileData.state?.toLowerCase()}
+            placeholder="California"
+            isRequired
+            name="state"
+            type="text"
+            errorMessage="Please enter a valid state"
+            label="State"
+            list="stateList"
+            id="state"
+          />
+          <datalist id="stateList">
+            {usStates.map((state) => (
+              <option key={state} value={state}>
+                {state}
+              </option>
+            ))}
+          </datalist>
+
+          {/* ################### Zip ################ */}
+
+          <Input
+            isDisabled={isPending}
+            onChange={(e) =>
+              setProfileData((prev) => ({
+                ...prev,
+                zip: e.target.value,
+              }))
+            }
+            value={profileData.zip}
+            placeholder="94102"
+            isRequired
+            name="zip"
+            type="number"
+            errorMessage="Please enter a valid zip code"
+            label="Zip"
+          />
+        </div>
+
         <p className="m-auto text-center text-xs text-light-font-color">
           This will be your default address for future bookings
         </p>

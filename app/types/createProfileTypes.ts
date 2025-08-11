@@ -39,7 +39,7 @@ export type CustomerResponse = {
   updated_at: string;
 };
 
-export type generateButtonAndErrorTextType = {
+export type GenerateButtonAndErrorTextType = {
   customerMutation: UseMutationResult<
     CustomerResponse,
     Error,

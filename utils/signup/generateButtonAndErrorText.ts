@@ -1,10 +1,10 @@
 import getFailureObjectDetails from "@/utils/getFailureObjectDetails";
-import { generateButtonAndErrorTextType } from "@/app/types/createProfileTypes";
+import { GenerateButtonAndErrorTextType } from "@/app/types/createProfileTypes";
 
 export default function generateButtonAndErrorText({
   customerMutation,
   addressMutation,
-}: generateButtonAndErrorTextType) {
+}: GenerateButtonAndErrorTextType) {
   const isPending = customerMutation.isPending || addressMutation.isPending;
   const isError = customerMutation.isError || addressMutation.isError;
   const isSuccess = customerMutation.isSuccess && addressMutation.isSuccess;
