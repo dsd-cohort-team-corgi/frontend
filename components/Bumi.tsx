@@ -2,11 +2,11 @@
 
 import React, { useState, useRef, useCallback, useMemo } from "react";
 import Image from "next/image";
+import { addToast } from "@heroui/react";
 import BumiGif from "@/public/bumi.gif";
 import BumiModal from "./BumiModal";
 import useVoiceRecognition from "@/lib/hooks/useVoiceRecognition";
 import { useApiMutation } from "@/lib/api-client";
-import { addToast } from "@heroui/react";
 
 export default function Bumi() {
   const [isBumiModalOpen, setIsBumiModalOpen] = useState(false);
