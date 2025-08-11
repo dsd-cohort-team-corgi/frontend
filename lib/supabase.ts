@@ -4,6 +4,12 @@ import { createBrowserClient } from "@supabase/ssr";
 const supabase = createBrowserClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  {
+    auth: {
+      persistSession: true, // keeps it across reloads, won't get lost even with a fast refresh
+      autoRefreshToken: true,
+    },
+  },
 );
 
 export default supabase;

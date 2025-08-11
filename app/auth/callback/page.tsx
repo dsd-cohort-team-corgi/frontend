@@ -36,7 +36,7 @@ export default function AuthCallback() {
     if (redirectPathRef.current !== null) {
       queryClient.removeQueries({ queryKey: ["authSession"] });
       // clearing query before changing routes to prevent memory leaks
-
+      console.log("redirectPathRef.current", redirectPathRef.current);
       router.replace(redirectPathRef.current);
     }
   };
