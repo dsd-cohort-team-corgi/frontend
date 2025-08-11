@@ -1,3 +1,5 @@
+import { UseMutationResult } from "@tanstack/react-query";
+
 export type CustomerPayload = {
   first_name?: string;
   last_name?: string;
@@ -35,4 +37,19 @@ export type CustomerResponse = {
   supabase_user_id: string;
   created_at: string;
   updated_at: string;
+};
+
+export type generateButtonAndErrorTextType = {
+  customerMutation: UseMutationResult<
+    CustomerResponse,
+    Error,
+    CustomerPayload,
+    unknown
+  >;
+  addressMutation: UseMutationResult<
+    AddressResponse,
+    Error,
+    AddressPayload,
+    unknown
+  >;
 };

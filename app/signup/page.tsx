@@ -18,7 +18,6 @@ import { useApiMutation } from "@/lib/api-client";
 import formatPhoneNumber from "@/utils/phone/formatPhoneNum";
 import filterPhoneInput from "@/utils/phone/filterPhoneInput";
 import { useQueryClient } from "@tanstack/react-query";
-import getFailureObjectDetails from "@/utils/getFailureObjectDetails";
 import { usStates } from "@/data/usStates";
 import {
   CustomerPayload,
@@ -26,6 +25,7 @@ import {
   CustomerResponse,
   AddressResponse,
 } from "../types/createProfileTypes";
+import generateButtonAndErrorText from "@/utils/signup/generateButtonAndErrorText";
 
 export default function CompleteProfileModal() {
   const [profileData, setProfileData] = useState<AuthDetailsType>({
@@ -38,24 +38,28 @@ export default function CompleteProfileModal() {
     state: "",
     zip: "",
   });
+
+  const profileRef = useRef<AuthDetailsType | undefined>();
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const googleLogin = useGoogleLogin();
+  const cookieExpirationInDays = 0.0034722;
+  const { authContextObject } = useAuthContext();
+
+  // ########## to create a full profile, we need to make 2 documents for the user #############
+  // 1. customer
   const createCustomerMutation = useApiMutation<
     CustomerResponse,
     CustomerPayload
   >("/customers/", "POST", true);
-
+  //  2. address
   const createAddressMutation = useApiMutation<AddressResponse, AddressPayload>(
     "/addresses/",
     "POST",
     true,
   );
 
-  const profileRef = useRef<AuthDetailsType | undefined>();
-  const router = useRouter();
-  const queryClient = useQueryClient();
-
-  const googleLogin = useGoogleLogin();
-  const cookieExpirationInDays = 0.0034722;
-  const { authContextObject } = useAuthContext();
+  // ############################# Phone input logic ##################################
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const filtered = filterPhoneInput(e.target.value);
@@ -65,16 +69,19 @@ export default function CompleteProfileModal() {
     }));
   };
 
+  // when the user stops typing, add in hypens
   const handlePhoneBlur = () => {
     setProfileData((prev) => ({
       ...prev,
       phoneNumber: formatPhoneNumber(prev.phoneNumber ?? ""),
     }));
   };
-  // ?? = if phoneNumber is undefined or null, use empty string instead
+  // ?? means if phoneNumber is undefined or null, use empty string instead
 
-  // On mount: put cooking into profileRef
   useEffect(() => {
+    // checking if user came back from logging in with google
+    // On mount: use cookies to restore data to the profileData state and profileRef objects
+    // which was lost when google redirected them to sign in
     const cookieData = getUserInfoFromCookies();
     if (cookieData) {
       profileRef.current = cookieData;
@@ -104,25 +111,27 @@ export default function CompleteProfileModal() {
     };
 
     try {
-      const customer = await createCustomerMutation.mutateAsync(customerData);
+      const createdCustomerDoc =
+        await createCustomerMutation.mutateAsync(customerData);
 
-      const address = await createAddressMutation.mutateAsync({
+      const createdAddressDoc = await createAddressMutation.mutateAsync({
         ...addressData,
-        customer_id: customer.id,
+        customer_id: createdCustomerDoc.id,
       });
-      if (address.id) {
+      if (createdAddressDoc.id) {
+        // if they have an address id then we know they made it to the end of the process successfully
         queryClient.getMutationCache().clear();
         // clear mutations to prevent memory leaks
         router.replace("/");
       }
 
-      console.log("Both created:", { customer, address });
+      console.log("Both created:", { createdCustomerDoc, createdAddressDoc });
     } catch (error) {
       console.error("Error creating customer or address", error);
     }
   };
 
-  // #############  user just came back from google sign in redirect ##############
+  // #############  user returned from google sign in redirect ##############
   //  attempt to create a customer and address document for them to complete their profile
 
   useEffect(() => {
@@ -145,7 +154,7 @@ export default function CompleteProfileModal() {
       return;
     }
     //  ################# cookies ############################
-    // so our data servives the login redirect
+    // so our data survives the login redirect
     setCookie(
       "booking_redirect_path",
       window.location.pathname,
@@ -154,36 +163,23 @@ export default function CompleteProfileModal() {
     );
     setUserInfoCookies(profileData);
 
-    // ############# login ##########################
+    // login
     if (!authContextObject.supabaseUserId) {
       setCookie("just_signed_in", "true", 0.0034722);
       googleLogin();
     }
-    // ########### let user manually retry if they logged in but some of the data was invalid ############
+    // let user manually retry if they logged in but some of the data was invalid
 
     createProfile();
   };
 
-  // submit button label condtions
-  const isPending =
-    createCustomerMutation.isPending || createAddressMutation.isPending;
-  const isError =
-    createCustomerMutation.isError || createAddressMutation.isError;
-  const isSuccess =
-    createCustomerMutation.isSuccess && createAddressMutation.isSuccess;
+  // ############ submit button labels and error text ###############
 
-  let buttonLabel;
-  let detailedError;
-  if (isPending) {
-    buttonLabel = "Submitting Profile...";
-  } else if (isError) {
-    buttonLabel = "Submission Failed. Retry?";
-    detailedError = `${getFailureObjectDetails(createCustomerMutation) || getFailureObjectDetails(createAddressMutation)}`;
-  } else if (isSuccess) {
-    buttonLabel = "Profile Created!";
-  } else {
-    buttonLabel = "Sign Up";
-  }
+  const { isPending, buttonLabel, detailedError } = generateButtonAndErrorText({
+    customerMutation: createCustomerMutation,
+    addressMutation: createAddressMutation,
+  });
+
   return (
     <section>
       <h1 className="text-center text-2xl font-semibold mb-4">
@@ -195,10 +191,11 @@ export default function CompleteProfileModal() {
         className="m-auto w-4/5"
         onSubmit={(e) => {
           e.preventDefault();
-          console.log("asdf");
           handleSubmit();
         }}
       >
+        {/* ################### First Name  ################*/}
+
         <div className="sm:flex justify-between w-full">
           <Input
             isDisabled={isPending}
@@ -217,6 +214,9 @@ export default function CompleteProfileModal() {
             errorMessage="Please enter a valid name"
             label="First Name"
           />
+
+          {/* ################### Last Name  ################*/}
+
           <Input
             isDisabled={isPending}
             onChange={(e) =>
@@ -235,6 +235,9 @@ export default function CompleteProfileModal() {
             label="Last Name"
           />
         </div>
+
+        {/* ################### Phone ################*/}
+
         <Input
           isDisabled={isPending}
           value={profileData.phoneNumber}
@@ -250,6 +253,8 @@ export default function CompleteProfileModal() {
           label="Phone Number"
           pattern="\d{3}-\d{3}-\d{4}"
         />
+
+        {/* ################### Address 1 ################*/}
 
         <Input
           isDisabled={isPending}
@@ -269,6 +274,8 @@ export default function CompleteProfileModal() {
           label="Service Address"
         />
 
+        {/* ################### Address 2  ################*/}
+
         <Input
           isDisabled={isPending}
           onChange={(e) =>
@@ -286,6 +293,8 @@ export default function CompleteProfileModal() {
           label="Service Address 2"
         />
         <div className="w-full lg:flex lg:gap-2">
+          {/* ################### City ################*/}
+
           <Input
             isDisabled={isPending}
             onChange={(e) =>
@@ -304,6 +313,8 @@ export default function CompleteProfileModal() {
             className="md:flex-1"
           />
           <div className="flex">
+            {/* ################### State  ################*/}
+
             <Input
               isDisabled={isPending}
               onChange={(e) =>
@@ -329,6 +340,9 @@ export default function CompleteProfileModal() {
                 </option>
               ))}
             </datalist>
+
+            {/* ################### Zip ################*/}
+
             <Input
               isDisabled={isPending}
               onChange={(e) =>
@@ -347,7 +361,7 @@ export default function CompleteProfileModal() {
             />
           </div>
         </div>
-        <p className="m-auto text-center text-xs text-[#62748e]">
+        <p className="m-auto text-center text-xs text-light-font-color">
           This will be your default address for future bookings
         </p>
         <StyledAsButton
@@ -363,7 +377,7 @@ export default function CompleteProfileModal() {
           </p>
         )}
 
-        <p className="m-auto text-center text-xs text-[#62748e]">
+        <p className="m-auto text-center text-xs text-light-font-color">
           Sign in with google to complete registration
         </p>
       </Form>
