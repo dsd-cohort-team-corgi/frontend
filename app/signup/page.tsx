@@ -19,115 +19,13 @@ import formatPhoneNumber from "@/utils/phone/formatPhoneNum";
 import filterPhoneInput from "@/utils/phone/filterPhoneInput";
 import { useQueryClient } from "@tanstack/react-query";
 import getFailureObjectDetails from "@/utils/getFailureObjectDetails";
-
-const usStates = [
-  "alabama",
-  "alaska",
-  "arizona",
-  "arkansas",
-  "california",
-  "colorado",
-  "connecticut",
-  "delaware",
-  "florida",
-  "georgia",
-  "hawaii",
-  "idaho",
-  "illinois",
-  "indiana",
-  "iowa",
-  "kansas",
-  "kentucky",
-  "louisiana",
-  "maine",
-  "maryland",
-  "massachusetts",
-  "michigan",
-  "minnesota",
-  "mississippi",
-  "missouri",
-  "montana",
-  "nebraska",
-  "nevada",
-  "new hampshire",
-  "new jersey",
-  "new mexico",
-  "new york",
-  "north carolina",
-  "north dakota",
-  "ohio",
-  "oklahoma",
-  "oregon",
-  "pennsylvania",
-  "rhode island",
-  "south carolina",
-  "south dakota",
-  "tennessee",
-  "texas",
-  "utah",
-  "vermont",
-  "virginia",
-  "washington",
-  "west virginia",
-  "wisconsin",
-  "wyoming",
-  // Common territories/districts often included
-  "district of columbia",
-  "guam",
-  "puerto rico",
-  "virgin islands",
-  "american samoa",
-  "northern mariana islands",
-];
-
-// interface ProfileData {
-//   firstName: string;
-//   lastName: string;
-//   phone: string;
-//   streetAddress: string;
-//   city: string;
-//   state: string;
-//   zip: string;
-// }
-
-type CustomerPayload = {
-  first_name?: string;
-  last_name?: string;
-  phone_number?: string;
-};
-
-type AddressPayload = {
-  street_address_1?: string;
-  street_address_2?: string;
-  city?: string;
-  state?: string;
-  zip?: string;
-  customer_id?: string; // added later
-};
-
-type AddressResponse = {
-  street_address_1: string;
-  street_address_2: string;
-  city: string;
-  state: string;
-  zip: string;
-  latitude: number;
-  longitude: number;
-  id: string; // UUID format
-  customer_id: string; // UUID format
-  created_at: string; // ISO date string
-  updated_at: string; // ISO date string
-};
-
-type CustomerResponse = {
-  first_name: string;
-  last_name: string;
-  phone_number: string;
-  id: string; // UUID format
-  supabase_user_id: string; // UUID format
-  created_at: string; // ISO date string
-  updated_at: string; // ISO date string
-};
+import { usStates } from "@/data/usStates";
+import {
+  CustomerPayload,
+  AddressPayload,
+  CustomerResponse,
+  AddressResponse,
+} from "../types/createProfileTypes";
 
 export default function CompleteProfileModal() {
   const [profileData, setProfileData] = useState<AuthDetailsType>({
@@ -175,7 +73,7 @@ export default function CompleteProfileModal() {
   };
   // ?? = if phoneNumber is undefined or null, use empty string instead
 
-  // On mount: read cookies into profileRef
+  // On mount: put cooking into profileRef
   useEffect(() => {
     const cookieData = getUserInfoFromCookies();
     if (cookieData) {
@@ -184,7 +82,9 @@ export default function CompleteProfileModal() {
     }
   }, []);
 
-  const createData = async () => {
+  // ############# main logic to create a profile ####################
+
+  const createProfile = async () => {
     const ref = profileRef.current;
 
     if (!ref) return;
@@ -222,17 +122,22 @@ export default function CompleteProfileModal() {
     }
   };
 
+  // #############  user just came back from google sign in redirect ##############
+  //  attempt to create a customer and address document for them to complete their profile
+
   useEffect(() => {
-    // if there is not supabaseUserId then the users not signed in
+    // if there is not a supabaseUserId then the users not signed in
     if (!authContextObject.supabaseUserId || !profileRef.current) return;
+
     let userJustSignedIn = getCookie("just_signed_in");
-    // we only want to automatically attempt to register the user if they just came from logging in
+
     if (!userJustSignedIn) {
+      //  we only want this check to run once, when they just signed in
       return;
     }
     removeCookie("just_signed_in");
 
-    createData();
+    createProfile();
   }, [authContextObject.supabaseUserId]);
 
   const handleSubmit = () => {
@@ -240,6 +145,7 @@ export default function CompleteProfileModal() {
       return;
     }
     //  ################# cookies ############################
+    // so our data servives the login redirect
     setCookie(
       "booking_redirect_path",
       window.location.pathname,
@@ -255,12 +161,10 @@ export default function CompleteProfileModal() {
     }
     // ########### let user manually retry if they logged in but some of the data was invalid ############
 
-    createData();
+    createProfile();
   };
 
   // submit button label condtions
-  console.log(createCustomerMutation);
-
   const isPending =
     createCustomerMutation.isPending || createAddressMutation.isPending;
   const isError =
@@ -275,7 +179,6 @@ export default function CompleteProfileModal() {
   } else if (isError) {
     buttonLabel = "Submission Failed. Retry?";
     detailedError = `${getFailureObjectDetails(createCustomerMutation) || getFailureObjectDetails(createAddressMutation)}`;
-    console.log(JSON.stringify(buttonLabel));
   } else if (isSuccess) {
     buttonLabel = "Profile Created!";
   } else {
