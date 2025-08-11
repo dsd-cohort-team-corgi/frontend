@@ -11,11 +11,11 @@ export default function generateButtonAndErrorText({
 
   let buttonLabel;
   let detailedError;
-  if (isPending) {
-    buttonLabel = "Submitting Profile...";
-  } else if (isError) {
+  if (isError) {
     buttonLabel = "Submission Failed. Retry?";
     detailedError = `${getFailureObjectDetails(customerMutation) || getFailureObjectDetails(addressMutation)}`;
+  } else if (isPending) {
+    buttonLabel = "Submitting Profile...";
   } else if (isSuccess) {
     buttonLabel = "Profile Created!";
   } else {

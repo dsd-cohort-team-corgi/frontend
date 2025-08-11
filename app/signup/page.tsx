@@ -90,7 +90,7 @@ export default function CompleteProfileModal() {
     const customerData: CustomerPayload = {
       first_name: ref.firstName,
       last_name: ref.lastName,
-      phone_number: `+1-${ref.phoneNumber}`,
+      phone_number: ref.phoneNumber,
     };
 
     const addressData: AddressPayload = {
