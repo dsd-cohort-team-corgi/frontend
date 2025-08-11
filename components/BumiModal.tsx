@@ -23,7 +23,7 @@ const ModalOverlay = styled.div<{ isOpen: boolean }>`
   display: ${(props) => (props.isOpen ? "flex" : "none")};
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 50;
   animation: ${(props) =>
     props.isOpen
       ? "overlayFadeIn 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)"

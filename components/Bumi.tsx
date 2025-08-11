@@ -2,14 +2,17 @@
 
 import React, { useState, useRef, useCallback, useMemo } from "react";
 import Image from "next/image";
+import { addToast } from "@heroui/react";
 import BumiGif from "@/public/bumi.gif";
 import BumiModal from "./BumiModal";
 import useVoiceRecognition from "@/lib/hooks/useVoiceRecognition";
+import { useApiMutation } from "@/lib/api-client";
 
 export default function Bumi() {
   const [isBumiModalOpen, setIsBumiModalOpen] = useState(false);
   const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
   const isLongPressRef = useRef(false);
+  const bookingActionMutation = useApiMutation("/bumi/ai/quickTricks", "POST");
 
   const { inProgressBubbles, isListening, toggleListening } =
     useVoiceRecognition({
@@ -19,11 +22,25 @@ export default function Bumi() {
       onBeforeApiCall: useCallback((text: string) => {
         const lowerText = text.toLowerCase().trim();
         console.log("Processing voice command:", lowerText);
-        if (lowerText === "turn off the lights") {
-          alert("Turning off the lights");
-          return true; // Prevent API call
+        if (
+          lowerText.includes("cancel") ||
+          lowerText.includes("reschedule") ||
+          lowerText.includes("rescheduling") ||
+          lowerText.includes("uncanceling")
+        ) {
+          bookingActionMutation.mutate({
+            message: lowerText,
+            conversationHistory: [],
+          });
+          // return true; // Prevent API call
         }
         alert("Allowing API call for normal speech");
+        if (bookingActionMutation.isSuccess) {
+          console.log(bookingActionMutation.data);
+          addToast({
+            title: bookingActionMutation.data as string,
+          });
+        }
         return false; // Allow API call for normal speech
       }, []),
       apiEndPath: "bumi/booking/chat",
