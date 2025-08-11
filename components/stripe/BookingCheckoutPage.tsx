@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect } from "react";
 import { Calendar, Clock, MapPin } from "lucide-react";
 import { format } from "date-fns";
 import { useAuthContext } from "@/components/context-wrappers/AuthContext";
@@ -8,18 +8,12 @@ import StarRatingReview from "../ProviderOverallRatingInfo";
 import IconLeftTwoTextRight from "../IconLeftTwoTextRight";
 import { useBooking } from "@/components/context-wrappers/BookingContext";
 import formatDateTimeString from "@/utils/formatDateTimeString";
-import {
-  getBookingFromCookies,
-  deleteBookingCookies,
-} from "@/utils/cookies/bookingCookies";
-
-import bookingsMatchCookies from "@/utils/cookies/bookingsMatchCookiesCheck";
+import { getBookingFromCookies } from "@/utils/cookies/bookingCookies";
 
 export default function BookingCheckoutPage() {
   const { authContextObject } = useAuthContext();
 
   const { booking, updateBooking } = useBooking();
-  const cookiesDeletedRef = useRef(false);
 
   const addressFromAuth = `${authContextObject.streetAddress1}
   ${authContextObject.streetAddress2}
@@ -42,21 +36,6 @@ export default function BookingCheckoutPage() {
       addressId: authContextObject.addressId,
     });
   }, [authContextObject.customerId]);
-
-  useEffect(() => {
-    if (cookiesDeletedRef.current) return; // ✅ Skip if already deleted
-
-    const bookingFromCookies = getBookingFromCookies();
-
-    if (!bookingFromCookies || Object.keys(bookingFromCookies).length === 0) {
-      return;
-    }
-
-    if (bookingsMatchCookies(bookingFromCookies, booking)) {
-      deleteBookingCookies();
-      cookiesDeletedRef.current = true;
-    }
-  }, [booking]);
 
   let eventDate = "";
   let eventTime = "";

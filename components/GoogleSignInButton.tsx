@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 import supabaseClient from "@/lib/supabase";
 import StyledAsButton from "./StyledAsButton";
 import { setBookingCookies } from "@/utils/cookies/bookingCookies";
@@ -15,7 +15,18 @@ export default function GoogleSignInButton() {
   const cookieExpirationInDays = 0.0034722;
   // ~ 5 minutes
 
-  useEffect(() => {
+  const handleLoginWithSupabase = async () => {
+    console.log("=== DEBUG INFO ===");
+    console.log("Button clicked!");
+    console.log("NEXT_PUBLIC_URL:", process.env.NEXT_PUBLIC_URL);
+    console.log(
+      "NEXT_PUBLIC_SUPABASE_URL:",
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+    );
+    console.log("Supabase client:", supabaseClient);
+    console.log("Window location:", window.location.href);
+    console.log("==================");
+
     if (booking && booking.redirectPath) {
       // Save booking details in cookies for use after login
       // if statement because booking is not needed for the navbar login
@@ -32,19 +43,6 @@ export default function GoogleSignInButton() {
         "/",
       );
     }
-  }, [booking]);
-
-  const handleLoginWithSupabase = async () => {
-    console.log("=== DEBUG INFO ===");
-    console.log("Button clicked!");
-    console.log("NEXT_PUBLIC_URL:", process.env.NEXT_PUBLIC_URL);
-    console.log(
-      "NEXT_PUBLIC_SUPABASE_URL:",
-      process.env.NEXT_PUBLIC_SUPABASE_URL,
-    );
-    console.log("Supabase client:", supabaseClient);
-    console.log("Window location:", window.location.href);
-    console.log("==================");
 
     // placed in useEffect because Supabase relies on window.location under the hood
     // and google oAuth also relies on window.google
