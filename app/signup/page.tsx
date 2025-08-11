@@ -8,7 +8,7 @@ import User from "@/components/icons/User";
 import Phone from "@/components/icons/Phone";
 import MapPin from "@/components/icons/MapPin";
 import useGoogleLogin from "@/lib/hooks/useGoogleLogin";
-import { setCookie } from "@/utils/cookies/cookies";
+import { getCookie, removeCookie, setCookie } from "@/utils/cookies/cookies";
 import {
   setUserInfoCookies,
   getUserInfoFromCookies,
@@ -18,6 +18,7 @@ import { useApiMutation } from "@/lib/api-client";
 import formatPhoneNumber from "@/utils/phone/formatPhoneNum";
 import filterPhoneInput from "@/utils/phone/filterPhoneInput";
 import { useQueryClient } from "@tanstack/react-query";
+import getFailureObjectDetails from "@/utils/getFailureObjectDetails";
 
 const usStates = [
   "alabama",
@@ -183,70 +184,56 @@ export default function CompleteProfileModal() {
     }
   }, []);
 
-  useEffect(() => {
-    // logic to run after the user signs in with google
-    if (!authContextObject.supabaseUserId || !profileRef.current) return;
-
+  const createData = async () => {
     const ref = profileRef.current;
 
-    const createData = async () => {
-      const customerData: CustomerPayload = {
-        first_name: ref.firstName,
-        last_name: ref.lastName,
-        phone_number: `+1-${ref.phoneNumber}`,
-      };
+    if (!ref) return;
 
-      const addressData: AddressPayload = {
-        street_address_1: ref.streetAddress1,
-        street_address_2: ref.streetAddress2 || "",
-        city: ref.city,
-        state: ref.state,
-        zip: ref.zip,
-      };
-
-      try {
-        const customer = await createCustomerMutation.mutateAsync(customerData);
-
-        const address = await createAddressMutation.mutateAsync({
-          ...addressData,
-          customer_id: customer.id,
-        });
-        if (address.id) {
-          queryClient.getMutationCache().clear();
-          // clear mutations to prevent memory leaks
-          router.replace("/");
-        }
-
-        console.log("Both created:", { customer, address });
-      } catch (error) {
-        console.error("Error creating customer or address", error);
-      }
+    const customerData: CustomerPayload = {
+      first_name: ref.firstName,
+      last_name: ref.lastName,
+      phone_number: `+1-${ref.phoneNumber}`,
     };
+
+    const addressData: AddressPayload = {
+      street_address_1: ref.streetAddress1,
+      street_address_2: ref.streetAddress2 || "",
+      city: ref.city,
+      state: ref.state,
+      zip: ref.zip,
+    };
+
+    try {
+      const customer = await createCustomerMutation.mutateAsync(customerData);
+
+      const address = await createAddressMutation.mutateAsync({
+        ...addressData,
+        customer_id: customer.id,
+      });
+      if (address.id) {
+        queryClient.getMutationCache().clear();
+        // clear mutations to prevent memory leaks
+        router.replace("/");
+      }
+
+      console.log("Both created:", { customer, address });
+    } catch (error) {
+      console.error("Error creating customer or address", error);
+    }
+  };
+
+  useEffect(() => {
+    // if there is not supabaseUserId then the users not signed in
+    if (!authContextObject.supabaseUserId || !profileRef.current) return;
+    let userJustSignedIn = getCookie("just_signed_in");
+    // we only want to automatically attempt to register the user if they just came from logging in
+    if (!userJustSignedIn) {
+      return;
+    }
+    removeCookie("just_signed_in");
 
     createData();
   }, [authContextObject.supabaseUserId]);
-
-  // const mutation = useMutation({
-  //   mutationFn: async () => {
-  //     // Simulate a 500ms network delay
-  //     // temp disabling this rule since this is mock flow
-  //     /* eslint-disable no-promise-executor-return */
-  //     await new Promise((resolve) => setTimeout(resolve, 500));
-  //     const response = await fetch("http://localhost:8000/", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         Authorization: "Bearer YOUR_TOKEN_HERE",
-  //       },
-  //       body: JSON.stringify(profileData),
-  //     });
-  //     if (!response.ok) {
-  //       const errorData = await response.json();
-  //       console.error(errorData);
-  //     }
-  //     return response.json();
-  //   },
-  // });
 
   const handleSubmit = () => {
     if (!profileData) {
@@ -263,8 +250,12 @@ export default function CompleteProfileModal() {
 
     // ############# login ##########################
     if (!authContextObject.supabaseUserId) {
+      setCookie("just_signed_in", "true", 0.0034722);
       googleLogin();
     }
+    // ########### let user manually retry if they logged in but some of the data was invalid ############
+
+    createData();
   };
 
   // submit button label condtions
@@ -278,12 +269,13 @@ export default function CompleteProfileModal() {
     createCustomerMutation.isSuccess && createAddressMutation.isSuccess;
 
   let buttonLabel;
+  let detailedError;
   if (isPending) {
     buttonLabel = "Submitting Profile...";
   } else if (isError) {
-    // typescript isn't sure about details, because it doesn't exist on a normal object, but it does on the one we get back from the server
-    /* eslint-disable @typescript-eslint/no-explicit-any */
-    buttonLabel = `Submission Failed. Retry?  ${(createCustomerMutation?.failureReason as any)?.detail || (createAddressMutation?.failureReason as any)?.detail || ""}`;
+    buttonLabel = "Submission Failed. Retry?";
+    detailedError = `${getFailureObjectDetails(createCustomerMutation) || getFailureObjectDetails(createAddressMutation)}`;
+    console.log(JSON.stringify(buttonLabel));
   } else if (isSuccess) {
     buttonLabel = "Profile Created!";
   } else {
@@ -291,7 +283,9 @@ export default function CompleteProfileModal() {
   }
   return (
     <section>
-      <h1 className="text-center">Create an account </h1>
+      <h1 className="text-center text-2xl font-semibold mb-4">
+        Create an account{" "}
+      </h1>
       <hr />
 
       <Form
@@ -302,41 +296,42 @@ export default function CompleteProfileModal() {
           handleSubmit();
         }}
       >
-        <Input
-          isDisabled={isPending}
-          onChange={(e) =>
-            setProfileData((prev) => ({
-              ...prev,
-              firstName: e.target.value,
-            }))
-          }
-          value={profileData.firstName}
-          placeholder="John"
-          startContent={<User size={18} color="#62748e" />}
-          isRequired
-          name="first_name"
-          type="text"
-          errorMessage="Please enter a valid name"
-          label="First Name"
-        />
-        <Input
-          isDisabled={isPending}
-          onChange={(e) =>
-            setProfileData((prev) => ({
-              ...prev,
-              lastName: e.target.value,
-            }))
-          }
-          value={profileData.lastName}
-          placeholder="Smith"
-          startContent={<User size={18} color="#62748e" />}
-          isRequired
-          name="last_name"
-          type="text"
-          errorMessage="Please enter a valid name"
-          label="Last Name"
-        />
-
+        <div className="sm:flex justify-between w-full">
+          <Input
+            isDisabled={isPending}
+            onChange={(e) =>
+              setProfileData((prev) => ({
+                ...prev,
+                firstName: e.target.value,
+              }))
+            }
+            value={profileData.firstName}
+            placeholder="John"
+            startContent={<User size={18} color="#62748e" />}
+            isRequired
+            name="first_name"
+            type="text"
+            errorMessage="Please enter a valid name"
+            label="First Name"
+          />
+          <Input
+            isDisabled={isPending}
+            onChange={(e) =>
+              setProfileData((prev) => ({
+                ...prev,
+                lastName: e.target.value,
+              }))
+            }
+            value={profileData.lastName}
+            placeholder="Smith"
+            startContent={<User size={18} color="#62748e" />}
+            isRequired
+            name="last_name"
+            type="text"
+            errorMessage="Please enter a valid name"
+            label="Last Name"
+          />
+        </div>
         <Input
           isDisabled={isPending}
           value={profileData.phoneNumber}
@@ -403,48 +398,51 @@ export default function CompleteProfileModal() {
             type="text"
             errorMessage="Please enter a valid city"
             label="City"
+            className="md:flex-1"
           />
-          <Input
-            isDisabled={isPending}
-            onChange={(e) =>
-              setProfileData((prev) => ({
-                ...prev,
-                state: e.target.value,
-              }))
-            }
-            value={profileData.state?.toLowerCase()}
-            placeholder="California"
-            isRequired
-            name="state"
-            type="text"
-            errorMessage="Please enter a valid state"
-            label="State"
-            list="stateList"
-            id="state"
-          />
-          <datalist id="stateList">
-            {usStates.map((state) => (
-              <option key={state} value={state}>
-                {state}
-              </option>
-            ))}
-          </datalist>
-          <Input
-            isDisabled={isPending}
-            onChange={(e) =>
-              setProfileData((prev) => ({
-                ...prev,
-                zip: e.target.value,
-              }))
-            }
-            value={profileData.zip}
-            placeholder="94102"
-            isRequired
-            name="zip"
-            type="number"
-            errorMessage="Please enter a valid zip code"
-            label="Zip"
-          />
+          <div className="flex">
+            <Input
+              isDisabled={isPending}
+              onChange={(e) =>
+                setProfileData((prev) => ({
+                  ...prev,
+                  state: e.target.value,
+                }))
+              }
+              value={profileData.state?.toLowerCase()}
+              placeholder="California"
+              isRequired
+              name="state"
+              type="text"
+              errorMessage="Please enter a valid state"
+              label="State"
+              list="stateList"
+              id="state"
+            />
+            <datalist id="stateList">
+              {usStates.map((state) => (
+                <option key={state} value={state}>
+                  {state}
+                </option>
+              ))}
+            </datalist>
+            <Input
+              isDisabled={isPending}
+              onChange={(e) =>
+                setProfileData((prev) => ({
+                  ...prev,
+                  zip: e.target.value,
+                }))
+              }
+              value={profileData.zip}
+              placeholder="94102"
+              isRequired
+              name="zip"
+              type="number"
+              errorMessage="Please enter a valid zip code"
+              label="Zip"
+            />
+          </div>
         </div>
         <p className="m-auto text-center text-xs text-[#62748e]">
           This will be your default address for future bookings
@@ -454,6 +452,14 @@ export default function CompleteProfileModal() {
           type="submit"
           label={buttonLabel}
         />
+        {detailedError && (
+          <p className="m-auto text-center text-xs text-red-500">
+            {" "}
+            <span className="font-semibold"> Error details: </span>
+            {detailedError}
+          </p>
+        )}
+
         <p className="m-auto text-center text-xs text-[#62748e]">
           Sign in with google to complete registration
         </p>
