@@ -31,19 +31,14 @@ import StyledAsButton from "./StyledAsButton";
 import { useAuthContext } from "@/components/context-wrappers/AuthContext";
 import listOfServices from "@/data/services";
 import GoogleSignInButton from "./GoogleSignInButton";
-import { useBooking } from "./context-wrappers/BookingContext";
 
 export default function App() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const { authContextObject } = useAuthContext();
-  const { resetBooking } = useBooking();
 
   const handleLogOut = async () => {
     await supabaseClient.auth.signOut();
     // the auth context automatically keeps track of auth changes, so we don't need to manually reset the auth context
-    resetBooking();
-    // need to clear any booking data on signout, otherwise when the signout button disappears and the google sign in button renders,
-    // the google sign in buttons useEffect will run, see the booking context, and create cookies for that booking context. So we need to delete the booking data on signout
   };
 
   type LoggedInMenuType =
