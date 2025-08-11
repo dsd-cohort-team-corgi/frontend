@@ -34,6 +34,8 @@ export interface BookingItem {
   status: "confirmed" | "pending" | "cancelled" | "completed";
   start_time: string;
   service_title: string;
+  id: string;
+  provider_id: string;
 }
 
 export interface BookingsData {
@@ -47,9 +49,6 @@ interface UserData {
   };
   // Add other user fields as needed
 }
-
-const TEMP_CUSTOMER_ID = "09761bda-e98b-46f0-b976-89658eb70148";
-const TEMP_PROVIDER_ID = "1f0f15da-9de9-4c79-bd6d-a48919b988d4";
 
 function AuthenticatedHero({ userSession }: { userSession: UserSession }) {
   const [bookingStatuses, setBookingStatuses] = useState<
@@ -277,14 +276,20 @@ function AuthenticatedHero({ userSession }: { userSession: UserSession }) {
             <CardBody className="px-4 pb-4">
               <div className="space-y-4">
                 {data.completed_needs_review.map(
-                  ({ service_title, provider_company_name, start_time }) => (
+                  ({
+                    service_title,
+                    provider_company_name,
+                    start_time,
+                    id,
+                    provider_id,
+                  }) => (
                     <LeaveReview
-                      key={`${provider_company_name}-${start_time}`}
+                      key={id}
                       service_title={service_title}
                       company_name={provider_company_name}
                       start_time={start_time}
-                      customer_id={TEMP_CUSTOMER_ID}
-                      provider_id={TEMP_PROVIDER_ID}
+                      customer_id={customerId || ""}
+                      provider_id={provider_id}
                     />
                   ),
                 )}
