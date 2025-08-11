@@ -196,7 +196,7 @@ export default function useVoiceRecognition({
       }
     };
 
-    recognition.onend = () => {
+    recognition.onbend = () => {
       if (isListening) {
         // Restart recognition if still listening, aka if it unexpectedly ends
         setTimeout(() => {
