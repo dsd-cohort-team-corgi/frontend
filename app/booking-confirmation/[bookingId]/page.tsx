@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { Card, CardBody } from "@heroui/react";
 import ConfettiExplosion from "react-confetti-explosion";
@@ -16,6 +16,11 @@ import ArrowRight from "@/components/icons/ArrowRight";
 import Phone from "@/components/icons/Phone";
 import MapPin from "@/components/icons/MapPin";
 import { useBooking } from "@/components/context-wrappers/BookingContext";
+import {
+  deleteBookingCookies,
+  getBookingFromCookies,
+} from "@/utils/cookies/bookingCookies";
+import bookingsMatchCookies from "@/utils/cookies/bookingsMatchCookiesCheck";
 
 interface BookingQueryProps {
   special_instructions: string;
@@ -63,11 +68,27 @@ export default function Page() {
   const pathName = usePathname();
   const bookingId = pathName.split("/")[2];
   const router = useRouter();
-  const { resetBooking } = useBooking();
+  const { booking, resetBooking } = useBooking();
+  const cookiesDeletedRef = useRef(false);
 
-  useEffect(() => resetBooking(), [resetBooking]);
-  // if they have reached this page, their booking was successful. Empty the booking context
-  // If they backtrack to the providers page to check out another service, the useEffect will fire and refill the booking context with the basic provider information
+  useEffect(() => {
+    if (cookiesDeletedRef.current) return; // ✅ Skip if already deleted
+
+    const bookingFromCookies = getBookingFromCookies();
+
+    if (!bookingFromCookies || Object.keys(bookingFromCookies).length === 0) {
+      return;
+    }
+
+    if (bookingsMatchCookies(bookingFromCookies, booking)) {
+      deleteBookingCookies();
+      cookiesDeletedRef.current = true;
+    }
+
+    resetBooking();
+    // if they have reached this page, their booking was successful. Empty the booking context
+    // If they backtrack to the providers page to check out another service, the useEffect will fire and refill the booking context with the basic provider information
+  }, [booking]);
 
   useEffect(() => {
     // Check if auth context has been initialized

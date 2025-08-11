@@ -28,14 +28,10 @@ export default function AuthCallback() {
 
   useEffect(() => {
     // Read cookie once immediately on mount
-    redirectPathRef.current = getCookie("redirectPath") || "/";
+    redirectPathRef.current = getCookie("booking_redirect_path") || "/";
   }, []);
 
   const handleRedirect = () => {
-    // by the time handleRedirect runs, the cookie has had time to be placed in the handleRedirect state (avoids race conditions)
-    // when removeCookie() was placed in the getCookie use effect, it kept deleting the cookie before it was finished being read, so we kept getting redirected to "/"
-    // removeCookie("redirectPath");
-
     if (redirectPathRef.current !== null) {
       router.replace(redirectPathRef.current);
     }

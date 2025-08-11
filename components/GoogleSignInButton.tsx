@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 import supabaseClient from "@/lib/supabase";
 import StyledAsButton from "./StyledAsButton";
 import { setBookingCookies } from "@/utils/cookies/bookingCookies";
@@ -15,29 +15,6 @@ export default function GoogleSignInButton() {
   const cookieExpirationInDays = 0.0034722;
   // ~ 5 minutes
 
-  useEffect(() => {
-    if (booking && booking.redirectPath) {
-      // Save booking details in cookies for use after login
-      // if statement because booking is not needed for the navbar login
-      setBookingCookies(booking, cookieExpirationInDays);
-      setCookie(
-        "redirectPath",
-        booking.redirectPath,
-        // ex: /checkout, /provider/category/providerid
-        cookieExpirationInDays,
-        "/",
-      );
-    } else {
-      setCookie(
-        "redirectPath",
-        window.location.pathname,
-        // ex: when clicking on the navbar login, this is wherever they were at
-        cookieExpirationInDays,
-        "/",
-      );
-    }
-  }, [booking]);
-
   const handleLoginWithSupabase = async () => {
     console.log("=== DEBUG INFO ===");
     console.log("Button clicked!");
@@ -49,6 +26,23 @@ export default function GoogleSignInButton() {
     console.log("Supabase client:", supabaseClient);
     console.log("Window location:", window.location.href);
     console.log("==================");
+
+    if (booking && booking.redirectPath) {
+      // Save booking details in cookies for use after login
+      // if statement because booking is not needed for the navbar login
+      setBookingCookies(booking, cookieExpirationInDays);
+
+      //   "booking_redirect_path",
+      //    ex: /checkout, /provider/category/providerid
+    } else {
+      setCookie(
+        "booking_redirect_path",
+        window.location.pathname,
+        // ex: when clicking on the navbar login, this is wherever they were at
+        cookieExpirationInDays,
+        "/",
+      );
+    }
 
     // placed in useEffect because Supabase relies on window.location under the hood
     // and google oAuth also relies on window.google
