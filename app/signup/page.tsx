@@ -65,18 +65,9 @@ export default function CompleteProfileModal() {
     const filtered = filterPhoneInput(e.target.value);
     setProfileData((prev) => ({
       ...prev,
-      phoneNumber: filtered,
+      phoneNumber: formatPhoneNumber(filtered),
     }));
   };
-
-  // when the user stops typing, add in hypens
-  const handlePhoneBlur = () => {
-    setProfileData((prev) => ({
-      ...prev,
-      phoneNumber: formatPhoneNumber(prev.phoneNumber ?? ""),
-    }));
-  };
-  // ?? means if phoneNumber is undefined or null, use empty string instead
 
   useEffect(() => {
     // checking if user came back from logging in with google
@@ -242,7 +233,6 @@ export default function CompleteProfileModal() {
             isDisabled={isPending}
             value={profileData.phoneNumber}
             onChange={handlePhoneChange}
-            onBlur={handlePhoneBlur}
             description="For service updates and provider contact"
             placeholder="xxx-xxx-xxxx"
             startContent={<Phone size={18} color="#62748e" />}
