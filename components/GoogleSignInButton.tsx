@@ -20,16 +20,12 @@ export default function GoogleSignInButton() {
       // Save booking details in cookies for use after login
       // if statement because booking is not needed for the navbar login
       setBookingCookies(booking, cookieExpirationInDays);
-      setCookie(
-        "redirectPath",
-        booking.redirectPath,
-        // ex: /checkout, /provider/category/providerid
-        cookieExpirationInDays,
-        "/",
-      );
+
+      //   "booking_redirect_path",
+      //    ex: /checkout, /provider/category/providerid
     } else {
       setCookie(
-        "redirectPath",
+        "booking_redirect_path",
         window.location.pathname,
         // ex: when clicking on the navbar login, this is wherever they were at
         cookieExpirationInDays,
