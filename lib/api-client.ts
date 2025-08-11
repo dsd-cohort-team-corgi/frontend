@@ -48,6 +48,7 @@ export const useApiQuery = <T>(
 export const useApiMutation = <T, V>(
   endpoint: string,
   method: "POST" | "PUT" | "DELETE" | "PATCH" = "POST",
+  viewErrorDetail?: boolean,
 ) => {
   return useMutation({
     mutationFn: async (variables: V) => {
@@ -58,9 +59,19 @@ export const useApiMutation = <T, V>(
         body: JSON.stringify(variables),
       });
 
-      if (!response.ok)
-        throw new Error(`HTTP error! status: ${response.status}`);
-      return response.json() as T;
+      const data = await response.json();
+
+      if (!response.ok) {
+        if (viewErrorDetail) {
+          // Throw the details object so you can access error.detail
+          throw data;
+        } else {
+          // Throw a generic error
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+      }
+
+      return data as T;
     },
   });
 };

@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-// import { useRouter } from "next/navigation";
-import { useMutation } from "@tanstack/react-query";
+import { useEffect, useState, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { Form, Input } from "@heroui/react";
 import StyledAsButton from "@/components/StyledAsButton";
 import User from "@/components/icons/User";
@@ -10,68 +9,74 @@ import Phone from "@/components/icons/Phone";
 import MapPin from "@/components/icons/MapPin";
 import useGoogleLogin from "@/lib/hooks/useGoogleLogin";
 import { setCookie } from "@/utils/cookies/cookies";
-import { setUserInfoCookies } from "@/utils/cookies/userInfoCookies";
+import {
+  setUserInfoCookies,
+  getUserInfoFromCookies,
+} from "@/utils/cookies/userInfoCookies";
 import { useAuthContext } from "@/components/context-wrappers/AuthContext";
 import { useApiMutation } from "@/lib/api-client";
+import formatPhoneNumber from "@/utils/phone/formatPhoneNum";
+import filterPhoneInput from "@/utils/phone/filterPhoneInput";
+import { useQueryClient } from "@tanstack/react-query";
 
 const usStates = [
-  "Alabama",
-  "Alaska",
-  "Arizona",
-  "Arkansas",
-  "California",
-  "Colorado",
-  "Connecticut",
-  "Delaware",
-  "Florida",
-  "Georgia",
-  "Hawaii",
-  "Idaho",
-  "Illinois",
-  "Indiana",
-  "Iowa",
-  "Kansas",
-  "Kentucky",
-  "Louisiana",
-  "Maine",
-  "Maryland",
-  "Massachusetts",
-  "Michigan",
-  "Minnesota",
-  "Mississippi",
-  "Missouri",
-  "Montana",
-  "Nebraska",
-  "Nevada",
-  "New Hampshire",
-  "New Jersey",
-  "New Mexico",
-  "New York",
-  "North Carolina",
-  "North Dakota",
-  "Ohio",
-  "Oklahoma",
-  "Oregon",
-  "Pennsylvania",
-  "Rhode Island",
-  "South Carolina",
-  "South Dakota",
-  "Tennessee",
-  "Texas",
-  "Utah",
-  "Vermont",
-  "Virginia",
-  "Washington",
-  "West Virginia",
-  "Wisconsin",
-  "Wyoming",
+  "alabama",
+  "alaska",
+  "arizona",
+  "arkansas",
+  "california",
+  "colorado",
+  "connecticut",
+  "delaware",
+  "florida",
+  "georgia",
+  "hawaii",
+  "idaho",
+  "illinois",
+  "indiana",
+  "iowa",
+  "kansas",
+  "kentucky",
+  "louisiana",
+  "maine",
+  "maryland",
+  "massachusetts",
+  "michigan",
+  "minnesota",
+  "mississippi",
+  "missouri",
+  "montana",
+  "nebraska",
+  "nevada",
+  "new hampshire",
+  "new jersey",
+  "new mexico",
+  "new york",
+  "north carolina",
+  "north dakota",
+  "ohio",
+  "oklahoma",
+  "oregon",
+  "pennsylvania",
+  "rhode island",
+  "south carolina",
+  "south dakota",
+  "tennessee",
+  "texas",
+  "utah",
+  "vermont",
+  "virginia",
+  "washington",
+  "west virginia",
+  "wisconsin",
+  "wyoming",
   // Common territories/districts often included
-  "District of Columbia",
-  "Guam",
-  "Puerto Rico",
-  "Virgin Islands",
-  "American Samoa",
-  "Northern Mariana Islands",
+  "district of columbia",
+  "guam",
+  "puerto rico",
+  "virgin islands",
+  "american samoa",
+  "northern mariana islands",
 ];
 
 // interface ProfileData {
@@ -124,46 +129,94 @@ type CustomerResponse = {
 };
 
 export default function CompleteProfileModal() {
-  const [profileData, setProfileData] = useState<AuthDetailsType | undefined>();
+  const [profileData, setProfileData] = useState<AuthDetailsType>({
+    firstName: "",
+    lastName: "",
+    phoneNumber: "",
+    streetAddress1: "",
+    streetAddress2: "",
+    city: "",
+    state: "",
+    zip: "",
+  });
   const createCustomerMutation = useApiMutation<
     CustomerResponse,
     CustomerPayload
-  >("/customers");
+  >("/customers/", "POST", true);
 
   const createAddressMutation = useApiMutation<AddressResponse, AddressPayload>(
-    "/addresses",
+    "/addresses/",
+    "POST",
+    true,
   );
+
+  const profileRef = useRef<AuthDetailsType | undefined>();
+  const router = useRouter();
+  const queryClient = useQueryClient();
+
   const googleLogin = useGoogleLogin();
   const cookieExpirationInDays = 0.0034722;
   const { authContextObject } = useAuthContext();
 
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const filtered = filterPhoneInput(e.target.value);
+    setProfileData((prev) => ({
+      ...prev,
+      phoneNumber: filtered,
+    }));
+  };
+
+  const handlePhoneBlur = () => {
+    setProfileData((prev) => ({
+      ...prev,
+      phoneNumber: formatPhoneNumber(prev.phoneNumber ?? ""),
+    }));
+  };
+  // ?? = if phoneNumber is undefined or null, use empty string instead
+
+  // On mount: read cookies into profileRef
+  useEffect(() => {
+    const cookieData = getUserInfoFromCookies();
+    if (cookieData) {
+      profileRef.current = cookieData;
+      setProfileData(cookieData);
+    }
+  }, []);
+
   useEffect(() => {
     // logic to run after the user signs in with google
-    if (!authContextObject.supabaseUserId) return;
+    if (!authContextObject.supabaseUserId || !profileRef.current) return;
 
-    // ############## after login #################
+    const ref = profileRef.current;
 
     const createData = async () => {
       const customerData: CustomerPayload = {
-        first_name: profileData?.firstName,
-        last_name: profileData?.lastName,
-        phone_number: profileData?.phoneNumber,
+        first_name: ref.firstName,
+        last_name: ref.lastName,
+        phone_number: `+1-${ref.phoneNumber}`,
       };
 
       const addressData: AddressPayload = {
-        street_address_1: profileData?.streetAddress1,
-        street_address_2: profileData?.streetAddress2,
-        city: profileData?.city,
-        state: profileData?.state,
-        zip: profileData?.zip,
+        street_address_1: ref.streetAddress1,
+        street_address_2: ref.streetAddress2 || "",
+        city: ref.city,
+        state: ref.state,
+        zip: ref.zip,
       };
 
       try {
         const customer = await createCustomerMutation.mutateAsync(customerData);
+
         const address = await createAddressMutation.mutateAsync({
           ...addressData,
           customer_id: customer.id,
         });
+        if (address.id) {
+          queryClient.getMutationCache().clear();
+          // clear mutations to prevent memory leaks
+          router.replace("/");
+        }
+
         console.log("Both created:", { customer, address });
       } catch (error) {
         console.error("Error creating customer or address", error);
@@ -171,7 +224,7 @@ export default function CompleteProfileModal() {
     };
 
     createData();
-  }, [authContextObject.supabaseUserId, profileData]);
+  }, [authContextObject.supabaseUserId]);
 
   // const mutation = useMutation({
   //   mutationFn: async () => {
@@ -194,7 +247,6 @@ export default function CompleteProfileModal() {
   //     return response.json();
   //   },
   // });
-  // const router = useRouter();
 
   const handleSubmit = () => {
     if (!profileData) {
@@ -216,15 +268,26 @@ export default function CompleteProfileModal() {
   };
 
   // submit button label condtions
+  console.log(createCustomerMutation);
+
+  const isPending =
+    createCustomerMutation.isPending || createAddressMutation.isPending;
+  const isError =
+    createCustomerMutation.isError || createAddressMutation.isError;
+  const isSuccess =
+    createCustomerMutation.isSuccess && createAddressMutation.isSuccess;
+
   let buttonLabel;
-  if (mutation.isPending) {
+  if (isPending) {
     buttonLabel = "Submitting Profile...";
-  } else if (mutation.isError) {
-    buttonLabel = "Submission Failed. Retry?";
-  } else if (mutation.isSuccess) {
-    buttonLabel = "Profile Updated!";
+  } else if (isError) {
+    // typescript isn't sure about details, because it doesn't exist on a normal object, but it does on the one we get back from the server
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+    buttonLabel = `Submission Failed. Retry?  ${(createCustomerMutation?.failureReason as any)?.detail || (createAddressMutation?.failureReason as any)?.detail || ""}`;
+  } else if (isSuccess) {
+    buttonLabel = "Profile Created!";
   } else {
-    buttonLabel = "Sign Up"; // Default case
+    buttonLabel = "Sign Up";
   }
   return (
     <section>
@@ -240,48 +303,45 @@ export default function CompleteProfileModal() {
         }}
       >
         <Input
-          isDisabled={mutation.isPending}
+          isDisabled={isPending}
           onChange={(e) =>
             setProfileData((prev) => ({
               ...prev,
-              fullName: e.target.value,
+              firstName: e.target.value,
             }))
           }
           value={profileData.firstName}
           placeholder="John"
           startContent={<User size={18} color="#62748e" />}
           isRequired
-          name="full_name"
+          name="first_name"
           type="text"
           errorMessage="Please enter a valid name"
-          label="Full Name"
+          label="First Name"
         />
         <Input
-          isDisabled={mutation.isPending}
+          isDisabled={isPending}
           onChange={(e) =>
             setProfileData((prev) => ({
               ...prev,
-              fullName: e.target.value,
+              lastName: e.target.value,
             }))
           }
           value={profileData.lastName}
           placeholder="Smith"
           startContent={<User size={18} color="#62748e" />}
           isRequired
-          name="full_name"
+          name="last_name"
           type="text"
           errorMessage="Please enter a valid name"
-          label="Full Name"
+          label="Last Name"
         />
+
         <Input
-          isDisabled={mutation.isPending}
-          onChange={(e) =>
-            setProfileData((prev) => ({
-              ...prev,
-              phone: e.target.value,
-            }))
-          }
-          value={profileData.phone}
+          isDisabled={isPending}
+          value={profileData.phoneNumber}
+          onChange={handlePhoneChange}
+          onBlur={handlePhoneBlur}
           description="For service updates and provider contact"
           placeholder="xxx-xxx-xxxx"
           startContent={<Phone size={18} color="#62748e" />}
@@ -290,18 +350,18 @@ export default function CompleteProfileModal() {
           type="tel"
           errorMessage="Please enter a valid phone number"
           label="Phone Number"
-          //   allows only numbers 0-9 with no hyphens. We can expand validation later on
-          pattern="[0-9]{10}"
+          pattern="\d{3}-\d{3}-\d{4}"
         />
+
         <Input
-          isDisabled={mutation.isPending}
+          isDisabled={isPending}
           onChange={(e) =>
             setProfileData((prev) => ({
               ...prev,
-              streetAddress: e.target.value,
+              streetAddress1: e.target.value,
             }))
           }
-          value={profileData.streetAddress}
+          value={profileData.streetAddress1}
           placeholder="123 Main Street"
           startContent={<MapPin size={18} color="#62748e" />}
           isRequired
@@ -310,16 +370,33 @@ export default function CompleteProfileModal() {
           errorMessage="Please enter a valid street address"
           label="Service Address"
         />
+
+        <Input
+          isDisabled={isPending}
+          onChange={(e) =>
+            setProfileData((prev) => ({
+              ...prev,
+              streetAddress1: e.target.value,
+            }))
+          }
+          value={profileData.streetAddress2}
+          placeholder="Apt 4b"
+          startContent={<MapPin size={18} color="#62748e" />}
+          name="street_address_2"
+          type="text"
+          errorMessage="Please enter a valid street address"
+          label="Service Address 2"
+        />
         <div className="w-full lg:flex lg:gap-2">
           <Input
-            isDisabled={mutation.isPending}
+            isDisabled={isPending}
             onChange={(e) =>
               setProfileData((prev) => ({
                 ...prev,
                 city: e.target.value,
               }))
             }
-            value={profileData.city}
+            value={profileData.city?.toLowerCase()}
             placeholder="San Francisco"
             isRequired
             name="city"
@@ -328,15 +405,15 @@ export default function CompleteProfileModal() {
             label="City"
           />
           <Input
-            isDisabled={mutation.isPending}
+            isDisabled={isPending}
             onChange={(e) =>
               setProfileData((prev) => ({
                 ...prev,
                 state: e.target.value,
               }))
             }
-            value={profileData.state}
-            placeholder="CA"
+            value={profileData.state?.toLowerCase()}
+            placeholder="California"
             isRequired
             name="state"
             type="text"
@@ -353,7 +430,7 @@ export default function CompleteProfileModal() {
             ))}
           </datalist>
           <Input
-            isDisabled={mutation.isPending}
+            isDisabled={isPending}
             onChange={(e) =>
               setProfileData((prev) => ({
                 ...prev,

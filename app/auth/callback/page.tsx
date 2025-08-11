@@ -5,7 +5,7 @@
 // if we want to redirect the user
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import supabaseClient from "@/lib/supabase";
 
 import { getCookie } from "@/utils/cookies/cookies";
@@ -23,6 +23,7 @@ export default function AuthCallback() {
   const [pollingEnabled, setPollingEnabled] = useState(true);
   // tanstack query's logic relies on the component's render cycle to toggle polling on/off so useRef wouldn't work right
   const redirectPathRef = useRef<string | null>(null);
+  const queryClient = useQueryClient();
 
   const router = useRouter();
 
@@ -33,6 +34,9 @@ export default function AuthCallback() {
 
   const handleRedirect = () => {
     if (redirectPathRef.current !== null) {
+      queryClient.removeQueries({ queryKey: ["authSession"] });
+      // clearing query before changing routes to prevent memory leaks
+
       router.replace(redirectPathRef.current);
     }
   };
