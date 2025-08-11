@@ -6,6 +6,7 @@ import StyledAsButton from "./StyledAsButton";
 
 export default function GoogleSignInButton() {
   const { booking } = useBooking();
+  const login = useGoogleLogin(booking);
 
-  return <StyledAsButton onPress={useGoogleLogin(booking)} label="Sign In" />;
+  return <StyledAsButton onPress={login} label="Sign In" />;
 }

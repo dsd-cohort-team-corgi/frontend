@@ -1,14 +1,17 @@
+import { parsePhoneNumberFromString } from "libphonenumber-js";
+
 export default function formatPhoneNumber(input: string) {
   // Strip all non-digit characters
-  let digits = input.replace(/\D/g, "");
+  const digits = input.replace(/\D/g, "").slice(0, 10); // US: max 10 digits
 
-  // Limit to max 10 digits
-  if (digits.length > 10) digits = digits.slice(0, 10);
+  const parts = [];
+  if (digits.length > 0) parts.push(digits.slice(0, 3));
+  if (digits.length > 3) parts.push(digits.slice(3, 6));
+  if (digits.length > 6) parts.push(digits.slice(6));
+  return parts.join("-");
+}
 
-  // Insert hyphens
-  if (digits.length <= 3) return digits;
-  if (digits.length <= 6) {
-    return `${digits.slice(0, 3)}-${digits.slice(3)}`;
-  }
-  return `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6)}`;
+export function getE164ForSupabase(input: string) {
+  const parsed = parsePhoneNumberFromString(input, "US");
+  return parsed?.isValid() ? parsed.number : null; // E.164 format if valid
 }

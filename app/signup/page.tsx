@@ -16,8 +16,9 @@ import {
 } from "@/utils/cookies/userInfoCookies";
 import { useAuthContext } from "@/components/context-wrappers/AuthContext";
 import { useApiMutation } from "@/lib/api-client";
-import formatPhoneNumber from "@/utils/phone/formatPhoneNum";
-import filterPhoneInput from "@/utils/phone/filterPhoneInput";
+import formatPhoneNumber, {
+  getE164ForSupabase,
+} from "@/utils/phone/formatPhoneNum";
 import { usStates } from "@/data/usStates";
 import {
   CustomerPayload,
@@ -62,10 +63,9 @@ export default function CompleteProfileModal() {
   // ############################# Phone input logic ##################################
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const filtered = filterPhoneInput(e.target.value);
     setProfileData((prev) => ({
       ...prev,
-      phoneNumber: formatPhoneNumber(filtered),
+      phoneNumber: formatPhoneNumber(profileData.phoneNumber || ""),
     }));
   };
 
@@ -87,10 +87,16 @@ export default function CompleteProfileModal() {
 
     if (!ref) return;
 
+    const phoneE164 = getE164ForSupabase(ref.phoneNumber || "");
+    if (!phoneE164) {
+      console.error("Invalid phone number");
+      return;
+    }
+
     const customerData: CustomerPayload = {
       first_name: ref.firstName,
       last_name: ref.lastName,
-      phone_number: ref.phoneNumber,
+      phone_number: phoneE164,
     };
 
     const addressData: AddressPayload = {
@@ -112,6 +118,7 @@ export default function CompleteProfileModal() {
       if (createdAddressDoc.id) {
         // if they have an address id then we know they made it to the end of the process successfully
         queryClient.getMutationCache().clear();
+        removeCookie("booking_redirect_path");
         // clear mutations to prevent memory leaks
         router.replace("/");
       }
