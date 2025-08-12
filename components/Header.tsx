@@ -94,7 +94,7 @@ export default function App() {
         onMenuOpenChange={setIsMenuOpen}
         classNames={{
           wrapper: "w-full max-w-6xl mx-auto p-4", // fixed width on desktop, centered, with padding and top padding
-          base: 'z-[9999]'
+          base: "z-[9999]",
         }}
       >
         {/* #### Left Section (logo and mobile menu toggle button) ###### */}
