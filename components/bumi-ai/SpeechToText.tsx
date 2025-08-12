@@ -27,7 +27,7 @@ type RequestCopyType = {
 
 const isTestMode = false;
 
-function VoiceInput() {
+function VoiceInput({ onClose }: { onClose?: () => void }) {
   const [response, setResponse] = useState<ChatResponse | null>(null);
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [requestCopy, setRequestCopy] = useState<RequestCopyType | null>(null);
@@ -108,6 +108,7 @@ function VoiceInput() {
                 services={services}
                 providerInfo={providerInfo}
                 setProviderInfo={setProviderInfo}
+                onClose={onClose}
               />
             )}
           </div>
