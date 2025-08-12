@@ -70,7 +70,7 @@ export default function RootLayout({
                   <Header />
                   {/* Toast provider needed for HeroUI toasts. Set defaults for project */}
                   <ToastProvider
-                    placement="bottom-center"
+                    placement="bottom-left"
                     toastProps={{
                       timeout: 5000,
                       radius: "md",
