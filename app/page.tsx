@@ -409,27 +409,26 @@ function UnauthenticatedHero() {
   );
 }
 
-function ServicesSection({ isDarkMode }: { isDarkMode: boolean }) {
+function ServicesSection() {
   return (
     <Container className="mt-20 text-center sm:text-left">
       <h3 className="text-4xl font-bold text-primary-font-color">
-        What service would you like?
+        Our Services
       </h3>
-      <p className="mb-8 mt-4 text-lg tracking-wider text-secondary-font-color">
-        Choose from our most popular home services
+      <p className="mt-4 text-lg text-secondary-font-color">
+        Choose from our range of professional services
       </p>
-      <section className="grid grid-cols-3 gap-4">
+      <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {Object.values(listOfServices).map((service) => (
           <Card
             key={service.label}
             service={service}
-            isDarkMode={isDarkMode}
             className="group relative max-w-xs bg-transparent pb-2 shadow-none"
             // group relative allows for the blue hover effect, it will trigger the group div inside this component to activate
             // heroui has a shadow by default, turned off with shadow-none
           />
         ))}
-      </section>
+      </div>
     </Container>
   );
 }
@@ -451,30 +450,11 @@ const renderHero = (authContextObject: AuthDetailsType) => {
 
 export default function Home() {
   const { authContextObject } = useAuthContext();
-  const [isDarkMode, setIsDarkMode] = useState(false);
-
-  useEffect(() => {
-    const checkDarkMode = () => {
-      setIsDarkMode(document.documentElement.classList.contains("dark"));
-    };
-
-    checkDarkMode();
-
-    const handlePartyModeChange = () => {
-      checkDarkMode();
-    };
-
-    window.addEventListener("party-mode-changed", handlePartyModeChange);
-
-    return () => {
-      window.removeEventListener("party-mode-changed", handlePartyModeChange);
-    };
-  }, []);
 
   return (
     <div>
       {renderHero(authContextObject)}
-      <ServicesSection isDarkMode={isDarkMode} />
+      <ServicesSection />
     </div>
   );
 }
