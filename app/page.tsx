@@ -354,29 +354,37 @@ function AuthenticatedHero({ userSession }: { userSession: UserSession }) {
 }
 
 function UnauthenticatedHero() {
+  const openBumi = () => {
+    window.dispatchEvent(new CustomEvent("open-bumi-modal"));
+  };
   return (
     <Container className="flex justify-center">
       {/* Container placed around image and text to allow for positioning based off image rather than screen */}
       <div className="relative">
         <Image
-          className="h-[40dvh] rounded-lg object-cover md:h-[40dvh]"
+          className="h-[42dvh] rounded-lg object-cover md:h-[50dvh] lg:h-[60vh]"
           alt="Young woman diligently cleaning a bright, modern home."
           // static import to have Next Image component decide height and width to prevent CLS
           src={HomePageHeroImage}
         />
         {/* Text Container */}
-        <div className="absolute left-[10%] top-[5%] w-1/2 md:top-[10%] lg:left-[15%] lg:top-1/4">
-          <div className="xlg:text-8xl text-3xl font-black md:text-7xl">
+        <div className="absolute left-[10%] top-[5%] w-1/2 md:top-[10%] lg:left-[15%]">
+          <div className="text-3xl md:text-4xl font-black lg:text-6xl">
             <p>Book. Relax.</p>
             <p>Done.</p>
           </div>
-          <p className="my-[10px] font-medium md:my-[1em] md:text-lg md:font-semibold">
+          <p className="my-[10px] font-medium md:my-[1em] lg:text-lg md:font-semibold">
             Professional services for your busy life.
+          </p>
+          <p className="mb-2 font-medium md:my-[1em] lg:text-lg md:font-semibold ">
+            {" "}
+            Need help ASAP?
           </p>
           <StyledAsButton
             as={Link}
             href="/"
-            label="Start Your Search"
+            onPress={openBumi}
+            label="Chat With Bumi!"
             className="text-xs md:text-base"
           />
         </div>
