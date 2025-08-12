@@ -1,8 +1,10 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Calendar from "./icons/Calendar";
 import formatDateTimeString from "@/utils/formatDateTimeString";
 import CircleCheck from "./icons/CircleCheck";
 import ChevronDown from "./icons/ChevronDown";
-import { useEffect, useState } from "react";
 
 interface BookingItem {
   provider_company_name: string;
