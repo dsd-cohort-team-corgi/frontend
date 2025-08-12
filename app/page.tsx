@@ -418,12 +418,12 @@ function ServicesSection() {
       <p className="mb-8 mt-4 text-lg tracking-wider text-secondary-font-color">
         Choose from our most popular home services
       </p>
-      <section className="grid grid-cols-3 gap-4">
+      <section className="grid grid-cols-1 min-[470px]:grid-cols-3 gap-4 justify-items-stretch">
         {Object.values(listOfServices).map((service) => (
           <Card
             key={service.label}
             service={service}
-            className="group relative max-w-xs bg-transparent pb-2 shadow-none"
+            className="group relative mx-auto max-w-52 sm:max-w-xs bg-transparent pb-2 shadow-none"
             // group relative allows for the blue hover effect, it will trigger the group div inside this component to activate
             // heroui has a shadow by default, turned off with shadow-none
           />
