@@ -14,7 +14,6 @@ import { DM_Sans } from "next/font/google"; // https://nextjs.org/docs/app/getti
 // 1. user's browser won't ping google's servers for the font data
 import BookingProvider from "../components/context-wrappers/BookingWrapper";
 import ClientProviders from "../components/context-wrappers/AuthWrapper";
-import { PathLogger } from "@/components/test";
 import "./globals.css";
 import Header from "../components/Header";
 import TanstackQueryProvider from "@/components/TanstackQueryProvider";
@@ -69,7 +68,6 @@ export default function RootLayout({
                 <TanstackQueryProvider>
                   <Header />
                   {/* Toast provider needed for HeroUI toasts. Set defaults for project */}
-                  <PathLogger />
                   <ToastProvider
                     placement="bottom-center"
                     toastProps={{

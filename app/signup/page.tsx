@@ -39,6 +39,7 @@ export default function CompleteProfileModal() {
     state: "",
     zip: "",
   });
+  const [phoneInputValid, setPhoneInputValid] = useState(true);
 
   const profileRef = useRef<AuthDetailsType | undefined>();
   const router = useRouter();
@@ -63,10 +64,29 @@ export default function CompleteProfileModal() {
   // ############################# Phone input logic ##################################
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // store only digits while typing
+    const rawDigits = e.target.value.replace(/\D/g, "");
     setProfileData((prev) => ({
       ...prev,
-      phoneNumber: formatPhoneNumber(profileData.phoneNumber || ""),
+      phoneNumber: rawDigits,
     }));
+  };
+
+  const handlePhoneBlur = () => {
+    const formatted = formatPhoneNumber(profileData.phoneNumber || "");
+    setProfileData((prev) => ({
+      ...prev,
+      phoneNumber: formatted,
+    }));
+
+    const digitsOnly = (profileData.phoneNumber || "").replace(/\D/g, "");
+    console.log(digitsOnly.length);
+    if (digitsOnly.length !== 10) {
+      setPhoneInputValid(false);
+    } else {
+      const isValid = Boolean(getE164ForSupabase(formatted));
+      setPhoneInputValid(isValid);
+    }
   };
 
   useEffect(() => {
@@ -240,15 +260,17 @@ export default function CompleteProfileModal() {
             isDisabled={isPending}
             value={profileData.phoneNumber}
             onChange={handlePhoneChange}
+            onBlur={handlePhoneBlur}
             description="For service updates and provider contact"
             placeholder="xxx-xxx-xxxx"
             startContent={<Phone size={18} color="#62748e" />}
             isRequired
             name="phone_number"
             type="tel"
+            isInvalid={!phoneInputValid}
             errorMessage="Please enter a valid phone number"
             label="Phone Number"
-            pattern="\d{3}-\d{3}-\d{4}"
+            // pattern="\d{3}-\d{3}-\d{4}"
           />
 
           {/* ################### Address 1 ################ */}
@@ -321,7 +343,7 @@ export default function CompleteProfileModal() {
               }))
             }
             value={profileData.state?.toLowerCase()}
-            placeholder="California"
+            placeholder="CA"
             isRequired
             name="state"
             type="text"
