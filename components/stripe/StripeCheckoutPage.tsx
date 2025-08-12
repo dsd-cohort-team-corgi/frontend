@@ -139,13 +139,12 @@ function CheckoutForm({ clientSecret }: CheckoutOutFormType) {
       if (
         !result.paymentIntent.id ||
         !booking.serviceId ||
-        // !booking.customerId ||
         !booking.providerId ||
         // !booking.addressId ||
         !(hasDateAndTime || hasAvailableTime)
       ) {
         console.log(
-          `missing required data to create booking result.paymentIntent.id ${result.paymentIntent.id} booking.serviceId ${booking.serviceId} booking.customerId ${booking.customerId} booking.providerId ${booking.providerId} booking.date ${booking.date} booking.time
+          `missing required data to create booking result.paymentIntent.id ${result.paymentIntent.id} booking.serviceId ${booking.serviceId}  booking.providerId ${booking.providerId} booking.date ${booking.date} booking.time
      ${booking.time} booking.addressId ${booking.addressId} `,
         );
         return;
