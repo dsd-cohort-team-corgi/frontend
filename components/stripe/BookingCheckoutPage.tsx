@@ -9,8 +9,16 @@ import IconLeftTwoTextRight from "../IconLeftTwoTextRight";
 import { useBooking } from "@/components/context-wrappers/BookingContext";
 import formatDateTimeString from "@/utils/formatDateTimeString";
 import { getBookingFromCookies } from "@/utils/cookies/bookingCookies";
+import DiscountForm from "./DiscountForm";
 
-export default function BookingCheckoutPage() {
+type BookingCheckoutPageType = {
+  setDiscountCode: React.Dispatch<React.SetStateAction<string>>;
+  discountCode: string;
+};
+export default function BookingCheckoutPage({
+  setDiscountCode,
+  discountCode,
+}: BookingCheckoutPageType) {
   const { authContextObject } = useAuthContext();
 
   const { booking, updateBooking } = useBooking();
@@ -93,9 +101,14 @@ export default function BookingCheckoutPage() {
               {`${booking.serviceDuration || ""} mins`}
             </span>
           </div>
-          <span className="font-semibold">{`$${booking.price}`}</span>
+
+          <span className="font-semibold">{`Total: $${booking.price}`}</span>
         </section>
+        <div className="flex justify-end w-full">
+          <DiscountForm />
+        </div>
       </div>
+
       <div className="mt-6 flex flex-col justify-center rounded-lg border-1 border-light-accent bg-white px-2 py-8">
         <h4 className="mb-2 ml-4 text-lg font-bold">
           Special Instructions (Optional)

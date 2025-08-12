@@ -274,7 +274,12 @@ function CheckoutForm({ clientSecret }: CheckoutOutFormType) {
   );
 }
 
-export default function StripeCheckoutPage() {
+type StripeCheckoutPageType = {
+  discountCode: string;
+};
+export default function StripeCheckoutPage({
+  discountCode,
+}: StripeCheckoutPageType) {
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [loadingPaymentSectionMessage, setLoadingPaymentSectionMessage] =
     useState<string | null>("loading payment section ...");
@@ -285,7 +290,7 @@ export default function StripeCheckoutPage() {
 
   const { mutate: createPaymentIntent } = useApiMutation<
     { client_secret: string },
-    { service_id: string }
+    { service_id: string; discount_code?: string }
   >("/stripe/create-payment-intent", "POST");
 
   // this outer data = This represents the current cached mutation result React Query stores for this mutation
@@ -298,7 +303,7 @@ export default function StripeCheckoutPage() {
       return;
     }
     createPaymentIntent(
-      { service_id: serviceId },
+      { service_id: serviceId, discount_code: discountCode },
       {
         onSuccess: (responseData) => {
           // This inner data is the data returned from this specific mutation call
@@ -329,7 +334,7 @@ export default function StripeCheckoutPage() {
         "There was an error with loading the stripe payment section! No service Id was found",
       );
     }
-  }, [serviceId]);
+  }, [serviceId, discountCode]);
 
   if (loadingPaymentSectionMessage || !clientSecret) {
     return (
