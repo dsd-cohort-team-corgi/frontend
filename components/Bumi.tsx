@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useState, useRef, useCallback, useMemo } from "react";
+import React, {
+  useState,
+  useRef,
+  useCallback,
+  useEffect,
+  useMemo,
+} from "react";
 import Image from "next/image";
 import { addToast } from "@heroui/react";
 import BumiGif from "@/public/bumi.gif";
@@ -13,6 +19,19 @@ export default function Bumi() {
   const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
   const isLongPressRef = useRef(false);
   const bookingActionMutation = useApiMutation("/bumi/ai/quickTricks", "POST");
+
+  // listens to the click event of the button on the landing page, to open bumi ai
+  useEffect(() => {
+    const handleOpenBumiModal = () => {
+      setIsBumiModalOpen(true);
+    };
+
+    window.addEventListener("open-bumi-modal", handleOpenBumiModal);
+
+    return () => {
+      window.removeEventListener("open-bumi-modal", handleOpenBumiModal);
+    };
+  }, []);
 
   const { inProgressBubbles, isListening, toggleListening } =
     useVoiceRecognition({
