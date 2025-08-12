@@ -274,7 +274,12 @@ function CheckoutForm({ clientSecret }: CheckoutOutFormType) {
   );
 }
 
-export default function StripeCheckoutPage() {
+type StripeCheckoutPageType = {
+  couponCode: string;
+};
+export default function StripeCheckoutPage({
+  couponCode,
+}: StripeCheckoutPageType) {
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [loadingPaymentSectionMessage, setLoadingPaymentSectionMessage] =
     useState<string | null>("loading payment section ...");
@@ -285,7 +290,7 @@ export default function StripeCheckoutPage() {
 
   const { mutate: createPaymentIntent } = useApiMutation<
     { client_secret: string },
-    { service_id: string }
+    { service_id: string; discount_code?: string }
   >("/stripe/create-payment-intent", "POST");
 
   // this outer data = This represents the current cached mutation result React Query stores for this mutation
@@ -298,13 +303,14 @@ export default function StripeCheckoutPage() {
       return;
     }
     createPaymentIntent(
-      { service_id: serviceId },
+      { service_id: serviceId, discount_code: couponCode },
       {
         onSuccess: (responseData) => {
           // This inner data is the data returned from this specific mutation call
           setClientSecret(responseData.client_secret);
           // no need to invalidate since this since we don't use a query fetching the client secret anywhere else, and the useEffect ensures we always get fresh data on page load or if theres a new serviceId
           setLoadingPaymentSectionMessage(null);
+          console.log("clientSecret", clientSecret);
         },
         onError: (err) => {
           setLoadingPaymentSectionMessage(
@@ -329,7 +335,7 @@ export default function StripeCheckoutPage() {
         "There was an error with loading the stripe payment section! No service Id was found",
       );
     }
-  }, [serviceId]);
+  }, [serviceId, couponCode]);
 
   if (loadingPaymentSectionMessage || !clientSecret) {
     return (

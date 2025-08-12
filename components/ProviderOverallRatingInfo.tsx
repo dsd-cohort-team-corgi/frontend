@@ -17,7 +17,7 @@ export default function StarRatingReview({
         {providerRating?.toFixed(2) || "No ratings yet"}
       </span>
       <span className="text-secondary-font-color">
-        {`(${numberOfReviews} reviews)`}
+        {`(${numberOfReviews || 0} reviews)`}
       </span>
     </div>
   );
