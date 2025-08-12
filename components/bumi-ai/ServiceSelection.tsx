@@ -12,12 +12,14 @@ interface ServiceSelectionProps {
   services: ServiceRecommendation[];
   providerInfo: ServiceRecommendation | null;
   setProviderInfo: (service: ServiceRecommendation) => void;
+  onClose?: () => void;
 }
 
 function ServiceSelection({
   services,
   providerInfo,
   setProviderInfo,
+  onClose,
 }: ServiceSelectionProps) {
   if (services.length === 0) {
     return null;
@@ -25,7 +27,7 @@ function ServiceSelection({
 
   return (
     <div>
-      <div className="space-y-2 rounded-2xl bg-slate-900/70 p-4 mb-4">
+      <div className="space-y-3 rounded-2xl bg-slate-900/70 p-4 mb-4">
         {services.map((service, index) => {
           const timeFromNow = convertDateToTimeFromNow(service.available_time);
           const timeUnitsIgnore = ["day", "week", "month", "year"];
@@ -41,37 +43,60 @@ function ServiceSelection({
             : timeFromNow;
 
           return (
-            <section key={`service-${service.id || index}-${service.name}`}>
-              <div className="flex justify-between">
-                <span className="font-medium text-white">{service.name}</span>
-                <span className="text-white"> ${service.price} </span>
-              </div>
-              <div className="flex justify-between text-sm text-slate-300">
-                <span>{service.provider}</span>
-                <div className="my-1 flex items-center text-[#ffd250]">
-                  <Star size={14} />
-                  <span className="ml-px inline-block"> {service.rating} </span>
-                </div>
-              </div>
-              <p className="py-1 text-sm text-slate-300">
-                {service.description}
-              </p>
-              <div className="flex items-center text-sm text-slate-300">
-                <Calendar size={16} />
-                <span className="ml-1">{timeToUse}</span>
-              </div>
-
-              {services.length > 1 && (
-                <div className="flex justify-center">
-                  <StyledAsButton
-                    label={isSelected ? "selected" : "select"}
-                    onPress={() => setProviderInfo(service)}
-                    className={
-                      isSelected ? "bg-white text-black" : "bg-primary"
-                    }
-                  />
-                </div>
+            <section
+              key={`service-${service.id || index}-${service.name}`}
+              className={`relative rounded-xl p-4 transition-all duration-200 ${
+                isSelected
+                  ? "bg-slate-800/80 border-2 border-primary/40"
+                  : "bg-slate-800/40 hover:bg-slate-800/60 border-2 border-transparent"
+              }`}
+            >
+              {/* Selected state subtle highlight */}
+              {isSelected && (
+                <div className="absolute inset-0 rounded-xl bg-primary/5 pointer-events-none" />
               )}
+
+              <div className="relative z-10">
+                <div className="flex justify-between items-start mb-2">
+                  <span className="font-semibold text-white text-lg">
+                    {service.name}
+                  </span>
+                  <span className="text-white font-bold text-lg">
+                    ${service.price}
+                  </span>
+                </div>
+
+                <div className="flex justify-between items-center text-sm text-slate-300 mb-3">
+                  <span className="font-medium">{service.provider}</span>
+                  <div className="flex items-center text-[#ffd250]">
+                    <Star size={16} />
+                    <span className="ml-1 font-medium">{service.rating}</span>
+                  </div>
+                </div>
+
+                <p className="text-sm text-slate-300 mb-3 leading-relaxed">
+                  {service.description}
+                </p>
+
+                <div className="flex items-center text-sm text-slate-300 mb-4">
+                  <Calendar size={16} />
+                  <span className="ml-2">{timeToUse}</span>
+                </div>
+
+                {services.length > 1 && (
+                  <div className="flex justify-center">
+                    <StyledAsButton
+                      label={isSelected ? "Selected" : "Select"}
+                      onPress={() => setProviderInfo(service)}
+                      className={`transition-all duration-200 ${
+                        isSelected
+                          ? "bg-primary text-white shadow-md border border-primary/30"
+                          : "bg-slate-700 hover:bg-slate-600 text-white border border-slate-600 hover:border-slate-500"
+                      }`}
+                    />
+                  </div>
+                )}
+              </div>
             </section>
           );
         })}
@@ -80,12 +105,13 @@ function ServiceSelection({
       {providerInfo ? (
         <CheckoutButton
           providerInfo={providerInfo}
-          className="bg-white font-bold text-black w-full"
+          className="bg-gradient-to-r from-primary to-primary/90 font-bold text-white w-full shadow-lg shadow-primary/25 border-2 border-primary/30"
           text={`Book Service $${providerInfo.price}`}
+          onClose={onClose}
         />
       ) : (
         <CheckoutButton
-          className="bg-white font-bold text-black w-full"
+          className="bg-slate-700 font-bold text-slate-400 w-full border-2 border-slate-600"
           providerInfo={{} as ProviderInfo | ServiceRecommendation}
           disabled
         />

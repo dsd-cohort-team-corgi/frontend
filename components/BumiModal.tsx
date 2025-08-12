@@ -104,7 +104,7 @@ function BumiModal({ isOpen, onOpenChange }: BumiModalType) {
       {isOpen && (
         <ModalContainer onClick={(e) => e.stopPropagation()}>
           <ModalHeader />
-          <SpeechToText />
+          <SpeechToText onClose={onOpenChange} />
         </ModalContainer>
       )}
     </ModalOverlay>

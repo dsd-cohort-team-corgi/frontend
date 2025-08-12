@@ -14,6 +14,7 @@ type CheckoutButtonProps = {
   disabled?: boolean;
   className?: string;
   text?: string;
+  onClose?: () => void;
 };
 
 export default function CheckoutButton({
@@ -21,6 +22,7 @@ export default function CheckoutButton({
   disabled,
   className,
   text,
+  onClose,
 }: CheckoutButtonProps) {
   const { authContextObject } = useAuthContext();
   const { booking, updateBooking } = useBooking();
@@ -97,6 +99,10 @@ export default function CheckoutButton({
     // }
 
     router.push(`/checkout`);
+    // Close modal if onClose function is provided
+    if (onClose) {
+      onClose();
+    }
   }
 
   return (
