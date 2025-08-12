@@ -1,19 +1,18 @@
 import { useState } from "react";
 import { Input } from "@heroui/react";
+import { TicketPercent } from "lucide-react";
 import { useApiQuery } from "@/lib/api-client";
 import findMatchingCoupon from "@/utils/coupons/findMatchingCoupon";
 import { CouponObject } from "@/app/types/coupon";
 import StyledAsButton from "../StyledAsButton";
 
 type DiscountFormType = {
-  couponObject: CouponObject | null;
   setCouponObject: React.Dispatch<React.SetStateAction<CouponObject | null>>;
   setCouponCode: React.Dispatch<React.SetStateAction<string>>;
   couponCode: string;
 };
 
 export default function DiscountForm({
-  couponObject,
   setCouponObject,
   setCouponCode,
   couponCode,
@@ -36,17 +35,20 @@ export default function DiscountForm({
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (couponsLoading) {
+      setCouponObject(null);
       setCouponStatus({ status: "pending", message: "Checking..." });
     }
 
     if (!coupons || coupons.length === 0) {
       setErrorMessage("No coupons currently available");
+      setCouponObject(null);
       return;
     }
     if (couponsError) {
       setErrorMessage(
         "There was an error while checking your coupon! Try again?",
       );
+      setCouponObject(null);
       return;
     }
 
@@ -56,19 +58,20 @@ export default function DiscountForm({
     });
 
     if (matchingCoupon) {
+      setCouponObject(matchingCoupon);
       setCouponStatus({
         status: "success",
-        message: `${couponObject?.coupon_name} ${couponObject?.discount_value}% discount applied!`,
+        message: `${matchingCoupon?.coupon_name} ${matchingCoupon?.discount_value}% discount applied!`,
       });
-      setCouponObject(matchingCoupon);
     } else {
       setErrorMessage("invalid discount code");
+      setCouponObject(null);
     }
   };
 
   return (
     <form onSubmit={handleSubmit}>
-      <div className="flex gap-2 items-end justify-center">
+      <div className="flex gap-2 items-end justify-center ">
         <Input
           onChange={(e) => {
             if (couponStatus) {
@@ -77,6 +80,7 @@ export default function DiscountForm({
             if (errorMessage) {
               setErrorMessage(null);
             }
+
             setCouponCode(e.target.value);
           }}
           value={couponCode}
@@ -89,9 +93,12 @@ export default function DiscountForm({
           isInvalid={!!errorMessage}
           label="Discount Code"
         />
+
         <StyledAsButton
+          startContent={<TicketPercent size={20} className="flex-shrink-0" />}
+          // flex-shrink-0 was needed, because flex was making the icon tiny
           type="submit"
-          className="px-4 py-2 bg-blue-500 text-white rounded my-auto"
+          className="px-5 py-2 bg-blue-500 text-white rounded my-auto"
           label="Apply"
         />
       </div>

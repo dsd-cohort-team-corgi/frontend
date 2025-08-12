@@ -128,7 +128,6 @@ export default function BookingCheckoutPage({
         </section>
         <div className="flex justify-end w-full">
           <DiscountForm
-            couponObject={couponObject}
             setCouponObject={setCouponObject}
             setCouponCode={setCouponCode}
             couponCode={couponCode}
