@@ -1,114 +1,99 @@
 "use client";
 
-// This must be a client component, because Supabase sets the session from a fragment URL (#access_token=...) which is only accessible in the browser
-//   const router = useRouter();
-// if we want to redirect the user
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
-import supabaseClient from "@/lib/supabase";
-
-import { getCookie } from "@/utils/cookies/cookies";
-
-// needs to be a page.tsx not a route.ts because supabaseClient.auth.getSession() is using client side logic
-// otherwise they'll be an error because route.ts is just for api handlers
-
-// https://supabase.com/docs/guides/auth/social-login/auth-google?queryGroups=environment&environment=client#google-pre-built
+import useAuth from "@/lib/hooks/useAuth";
 
 export default function AuthCallback() {
-  const [messageToUser, setMessageToUser] = useState(
-    "Finishing signing you in ...",
-  );
-
-  const [pollingEnabled, setPollingEnabled] = useState(true);
-  // tanstack query's logic relies on the component's render cycle to toggle polling on/off so useRef wouldn't work right
-  const redirectPathRef = useRef<string | null>(null);
-
   const router = useRouter();
+  const { userSession, loading } = useAuth();
+  const [messageToUser, setMessageToUser] = useState(
+    "Processing authentication...",
+  );
+  const [debugInfo, setDebugInfo] = useState("");
+
+  // Check if this is an OAuth callback
+  const urlParams = new URLSearchParams(window.location.search);
+  const authCode = urlParams.get("code");
+  const errorDescription = urlParams.get("error_description");
+  const hasAuthCode = !!authCode;
+  const isAuthCallbackEmpty = !hasAuthCode && !errorDescription;
 
   useEffect(() => {
-    // Read cookie once immediately on mount
-    redirectPathRef.current = getCookie("booking_redirect_path") || "/";
-  }, []);
+    // Set debug info
+    setDebugInfo(
+      `hasAuthCode: ${hasAuthCode}, authCode: ${authCode ? authCode.substring(0, 8) + "..." : "null"}, errorDescription: ${errorDescription}, isAuthCallbackEmpty: ${isAuthCallbackEmpty}`,
+    );
 
-  const handleRedirect = () => {
-    if (redirectPathRef.current !== null) {
-      router.replace(redirectPathRef.current);
-    }
-  };
-
-  const hasHashTokens = () => {
-    if (typeof window === "undefined") return false;
-    const { hash } = window.location;
-    return hash.includes("access_token") || hash.includes("error");
-  };
-
-  // React Query poller to check session every 800ms max 5 tries (~4s)
-
-  const {
-    data: session,
-    isFetching,
-    failureCount,
-  } = useQuery({
-    queryKey: ["authSession"],
-    queryFn: () =>
-      supabaseClient.auth.getSession().then((res) => res.data.session),
-    refetchInterval: pollingEnabled ? 800 : false,
-    retry: false,
-    refetchOnWindowFocus: false,
-    enabled: pollingEnabled,
-  });
-
-  useEffect(() => {
-    if (!hasHashTokens()) {
+    // Handle authentication errors
+    if (errorDescription) {
       setMessageToUser(
-        "Signin failed. No valid access_token or error exists for Supabase to process the login. Redirecting...",
+        `Authentication error: ${errorDescription}. Redirecting...`,
       );
-      setTimeout(handleRedirect, 3000);
-      return () => {};
-      // this way the 2 returns always return a function, eslint wasn't happy this first one used to return nothing but the second one was a cleanup return
+      setTimeout(() => router.push("/"), 2000);
+      return;
     }
 
-    // Subscribe to auth state changes for edge cases
-    const {
-      data: { subscription },
-    } = supabaseClient.auth.onAuthStateChange((event, authSession) => {
-      if (authSession) {
-        setMessageToUser("Signed in! Redirecting...");
-        setPollingEnabled(false); // <-- STOP react-query polling, no need to keep checking
-        handleRedirect();
+    // If no auth code, redirect
+    if (isAuthCallbackEmpty) {
+      setMessageToUser("No authentication code found. Redirecting...");
+      setTimeout(() => router.push("/"), 2000);
+      return;
+    }
+
+    // If we have an auth code, wait for useAuth to process it
+    if (hasAuthCode) {
+      setMessageToUser("Authentication code received. Processing...");
+    }
+  }, [authCode, errorDescription, hasAuthCode, isAuthCallbackEmpty, router]);
+
+  // Handle successful authentication
+  useEffect(() => {
+    if (!loading && userSession) {
+      console.log("User authenticated successfully:", userSession);
+      setMessageToUser("Authentication successful! Redirecting...");
+
+      // Get the redirect path from cookies or default to home
+      const redirectPath =
+        document.cookie
+          .split("; ")
+          .find((row) => row.startsWith("redirectPath="))
+          ?.split("=")[1] || "/";
+
+      // Clear the redirect path cookie
+      document.cookie =
+        "redirectPath=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+
+      setTimeout(() => router.push(redirectPath), 1000);
+    }
+  }, [userSession, loading, router]);
+
+  // Safety timeout - redirect after 10 seconds if something goes wrong
+  useEffect(() => {
+    const safetyTimeout = setTimeout(() => {
+      if (!userSession) {
+        console.log("OAuth callback timeout reached, redirecting anyway");
+        setMessageToUser("Authentication timeout. Redirecting...");
+        router.push("/");
       }
-    });
+    }, 10000);
 
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
+    return () => clearTimeout(safetyTimeout);
+  }, [userSession, router]);
 
-  useEffect(() => {
-    // When polling yields a session, redirect
-    if (session) {
-      setMessageToUser("Signed in! Redirecting...");
-      setPollingEnabled(false); // <-- STOP polling here too if we got session from polling
-      handleRedirect();
-    } else if (!isFetching && failureCount >= 5) {
-      // After 5 failed polls (~4s), show error and redirect
-      setMessageToUser(
-        "Signin failed, recheck your url. No session found. Redirecting...",
-      );
-      setTimeout(handleRedirect, 1500);
-    }
-  }, [session, isFetching, failureCount]);
-
-  // on page load, Supabase will automatically look at the URL hash and automagically set a session in cookies
-  // Supabase stores session data (especially the JWT and user identity info) in a cookie. Sometimes, this data gets too big for a single cookie (max ~4KB), so Supabase will split it into two parts:
-  //    part 1 of the token (typically the access token) sb-<project-ref>-auth-token.
-  //    part 2 (often identity data, maybe even the refresh token).
-  // They work together as one session.
-
-  return <p>{messageToUser} </p>;
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="max-w-md w-full space-y-8">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">
+            {messageToUser}
+          </h2>
+          <div className="text-sm text-gray-600 bg-gray-100 p-3 rounded">
+            <strong>Debug Info:</strong> {debugInfo}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
-
-// even though we're subscribed to auth changes in the header (aka if the session changes) we still need this because:
-// It’s the return URI Supabase redirects to after Google signs in the user
-// The Supabase client-side session/auth-change listener in the layout only sees the session after that cookie is set
