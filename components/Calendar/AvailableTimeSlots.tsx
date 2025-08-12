@@ -1,4 +1,5 @@
-import React from "react";
+import { useState } from "react";
+import { ArrowBigDown, ArrowBigUp } from "lucide-react";
 import StyledAsButton from "../StyledAsButton";
 import { useBooking } from "@/components/context-wrappers/BookingContext";
 import returnAvailableTimeSlotsIn12Hour from "@/utils/returnAvailableTimeSlotsIn12Hour";
@@ -12,11 +13,28 @@ export default function AvailableTimeSlots({
   providersAppointments,
 }: AvailableTimeSlotsType) {
   const { booking, updateBooking } = useBooking();
+  const [startIndex, setStartIndex] = useState(0);
+  const pageSize = 6;
 
   const availableTimeSlots = returnAvailableTimeSlotsIn12Hour({
     serviceLength,
     providersAppointments,
   });
+
+  const handleUp = () => {
+    setStartIndex((prev) => Math.max(prev - pageSize, 0));
+  };
+
+  const handleDown = () => {
+    setStartIndex((prev) =>
+      Math.min(prev + pageSize, availableTimeSlots.length - pageSize),
+    );
+  };
+
+  const visibleSlots = availableTimeSlots.slice(
+    startIndex,
+    startIndex + pageSize,
+  );
 
   function handleSlotChangeWithContext(slot: string) {
     if (booking.time === slot) {
@@ -27,8 +45,15 @@ export default function AvailableTimeSlots({
   }
   return (
     <div className="w-full">
+      <StyledAsButton
+        type="button"
+        onPress={handleUp}
+        disabled={startIndex === 0}
+        className=" w-full disabled:bg-slate-600"
+        startContent={<ArrowBigUp />}
+      />
       <ul className="flex w-full flex-col gap-y-3">
-        {availableTimeSlots.map((slot) => (
+        {visibleSlots.map((slot) => (
           <li
             className="group w-full rounded-md border-1 border-light-accent text-center hover:bg-primary"
             key={`li available time ${slot}`}
@@ -45,6 +70,12 @@ export default function AvailableTimeSlots({
           </li>
         ))}
       </ul>
+      <StyledAsButton
+        onPress={handleDown}
+        className="w-full  disabled:bg-slate-600"
+        disabled={startIndex + pageSize >= availableTimeSlots.length}
+        startContent={<ArrowBigDown />}
+      />
     </div>
   );
 }
