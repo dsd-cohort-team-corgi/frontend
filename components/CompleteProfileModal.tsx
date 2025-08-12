@@ -127,7 +127,7 @@ function CompleteProfileModal({
 
   const handleSubmit = () => {
     mutation.mutate();
-    router.push("/booking-confirmation/19eb6a08-5e86-4420-ae28-b6c4435f6238");
+    router.push("/checkout");
   };
   useEffect(() => {
     if (mutation.isSuccess) {

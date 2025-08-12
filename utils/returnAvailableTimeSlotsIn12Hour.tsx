@@ -14,7 +14,7 @@ export default function returnAvailableTimeSlotsIn12Hour({
 }: AvailableTimeSlotsType) {
   const busySlots = calculateBusyTimeSlots(providersAppointments);
 
-  const allTimeSlots = generateTimeSlots(9, 17, 30);
+  const allTimeSlots = generateTimeSlots(8, 23, 30);
 
   const availableStartTimes = getValidAppointmentStartTimes({
     allTimeSlots,

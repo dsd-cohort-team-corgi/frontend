@@ -7,7 +7,7 @@ import StyledAsButton from "@/components/StyledAsButton";
 import { useAuthContext } from "@/components/context-wrappers/AuthContext";
 import { useBooking } from "@/components/context-wrappers/BookingContext";
 import SignInModal from "@/components/SignInModal";
-import CompleteProfileModal from "@/components/CompleteProfileModal";
+// import CompleteProfileModal from "@/components/CompleteProfileModal";
 
 type CheckoutButtonProps = {
   providerInfo: ProviderInfo | ServiceRecommendation;
@@ -33,11 +33,11 @@ export default function CheckoutButton({
     onOpen: signInOnOpen,
     onClose: signInIsClosed,
   } = useDisclosure();
-  const {
-    isOpen: completeProfileIsOpen,
-    onOpenChange: completeProfileOnOpenChange,
-    onOpen: openCompleteProfile,
-  } = useDisclosure();
+  // const {
+  //   isOpen: completeProfileIsOpen,
+  //   onOpenChange: completeProfileOnOpenChange,
+  //   onOpen: openCompleteProfile,
+  // } = useDisclosure();
 
   useEffect(() => {
     if (providerInfo && "first_name" in providerInfo) {
@@ -82,19 +82,19 @@ export default function CheckoutButton({
       return;
     }
 
-    if (authContextObject.supabaseUserId) {
-      const isMissingProfileInfo =
-        !authContextObject.customerId ||
-        !authContextObject.streetAddress1 ||
-        !authContextObject.city ||
-        !authContextObject.state ||
-        !authContextObject.zip;
+    // if (authContextObject.supabaseUserId) {
+    //   const isMissingProfileInfo =
+    //     !authContextObject.customerId ||
+    //     !authContextObject.streetAddress1 ||
+    //     !authContextObject.city ||
+    //     !authContextObject.state ||
+    //     !authContextObject.zip;
 
-      if (isMissingProfileInfo && !completeProfileIsOpen) {
-        openCompleteProfile();
-        return;
-      }
-    }
+    //   if (isMissingProfileInfo && !completeProfileIsOpen) {
+    //     openCompleteProfile();
+    //     return;
+    //   }
+    // }
 
     router.push(`/checkout`);
   }
@@ -106,10 +106,10 @@ export default function CheckoutButton({
         onOpenChange={signInOnOpen}
         signInIsClosed={signInIsClosed}
       />
-      <CompleteProfileModal
+      {/* <CompleteProfileModal
         isOpen={completeProfileIsOpen}
         onOpenChange={completeProfileOnOpenChange}
-      />
+      /> */}
       <StyledAsButton
         className={`mb-4 mt-6 block px-0 disabled:bg-gray-500 disabled:text-black h-14 ${className}`}
         label={text || "Continue to Booking"}
