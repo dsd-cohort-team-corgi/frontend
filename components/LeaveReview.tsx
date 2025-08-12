@@ -59,7 +59,7 @@ function LeaveReview({
         <StyledAsButton
           startContent={<Star size={isMobile ? 16 : 18} />}
           label="Leave Review"
-          className="bg-green-600 hover:bg-green-700 text-white text-sm px-4 py-2 h-10 font-medium transition-colors duration-200"
+          className="bg-green hover:bg-green-700 text-white text-sm px-4 py-2 h-10 font-medium transition-colors duration-200"
           onPress={onOpen}
         />
       </div>

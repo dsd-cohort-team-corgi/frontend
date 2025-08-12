@@ -13,7 +13,7 @@ export default function StarRatingReview({
   return (
     <div className="flex text-xs">
       <FullStar width={16} height={16} />
-      <span className="pl-1 pr-2 font-bold">
+      <span className="pl-1 pr-1 font-bold">
         {providerRating?.toFixed(2) || "No ratings yet"}
       </span>
       <span className="text-secondary-font-color">

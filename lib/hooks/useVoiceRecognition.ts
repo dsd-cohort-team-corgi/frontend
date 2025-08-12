@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 type SpeechRecognitionConstructor =
   | typeof window.SpeechRecognition
@@ -77,6 +77,22 @@ export default function useVoiceRecognition({
   // just keeps the liveTranscriptRef updated when inProgressBubbles changes, so setTimeout or event handlers can access the liveTranscript information without stale values (like it would from useState)
   // so if we did setTimeOut with console.log it would print the latest value, not the older stale value like we would with setState
 
+  const stopListening = useCallback(() => {
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+    }
+    if (silenceTimer.current) {
+      clearTimeout(silenceTimer.current);
+      silenceTimer.current = null;
+    }
+    setIsListening(false);
+    textsAfterLastApiRef.current = "";
+    setInProgressBubbles("");
+    liveTranscriptRef.current = "";
+    setFinishedBubbles([]);
+    console.log("Speech recognition stopped and state reset");
+  }, []);
+
   const resetSilenceTimer = () => {
     if (silenceTimer.current) clearTimeout(silenceTimer.current);
     // clear old timer every time the user talks
@@ -86,6 +102,7 @@ export default function useVoiceRecognition({
       const textToSend = textsAfterLastApiRef.current.trim();
       if (!textToSend) {
         console.warn("No text accumulated to send");
+        stopListening();
         return;
       }
 
@@ -98,6 +115,7 @@ export default function useVoiceRecognition({
           setInProgressBubbles("");
           liveTranscriptRef.current = "";
           if (silenceTimer.current) clearTimeout(silenceTimer.current);
+          stopListening();
           return;
         }
       }
@@ -108,6 +126,7 @@ export default function useVoiceRecognition({
         setErrorMessage(
           "There was an error with your message! ConversationHistoryRef.current is not an array",
         );
+        stopListening();
       }
 
       setRequestCopy({
@@ -147,7 +166,7 @@ export default function useVoiceRecognition({
           textsAfterLastApiRef.current = "";
           //   Clear after sending
         });
-    }, 2000); // 2 seconds of silence
+    }, 3000); // 3 seconds of silence
   };
 
   const createRecognition = () => {
@@ -196,7 +215,7 @@ export default function useVoiceRecognition({
       }
     };
 
-    recognition.onbend = () => {
+    recognition.onend = () => {
       if (isListening) {
         // Restart recognition if still listening, aka if it unexpectedly ends
         setTimeout(() => {
@@ -205,6 +224,7 @@ export default function useVoiceRecognition({
           } catch (err) {
             console.error("Failed to restart recognition:", err);
             setErrorMessage("Failed to restart speech recognition");
+            stopListening();
           }
         }, 200);
       }
@@ -213,6 +233,7 @@ export default function useVoiceRecognition({
     recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
       console.error("Speech recognition error", event);
       setErrorMessage("A speech recognition error occured");
+      stopListening();
     };
 
     return recognition;
@@ -224,13 +245,14 @@ export default function useVoiceRecognition({
   const toggleListening = () => {
     if (isListening) {
       // If already listening: stops everything and resets
-      recognitionRef.current?.stop();
-      setIsListening(false);
-      if (silenceTimer.current) clearTimeout(silenceTimer.current);
-      // Clear the in progress text we've accumulated when we toggle the mic
-      textsAfterLastApiRef.current = "";
-      setInProgressBubbles("");
-      liveTranscriptRef.current = "";
+      stopListening();
+      // recognitionRef.current?.stop();
+      // setIsListening(false);
+      // if (silenceTimer.current) clearTimeout(silenceTimer.current);
+      // // Clear the in progress text we've accumulated when we toggle the mic
+      // textsAfterLastApiRef.current = "";
+      // setInProgressBubbles("");
+      // liveTranscriptRef.current = "";
     } else {
       // User just clicked the mic to start listening
       recognitionRef.current = createRecognition();
@@ -251,11 +273,17 @@ export default function useVoiceRecognition({
         } catch (err) {
           console.error("Failed to start recognition:", err);
           setErrorMessage("Failed to start speech recognition");
+          stopListening();
         }
         // setTimeout(150) gives a brief delay before starting recognition to ensure the speech engine is ready
       }, 150);
     }
   };
+
+  // clean up stop listening
+  useEffect(() => {
+    return () => stopListening();
+  }, [stopListening]);
 
   return {
     finishedBubbles,
