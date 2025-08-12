@@ -82,7 +82,7 @@ function AuthenticatedHero({ userSession }: { userSession: UserSession }) {
       setBookingStatuses(data?.upcoming_bookings);
     }
     if (bookingStatuses && bookingStatuses?.length > 0) {
-      data?.upcoming_bookings.forEach(
+      data?.upcoming_bookings?.forEach(
         ({ provider_company_name, status }, idx) => {
           if (bookingStatuses && bookingStatuses[idx].status !== status) {
             addToast({
@@ -301,7 +301,7 @@ function AuthenticatedHero({ userSession }: { userSession: UserSession }) {
         <CardHeader className="flex flex-row items-start justify-between text-pretty p-4 md:text-md lg:pt-6 lg:pb-4">
           <div className="space-y-2">
             <h2 className="font-bold lg:text-xl text-gray-900">
-              Your Upcoming Services ({data?.upcoming_bookings.length ?? 0})
+              Your Upcoming Services ({data?.upcoming_bookings?.length ?? 0})
             </h2>
             <p className="text-sm text-gray-600 font-medium">
               Stay on top of your scheduled appointments
@@ -316,7 +316,7 @@ function AuthenticatedHero({ userSession }: { userSession: UserSession }) {
           </button>
         </CardHeader>
         <CardBody className="px-4 pb-4">
-          {data?.upcoming_bookings.length === 0 ? (
+          {data?.upcoming_bookings?.length === 0 ? (
             <div className="text-center py-8">
               <p className="text-gray-500 text-lg">
                 No upcoming services scheduled
@@ -328,7 +328,7 @@ function AuthenticatedHero({ userSession }: { userSession: UserSession }) {
           ) : (
             <div className="space-y-4">
               {data?.upcoming_bookings
-                .slice(0, showAllServices ? undefined : 2)
+                ?.slice(0, showAllServices ? undefined : 2)
                 .map(
                   ({
                     provider_company_name,
