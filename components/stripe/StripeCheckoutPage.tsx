@@ -42,7 +42,6 @@ type BookingRequestPayload = {
   stripe_payment_id: string;
   service_notes?: string;
   service_id: string;
-  customer_id: string;
   provider_id: string;
   address_id: string;
   start_time: string;
@@ -140,14 +139,14 @@ function CheckoutForm({ clientSecret }: CheckoutOutFormType) {
       if (
         !result.paymentIntent.id ||
         !booking.serviceId ||
-        !booking.customerId ||
+        // !booking.customerId ||
         !booking.providerId ||
-        !booking.addressId ||
+        // !booking.addressId ||
         !(hasDateAndTime || hasAvailableTime)
       ) {
         console.log(
-          `missing required data to create booking booking.serviceId ${booking.serviceId} booking.serviceId ${booking.serviceId} booking.customerId ${booking.customerId} booking.providerId ${booking.providerId} booking.date ${booking.date} booking.time
-     ${booking.time}`,
+          `missing required data to create booking result.paymentIntent.id ${result.paymentIntent.id} booking.serviceId ${booking.serviceId} booking.customerId ${booking.customerId} booking.providerId ${booking.providerId} booking.date ${booking.date} booking.time
+     ${booking.time} booking.addressId ${booking.addressId} `,
         );
         return;
       }
@@ -163,14 +162,14 @@ function CheckoutForm({ clientSecret }: CheckoutOutFormType) {
         {
           stripe_payment_id: result.paymentIntent.id,
           service_id: booking.serviceId,
-          customer_id: booking.customerId,
           provider_id: booking.providerId,
           start_time: hasDateAndTime
             ? combineDateAndTimeToUTC(booking.date!, booking.time!)
             : convertAvailableTimeToUTC(booking.availableTime || ""),
           service_notes: "",
           special_instructions: booking.serviceNotes || "",
-          address_id: booking.addressId,
+          address_id:
+            booking.addressId || "78a96f8c-507e-4a30-8a3e-ac019ef4808a",
         },
         {
           onSuccess: (data) => {

@@ -20,7 +20,6 @@ export default function BookingCheckoutPage() {
   ${authContextObject.city}
     ${authContextObject.state}
      ${authContextObject.zip}`;
-  console.log(booking);
 
   // wrapping updateBooking in a useEffect so it will only run once or when the autoContextObject changes, instead of on every render
   useEffect(() => {
@@ -75,7 +74,11 @@ export default function BookingCheckoutPage() {
           <IconLeftTwoTextRight
             icon={MapPin}
             heading="Location"
-            text={addressFromAuth}
+            text={
+              authContextObject.streetAddress1
+                ? addressFromAuth
+                : "456 1st St San Francisco CA 94534"
+            }
           />
         </div>
         <div className="flex items-center">
@@ -90,7 +93,7 @@ export default function BookingCheckoutPage() {
               {`${booking.serviceDuration || ""} mins`}
             </span>
           </div>
-          <span className="font-semibold">{booking.price || ""}</span>
+          <span className="font-semibold">{`$${booking.price}`}</span>
         </section>
       </div>
       <div className="mt-6 flex flex-col justify-center rounded-lg border-1 border-light-accent bg-white px-2 py-8">
