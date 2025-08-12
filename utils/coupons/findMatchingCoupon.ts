@@ -3,7 +3,7 @@ import { CouponObject, FindMatchingCouponType } from "@/app/types/coupon";
 export default function findMatchingCoupon({
   couponCode,
   couponList,
-}: FindMatchingCouponType) {
+}: FindMatchingCouponType): CouponObject | null {
   const trimmedCouponCode = couponCode.trim();
 
   if (couponList.length === 0) {

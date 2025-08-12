@@ -8,3 +8,10 @@ export type FindMatchingCouponType = {
   couponCode: string;
   couponList: CouponObject[];
 };
+
+export type DiscountFormType = {
+  couponStatus: StatusAndMessage | null;
+  setCouponStatus: React.Dispatch<
+    React.SetStateAction<StatusAndMessage | null>
+  >;
+};

@@ -5,15 +5,21 @@ import findMatchingCoupon from "@/utils/coupons/findMatchingCoupon";
 import { CouponObject } from "@/app/types/coupon";
 import StyledAsButton from "../StyledAsButton";
 
-type couponCheckStatus = {
-  status: string;
-  message: string;
+type DiscountFormType = {
+  couponObject: CouponObject | null;
+  setCouponObject: React.Dispatch<React.SetStateAction<CouponObject | null>>;
+  setCouponCode: React.Dispatch<React.SetStateAction<string>>;
+  couponCode: string;
 };
 
-export default function DiscountForm() {
-  const [couponCode, setCouponCode] = useState("");
+export default function DiscountForm({
+  couponObject,
+  setCouponObject,
+  setCouponCode,
+  couponCode,
+}: DiscountFormType) {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [couponStatus, setCouponStatus] = useState<couponCheckStatus | null>(
+  const [couponStatus, setCouponStatus] = useState<StatusAndMessage | null>(
     null,
   );
 
@@ -27,7 +33,7 @@ export default function DiscountForm() {
     skip: false,
   });
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (couponsLoading) {
       setCouponStatus({ status: "pending", message: "Checking..." });
@@ -50,7 +56,11 @@ export default function DiscountForm() {
     });
 
     if (matchingCoupon) {
-      setCouponStatus({ status: "success", message: "Discount applied!" });
+      setCouponStatus({
+        status: "success",
+        message: `${couponObject?.coupon_name} ${couponObject?.discount_value}% discount applied!`,
+      });
+      setCouponObject(matchingCoupon);
     } else {
       setErrorMessage("invalid discount code");
     }
@@ -74,6 +84,7 @@ export default function DiscountForm() {
           isRequired
           name="discount_code"
           type="text"
+          className="text-light-font-color"
           errorMessage={errorMessage || "Please enter a valid discount code"}
           isInvalid={!!errorMessage}
           label="Discount Code"

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Calendar, Clock, MapPin } from "lucide-react";
 import { format } from "date-fns";
 import { useAuthContext } from "@/components/context-wrappers/AuthContext";
@@ -10,24 +10,35 @@ import { useBooking } from "@/components/context-wrappers/BookingContext";
 import formatDateTimeString from "@/utils/formatDateTimeString";
 import { getBookingFromCookies } from "@/utils/cookies/bookingCookies";
 import DiscountForm from "./DiscountForm";
+import { CouponObject } from "@/app/types/coupon";
 
 type BookingCheckoutPageType = {
-  setDiscountCode: React.Dispatch<React.SetStateAction<string>>;
-  discountCode: string;
+  couponCode: string;
+  setCouponCode: React.Dispatch<React.SetStateAction<string>>;
 };
+
 export default function BookingCheckoutPage({
-  setDiscountCode,
-  discountCode,
+  couponCode,
+  setCouponCode,
 }: BookingCheckoutPageType) {
   const { authContextObject } = useAuthContext();
 
   const { booking, updateBooking } = useBooking();
+  const [couponObject, setCouponObject] = useState<CouponObject | null>(null);
+
+  function calculateNewPrice(fullPrice: number | string, discount: number) {
+    const fullPriceInteger = Number(fullPrice);
+    const discountInDollars = fullPriceInteger * (discount / 100);
+    return fullPriceInteger - discountInDollars;
+  }
 
   const addressFromAuth = `${authContextObject.streetAddress1}
   ${authContextObject.streetAddress2}
   ${authContextObject.city}
     ${authContextObject.state}
      ${authContextObject.zip}`;
+
+  const discount = couponObject != null ? couponObject.discount_value : 0;
 
   // wrapping updateBooking in a useEffect so it will only run once or when the autoContextObject changes, instead of on every render
   useEffect(() => {
@@ -102,10 +113,26 @@ export default function BookingCheckoutPage({
             </span>
           </div>
 
-          <span className="font-semibold">{`Total: $${booking.price}`}</span>
+          {couponObject && booking.price ? (
+            <div className="font-semibold">
+              <span className="font-semibold"> Total: </span>
+              <span className="line-through"> {`$${booking.price}`}</span>
+              <span className=" text-emerald-700">
+                {" "}
+                ${calculateNewPrice(booking.price || 0, discount)}
+              </span>
+            </div>
+          ) : (
+            <span className="font-semibold">{`Total: $${booking.price}`}</span>
+          )}
         </section>
         <div className="flex justify-end w-full">
-          <DiscountForm />
+          <DiscountForm
+            couponObject={couponObject}
+            setCouponObject={setCouponObject}
+            setCouponCode={setCouponCode}
+            couponCode={couponCode}
+          />
         </div>
       </div>
 

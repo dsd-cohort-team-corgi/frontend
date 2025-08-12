@@ -95,6 +95,11 @@ declare global {
     created_at: string; // ISO date string
     customer_name: string;
   };
+
+  type StatusAndMessage = {
+    status: string;
+    message: string;
+  };
 }
 
 // Due to Property 'google' does not exist on type 'Window & typeof globalThis error in googleSignInButton component
