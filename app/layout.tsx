@@ -14,7 +14,6 @@ import { DM_Sans } from "next/font/google"; // https://nextjs.org/docs/app/getti
 // 1. user's browser won't ping google's servers for the font data
 import BookingProvider from "../components/context-wrappers/BookingWrapper";
 import ClientProviders from "../components/context-wrappers/AuthWrapper";
-
 import "./globals.css";
 import Header from "../components/Header";
 import TanstackQueryProvider from "@/components/TanstackQueryProvider";
