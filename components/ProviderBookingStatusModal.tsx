@@ -142,6 +142,8 @@ function ProviderBookingStatusModal({
         closeButton: "text-black hover:text-primary",
         // the X defaults to the top right corner, moved it with top and right
         base: "max-w-[500px]",
+        backdrop: "z-[10000]",
+        wrapper: "z-[10000]",
         // default version was too small and had a max-w-m
       }}
     >
