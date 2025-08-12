@@ -360,23 +360,30 @@ function UnauthenticatedHero() {
   return (
     <Container className="flex justify-center">
       {/* Container placed around image and text to allow for positioning based off image rather than screen */}
-      <div className="relative">
+      <div
+        className="relative w-full max-w-6xl rounded-lg overflow-hidden"
+        style={{
+          height: "clamp(350px, 40vh, 600px)", // controls height
+        }}
+      >
         <Image
-          className="h-[42dvh] rounded-lg object-cover md:h-[50dvh] lg:h-[60vh]"
+          className=" object-cover"
+          fill
           alt="Young woman diligently cleaning a bright, modern home."
           // static import to have Next Image component decide height and width to prevent CLS
           src={HomePageHeroImage}
         />
         {/* Text Container */}
-        <div className="absolute left-[10%] top-[5%] w-1/2 md:top-[10%] lg:left-[15%]">
-          <div className="text-3xl md:text-4xl font-black lg:text-6xl">
+        <div className="absolute inset-0 flex flex-col items-start justify-center px-[10%]  translate-y-[-10%] lg:translate-y-0">
+          {/* inset-0 flex flex-col items-start justify-center px-[10%]  */}
+          <div className="text-3xl font-black md:text-5xl lg:text-6xl">
             <p>Book. Relax.</p>
             <p>Done.</p>
           </div>
           <p className="my-[10px] font-medium md:my-[1em] lg:text-lg md:font-semibold">
             Professional services for your busy life.
           </p>
-          <p className="mb-2 font-medium md:my-[1em] lg:text-lg md:font-semibold ">
+          <p className="mb-3 font-medium lg:text-lg md:font-semibold ">
             {" "}
             Need help ASAP?
           </p>
@@ -386,6 +393,15 @@ function UnauthenticatedHero() {
             onPress={openBumi}
             label="Chat With Bumi!"
             className="text-xs md:text-base"
+            endContent={
+              <img
+                src="/bumi.png"
+                width={24}
+                height={24}
+                className="rounded-full -ml-1 my-auto"
+                alt="a happy corgi with its tongue lolling out of its mouth"
+              />
+            }
           />
         </div>
       </div>
