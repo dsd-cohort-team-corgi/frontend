@@ -134,6 +134,8 @@ export default function useVoiceRecognition({
         conversation_history: conversationHistoryRef.current,
       });
 
+      stopListening();
+
       fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/${apiEndPath}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -246,13 +248,6 @@ export default function useVoiceRecognition({
     if (isListening) {
       // If already listening: stops everything and resets
       stopListening();
-      // recognitionRef.current?.stop();
-      // setIsListening(false);
-      // if (silenceTimer.current) clearTimeout(silenceTimer.current);
-      // // Clear the in progress text we've accumulated when we toggle the mic
-      // textsAfterLastApiRef.current = "";
-      // setInProgressBubbles("");
-      // liveTranscriptRef.current = "";
     } else {
       // User just clicked the mic to start listening
       recognitionRef.current = createRecognition();
@@ -288,6 +283,7 @@ export default function useVoiceRecognition({
   return {
     finishedBubbles,
     inProgressBubbles,
+    setInProgressBubbles,
     isListening,
     aiThinking,
     toggleListening,

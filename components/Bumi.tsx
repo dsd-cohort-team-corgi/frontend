@@ -14,11 +14,32 @@ import BumiModal from "./BumiModal";
 import useVoiceRecognition from "@/lib/hooks/useVoiceRecognition";
 import { useApiMutation } from "@/lib/api-client";
 
+interface BumiQuickTrickDetails {
+  success: boolean;
+  message: string;
+  booking: object;
+}
+
+interface BumiQuickTrickRequest {
+  message: string;
+  conversation_history: string[];
+}
+
+interface BumiQuickTrickResponse {
+  message: string;
+  success: boolean;
+  details: BumiQuickTrickDetails;
+  action: string;
+}
+
 export default function Bumi() {
   const [isBumiModalOpen, setIsBumiModalOpen] = useState(false);
   const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
   const isLongPressRef = useRef(false);
-  const bookingActionMutation = useApiMutation("/bumi/ai/quickTricks", "POST");
+  const bookingActionMutation = useApiMutation<
+    BumiQuickTrickResponse,
+    BumiQuickTrickRequest
+  >("/bumi/ai/quickTricks", "POST");
 
   // listens to the click event of the button on the landing page, to open bumi ai
   useEffect(() => {
@@ -33,39 +54,54 @@ export default function Bumi() {
     };
   }, []);
 
-  const { inProgressBubbles, isListening, toggleListening } =
-    useVoiceRecognition({
-      onApiResponse: () => {
-        /* No-op */
-      },
-      onBeforeApiCall: useCallback((text: string) => {
-        const lowerText = text.toLowerCase().trim();
-        console.log("Processing voice command:", lowerText);
-        if (
-          lowerText.includes("cancel") ||
-          lowerText.includes("reschedule") ||
-          lowerText.includes("rescheduling") ||
-          lowerText.includes("uncanceling")
-        ) {
-          bookingActionMutation.mutate({
-            message: lowerText,
-            conversationHistory: [],
-          });
-          // return true; // Prevent API call
-        }
-        alert("Allowing API call for normal speech");
-        if (bookingActionMutation.isSuccess) {
-          console.log(bookingActionMutation.data);
-          addToast({
-            title: bookingActionMutation.data as string,
-          });
-        }
-        return false; // Allow API call for normal speech
-      }, []),
-      apiEndPath: "bumi/booking/chat",
-      setErrorMessage: () => {},
-      setRequestCopy: () => {},
-    });
+  const {
+    inProgressBubbles,
+    setInProgressBubbles,
+    isListening,
+    toggleListening,
+  } = useVoiceRecognition({
+    onApiResponse: () => {
+      /* No-op */
+    },
+    onBeforeApiCall: useCallback((text: string) => {
+      const lowerText = text.toLowerCase().trim();
+      if (
+        lowerText.includes("cancel") ||
+        lowerText.includes("reschedule") ||
+        lowerText.includes("rescheduling") ||
+        lowerText.includes("uncanceling")
+      ) {
+        bookingActionMutation.mutate({
+          message: lowerText,
+          conversation_history: [],
+        });
+      }
+      return false; // Allow API call for normal speech
+    }, []),
+    apiEndPath: "bumi/booking/chat",
+    setErrorMessage: () => {},
+    setRequestCopy: () => {},
+  });
+
+  useEffect(() => {
+    if (bookingActionMutation.isPending) {
+      setInProgressBubbles("Thinking...");
+    }
+    console.log(bookingActionMutation.isSuccess);
+    if (bookingActionMutation.isSuccess) {
+      setInProgressBubbles(bookingActionMutation?.data.message);
+      setTimeout(() => setInProgressBubbles(""), 3000);
+    }
+    if (bookingActionMutation.isError) {
+      setInProgressBubbles("Something went wrong, please try again");
+      setTimeout(() => setInProgressBubbles(""), 3000);
+    }
+  }, [
+    bookingActionMutation.data,
+    bookingActionMutation.isPending,
+    bookingActionMutation.isSuccess,
+    bookingActionMutation.isError,
+  ]);
 
   const handleBumiClick = useCallback(() => {
     if (!isLongPressRef.current) {
@@ -149,7 +185,6 @@ export default function Bumi() {
       </div>
     );
   }, [inProgressBubbles]);
-  console.log({ inProgressBubbles });
   return (
     <>
       <div className="fixed bottom-10 right-10 z-50 flex items-center space-x-4">
