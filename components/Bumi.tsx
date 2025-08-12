@@ -92,10 +92,15 @@ export default function Bumi() {
       setInProgressBubbles(bookingActionMutation?.data.message);
       setTimeout(() => setInProgressBubbles(""), 3000);
     }
+    if (bookingActionMutation.isError) {
+      setInProgressBubbles("Something went wrong, please try again");
+      setTimeout(() => setInProgressBubbles(""), 3000);
+    }
   }, [
     bookingActionMutation.data,
     bookingActionMutation.isPending,
     bookingActionMutation.isSuccess,
+    bookingActionMutation.isError,
   ]);
 
   const handleBumiClick = useCallback(() => {
