@@ -409,7 +409,7 @@ function UnauthenticatedHero() {
   );
 }
 
-function ServicesSection() {
+function ServicesSection({ isDarkMode }: { isDarkMode: boolean }) {
   return (
     <Container className="mt-20 text-center sm:text-left">
       <h3 className="text-4xl font-bold text-primary-font-color">
@@ -423,6 +423,7 @@ function ServicesSection() {
           <Card
             key={service.label}
             service={service}
+            isDarkMode={isDarkMode}
             className="group relative max-w-xs bg-transparent pb-2 shadow-none"
             // group relative allows for the blue hover effect, it will trigger the group div inside this component to activate
             // heroui has a shadow by default, turned off with shadow-none
@@ -450,11 +451,30 @@ const renderHero = (authContextObject: AuthDetailsType) => {
 
 export default function Home() {
   const { authContextObject } = useAuthContext();
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  useEffect(() => {
+    const checkDarkMode = () => {
+      setIsDarkMode(document.documentElement.classList.contains("dark"));
+    };
+
+    checkDarkMode();
+
+    const handlePartyModeChange = () => {
+      checkDarkMode();
+    };
+
+    window.addEventListener("party-mode-changed", handlePartyModeChange);
+
+    return () => {
+      window.removeEventListener("party-mode-changed", handlePartyModeChange);
+    };
+  }, []);
 
   return (
     <div>
       {renderHero(authContextObject)}
-      <ServicesSection />
+      <ServicesSection isDarkMode={isDarkMode} />
     </div>
   );
 }
