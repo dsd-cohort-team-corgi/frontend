@@ -117,7 +117,7 @@ export default function CheckoutButton({
         onOpenChange={completeProfileOnOpenChange}
       /> */}
       <StyledAsButton
-        className={`mb-4 mt-6 block px-0 disabled:bg-gray-500 disabled:text-black h-14 ${className}`}
+        className={`mb-4 mt-6 block px-0 disabled:bg-gray-500 disabled:text-white h-14 ${className}`}
         label={text || "Continue to Booking"}
         onPress={() => handleContinueToBooking()}
         disabled={disabled}

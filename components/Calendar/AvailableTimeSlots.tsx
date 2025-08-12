@@ -49,7 +49,7 @@ export default function AvailableTimeSlots({
         type="button"
         onPress={handleUp}
         disabled={startIndex === 0}
-        className=" w-full"
+        className=" w-full disabled:bg-slate-600"
         startContent={<ArrowBigUp />}
       />
       <ul className="flex w-full flex-col gap-y-3">
@@ -72,7 +72,7 @@ export default function AvailableTimeSlots({
       </ul>
       <StyledAsButton
         onPress={handleDown}
-        className="w-full"
+        className="w-full  disabled:bg-slate-600"
         disabled={startIndex + pageSize >= availableTimeSlots.length}
         startContent={<ArrowBigDown />}
       />
