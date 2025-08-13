@@ -74,27 +74,31 @@ function AuthenticatedHero({ userSession }: { userSession: UserSession }) {
     },
   );
 
-  // sets booking statuses to initial data for comparisons
-  // loops through incoming data and booking statuses and checks for any changes
-  // if there is a change toast fires and booking statues is updated for new comparison point
   useEffect(() => {
-    if (bookingStatuses?.length === 0 && data?.upcoming_bookings) {
-      setBookingStatuses(data?.upcoming_bookings);
-    }
-    if (bookingStatuses && bookingStatuses?.length > 0) {
-      data?.upcoming_bookings?.forEach(
-        ({ provider_company_name, status }, idx) => {
-          if (bookingStatuses && bookingStatuses[idx].status !== status) {
-            addToast({
-              title: `${provider_company_name} is now ${status} to your location`,
-              icon: <Truck color="#fff" />,
-            });
-          }
-        },
-      );
-      setBookingStatuses(data?.upcoming_bookings);
-    }
-  }, [dataUpdatedAt, bookingStatuses, data?.upcoming_bookings]);
+    if (!data?.upcoming_bookings) return;
+
+    const prevBookingsMap = new Map(
+      bookingStatuses?.map((b) => [b.id, b]) || [],
+    );
+
+    data.upcoming_bookings.forEach((booking) => {
+      const prevBooking = prevBookingsMap.get(booking.id);
+
+      if (!prevBooking) {
+        addToast({
+          title: `New booking at ${booking.provider_company_name}: ${booking.status}`,
+          icon: <Truck color="#fff" />,
+        });
+      } else if (prevBooking.status !== booking.status) {
+        addToast({
+          title: `${booking.provider_company_name} is now ${booking.status} to your location`,
+          icon: <Truck color="#fff" />,
+        });
+      }
+    });
+
+    setBookingStatuses(data?.upcoming_bookings);
+  }, [dataUpdatedAt, data?.upcoming_bookings]);
 
   if (userLoading) {
     return (
