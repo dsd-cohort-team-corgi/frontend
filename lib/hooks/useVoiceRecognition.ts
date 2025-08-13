@@ -38,8 +38,6 @@ type UseVoiceRecognitionOptions = {
   setErrorMessage: React.Dispatch<React.SetStateAction<string>>;
   setRequestCopy: React.Dispatch<React.SetStateAction<RequestCopyType | null>>;
 };
-// SpeechRecognition is the standardized and unprefixed newer version
-// however some browsers only support the legacy webkitSpeechRecognition which uses vendor prefixes
 
 export default function useVoiceRecognition({
   onApiResponse,
@@ -56,26 +54,19 @@ export default function useVoiceRecognition({
   const recognitionRef =
     useRef<InstanceType<SpeechRecognitionConstructor> | null>(null);
   //  stores the SpeechRecognition instance so we can start/stop/restart
-  // persist an object (the SpeechRecognition instance) across renders without triggering re-renders when it changes
-  // Ideal for storing mutable non-UI things (like timers, audio nodes, socket connections, speech recognition instances)
-  // storing it in useState would not be ideal, because it would trigger rerenders even though we don't need UI updates because recognition changed
 
   const conversationHistoryRef = useRef<ConversationMessage[]>([]);
 
   const silenceTimer = useRef<NodeJS.Timeout | null>(null);
-  // detects silence, it keeps track if the silence has lasted for 3 seconds
+
   const textsAfterLastApiRef = useRef<string>("");
   // stores all the user speech bubbles since last API call to send in one go
-  // we want to use useRef instead of useState instead to ensure we're sending the most up to date value to the web api callbacks and timers, state would give us stale values because of the delay
+
   const liveTranscriptRef = useRef("");
-  // stores the current live transcript to send
 
   useEffect(() => {
     liveTranscriptRef.current = inProgressBubbles;
   }, [inProgressBubbles]);
-
-  // just keeps the liveTranscriptRef updated when inProgressBubbles changes, so setTimeout or event handlers can access the liveTranscript information without stale values (like it would from useState)
-  // so if we did setTimeOut with console.log it would print the latest value, not the older stale value like we would with setState
 
   const stopListening = useCallback(() => {
     if (recognitionRef.current) {
@@ -166,7 +157,6 @@ export default function useVoiceRecognition({
         .finally(() => {
           setAiThinking(false);
           textsAfterLastApiRef.current = "";
-          //   Clear after sending
         });
     }, 3000); // 3 seconds of silence
   };
@@ -180,7 +170,6 @@ export default function useVoiceRecognition({
       return null;
     }
 
-    // Creates a speech recognize
     const recognition = new SpeechRecognition();
     recognition.continuous = true;
     recognition.interimResults = true;
@@ -241,9 +230,6 @@ export default function useVoiceRecognition({
     return recognition;
   };
 
-  // we need to type is to be a pressEvent, but we don't use e anywhere. So turn off this eslint warning
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-
   const toggleListening = () => {
     if (isListening) {
       // If already listening: stops everything and resets
@@ -251,17 +237,11 @@ export default function useVoiceRecognition({
     } else {
       // User just clicked the mic to start listening
       recognitionRef.current = createRecognition();
-      // creates a new speech recognition instance
-
       if (!recognitionRef.current) return;
-      // safety check, if recognition fails such as if the browser doesn't support it, then it will return null. So the logic below would throw errors if the null value continued onward. So we return
+      // safety check, if recognition fails such as if the browser doesn't support it, then it will return null
 
       setTimeout(() => {
         try {
-          // If we were not listening before the toggle was clicked:
-          // - sets up speech recognition
-          // -  starts listening
-          // -  starts the silence timer
           recognitionRef.current?.start();
           setIsListening(true);
           resetSilenceTimer();

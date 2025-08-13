@@ -1,11 +1,6 @@
 "use client";
 
 import Link from "next/link";
-// Link is a wrapper component that allows for client side navigation, which improves next.js performance
-// Why? Since it will not reload the page & it prefetches the page in the background
-// When to use? To be used when moving internally, do not use for external links
-// it doesn't render anything by default, instead it wraps the content
-// ex <Link href="/about"> <a> Click here to go to the about page </a> </Link>
 
 import React from "react";
 import Image from "next/image";
@@ -19,8 +14,6 @@ import {
   NavbarMenu,
   NavbarMenuItem,
   Link as HeroUiLink,
-  // HeroUi's Link under the hood is an <a> tag with styling and accessiblity built in
-  // we tell HeroUiLink to render as a Next/Link "as={Link}" in order to get the performance boost of Next/Link while keeping the styling & accessiblity benefits of a HeroUi's Link Component
   DropdownItem,
   DropdownTrigger,
   Dropdown,
@@ -35,8 +28,7 @@ import {
   Spinner,
   Avatar,
 } from "@heroui/react";
-// NavBarMenuToggle == toggles mobile nav bar
-// NavBarMenu == mobile nav bar
+
 import supabaseClient from "@/lib/supabase";
 import { useAuthContext } from "@/components/context-wrappers/AuthContext";
 import listOfServices from "@/data/services";
@@ -83,7 +75,6 @@ export default function App() {
 
   const handleLogOut = async () => {
     await supabaseClient.auth.signOut();
-    // the auth context automatically keeps track of auth changes, so we don't need to manually reset the auth context
   };
 
   const mobileNavMenuItems = [...Object.values(listOfServices)];
@@ -93,14 +84,13 @@ export default function App() {
       <Navbar
         onMenuOpenChange={setIsMenuOpen}
         classNames={{
-          wrapper: "w-full max-w-6xl mx-auto p-4", // fixed width on desktop, centered, with padding and top padding
+          wrapper: "w-full max-w-6xl mx-auto p-4",
           base: "z-[9999]",
         }}
       >
         {/* #### Left Section (logo and mobile menu toggle button) ###### */}
 
         <NavbarContent justify="start">
-          {/* Toggle for mobile menu, it hides on screens that are larger than extra small */}
           <NavbarMenuToggle
             aria-label={isMenuOpen ? "Close menu" : "Open menu"}
             className="sm:hidden"

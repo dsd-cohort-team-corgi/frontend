@@ -40,9 +40,8 @@ export default function BookingCheckoutPage({
 
   const discount = couponObject != null ? couponObject.discount_value : 0;
 
-  // wrapping updateBooking in a useEffect so it will only run once or when the autoContextObject changes, instead of on every render
   useEffect(() => {
-    const bookingFromCookies = getBookingFromCookies(); // will return {} if its empty, so we won't have errors when spreading like we would with null data
+    const bookingFromCookies = getBookingFromCookies();
     if (bookingFromCookies) {
       updateBooking({
         ...bookingFromCookies,
@@ -87,7 +86,6 @@ export default function BookingCheckoutPage({
             icon={Clock}
             heading="Time"
             text={booking.time || (booking.availableTime ? eventTime : "")}
-            // since booking.available_time can be undefined, we need to do a guard check first
           />
 
           <IconLeftTwoTextRight

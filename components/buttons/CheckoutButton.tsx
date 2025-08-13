@@ -44,8 +44,8 @@ export default function CheckoutButton({
   useEffect(() => {
     if (providerInfo && "first_name" in providerInfo) {
       const redirectUrl = window.location.pathname;
-      // providerInfo is a ProviderInfo object, aka they are coming from the provider's page
-      // because ServiceRecommendation does not have "first_name"
+      // providerInfo is a ProviderInfo object, aka they are coming from a provider's page
+      // ServiceRecommendation does not have "first_name" so this allows us to confirm that they're not coming from bumi ai
       updateBooking({
         companyName: providerInfo?.company_name,
         firstName: providerInfo?.first_name,
@@ -99,7 +99,6 @@ export default function CheckoutButton({
     // }
 
     router.push(`/checkout`);
-    // Close modal if onClose function is provided
     if (onClose) {
       onClose();
     }

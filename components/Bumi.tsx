@@ -8,7 +8,6 @@ import React, {
   useMemo,
 } from "react";
 import Image from "next/image";
-import { addToast } from "@heroui/react";
 import BumiGif from "@/public/bumi.gif";
 import BumiModal from "./BumiModal";
 import useVoiceRecognition from "@/lib/hooks/useVoiceRecognition";

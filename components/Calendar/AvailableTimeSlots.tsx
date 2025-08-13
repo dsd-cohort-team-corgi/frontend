@@ -62,7 +62,6 @@ export default function AvailableTimeSlots({
               key={slot}
               label={slot}
               className="text-md w-full bg-transparent font-semibold text-black group-hover:text-white"
-              // w-full that way if you click anywhere on the li, the special click ripple animation will be shown, since the button "fills" the li
               onPress={() => {
                 handleSlotChangeWithContext(slot);
               }}

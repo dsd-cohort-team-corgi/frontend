@@ -16,17 +16,6 @@ export default function Calendar({
   serviceLength,
 }: CalendarType) {
   const { booking, updateBooking } = useBooking();
-  // if all slots for the day are gone, add it as an unavailable day
-
-  // when SelectedDay is not undefined (when user selects a day)
-  // load selected time slots component
-
-  // all slots from X am to X pm
-  // calculate what 30 minute slots are unavailable
-
-  // filter out slots that
-
-  // let user click one to select a time
 
   const today = new Date();
   const twoWeeksLater = new Date();

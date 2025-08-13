@@ -61,11 +61,6 @@ function CheckoutForm({ clientSecret }: CheckoutOutFormType) {
 
   const queryClient = useQueryClient();
 
-  // plus to using reactQuery versus a normal fetch
-  // 1. If the fetch fails due to a flaky network, React Query can automatically retry a few times before showing the error
-  // 2. Automatic Caching, avoids duplicate networking calls, allows refetching, improves performance
-  // 3. access to a more robust error state
-  // 4. if the hook was modified slightly, we could also access the isloading state
   const { mutate: createBooking, error } = useApiMutation<
     BookingResponse,
     BookingRequestPayload
@@ -131,8 +126,6 @@ function CheckoutForm({ clientSecret }: CheckoutOutFormType) {
       setMessage("Payment was successful!");
 
       // ########################## CREATE BOOKING ###################
-      // createBooking() will call useAPIMutation's mutation function const { mutate: createBooking, error } ....
-
       const hasDateAndTime = booking.date && booking.time;
       const hasAvailableTime = booking.availableTime;
 
@@ -175,7 +168,6 @@ function CheckoutForm({ clientSecret }: CheckoutOutFormType) {
             const bookingId = data.id;
             setMessage("Booking successfully created!");
             queryClient.invalidateQueries({ queryKey: ["bookings"] });
-            // since next.js 14 has persistant layouts and react query's cache persists, we want to invalidate the query so we don't have old information if we revist it laer
             router.push(`/booking-confirmation/${bookingId}`);
           },
           onError: (err) => {
@@ -293,22 +285,16 @@ export default function StripeCheckoutPage({
     { service_id: string; discount_code?: string }
   >("/stripe/create-payment-intent", "POST");
 
-  // this outer data = This represents the current cached mutation result React Query stores for this mutation
-  // this outer data was not needed, so it was removed from const { mutate:createPaymentIntent ....}
-
   const handleCreatePaymentIntent = () => {
     if (!serviceId) {
-      // return here to satisfy typescript's worry that serviceId will not be null in { service_id: serviceId }
-      // the error handling for a falsey serviceId is in the useEffect below
       return;
     }
     createPaymentIntent(
       { service_id: serviceId, discount_code: couponCode },
       {
         onSuccess: (responseData) => {
-          // This inner data is the data returned from this specific mutation call
           setClientSecret(responseData.client_secret);
-          // no need to invalidate since this since we don't use a query fetching the client secret anywhere else, and the useEffect ensures we always get fresh data on page load or if theres a new serviceId
+
           setLoadingPaymentSectionMessage(null);
           console.log("clientSecret", clientSecret);
         },
@@ -319,15 +305,11 @@ export default function StripeCheckoutPage({
           console.error("Booking failed:", err.message);
         },
         onSettled: () => {},
-        // Runs on both success or error
       },
     );
   };
 
   useEffect(() => {
-    // rerun the handleCreatePaymentIntent anytime the serviceId changes, which triggers the tan Query mutation via createPaymentIntent
-    // for example, if the serviceId is slow to load from the queryParams
-
     if (serviceId) {
       handleCreatePaymentIntent();
     } else {
