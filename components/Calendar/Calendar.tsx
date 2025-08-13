@@ -33,7 +33,7 @@ export default function Calendar({
   twoWeeksLater.setDate(twoWeeksLater.getDate() + 14);
 
   return (
-    <div className="mx-auto max-w-md px-2">
+    <div className="mx-auto max-w-md">
       <div className="flex flex-col sm:flex-row gap-4">
         {/* allow horizontal scroll on very small screens so DatePicker never overflows */}
         <div className="flex-shrink-0 w-full sm:w-auto overflow-x-auto touch-pan-x">
@@ -64,7 +64,7 @@ export default function Calendar({
       </div>
 
       <div className="mt-8">
-        <span className="">
+        <span>
           {booking.date instanceof Date
             ? convertDateToWeekDayYear(booking.date)
             : "Select a day and time"}

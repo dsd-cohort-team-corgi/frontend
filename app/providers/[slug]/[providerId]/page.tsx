@@ -222,9 +222,12 @@ export default function Page() {
         {!booking.serviceId ? (
           <span className="block font-bold"> Please select a service</span>
         ) : (
-          <span className="block font-bold">
-            {`${booking?.serviceTitle} (${booking.serviceDuration} mins) - $${booking?.price}`}
-          </span>
+          <div className="font-bold">
+            <p>{booking?.serviceTitle}</p>
+            <p>
+              ({booking.serviceDuration} mins) - ${booking?.price}
+            </p>
+          </div>
         )}
         <CheckoutButton
           className="font-bold w-full"
