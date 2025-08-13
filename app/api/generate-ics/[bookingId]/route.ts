@@ -35,17 +35,17 @@ export async function GET(
 
   try {
     const bookingResponse = await fetch(
-      `https://maidyoulook-backend.onrender.com/bookings/${bookingId}`,
+      `https://${process.env.NEXT_PUBLIC_API_BASE_URL}/bookings/${bookingId}`,
     );
     const bookingData: BookingData = await bookingResponse.json();
 
     const serviceResponse = await fetch(
-      `https://maidyoulook-backend.onrender.com/services/${bookingData.service_id}`,
+      `https://${process.env.NEXT_PUBLIC_API_BASE_URL}/services/${bookingData.service_id}`,
     );
     const serviceData: ServiceData = await serviceResponse.json();
 
     const addressResponse = await fetch(
-      `https://maidyoulook-backend.onrender.com/addresses/${bookingData.address_id}`,
+      `https://${process.env.NEXT_PUBLIC_API_BASE_URL}/addresses/${bookingData.address_id}`,
     );
 
     const address: AddressData = await addressResponse.json();
@@ -73,7 +73,7 @@ export async function GET(
       location: address
         ? `${address.street_address_1} ${address.city}, ${address.state}, ${address.zip}`
         : "virtual",
-      url: `http://localhost:3000/booking-confirmation/${bookingId}`,
+      url: `http://${process.env.NEXT_PUBLIC_URL}/booking-confirmation/${bookingId}`,
     });
 
     // Set headers for ICS file download
