@@ -77,6 +77,11 @@ function AuthenticatedHero({ userSession }: { userSession: UserSession }) {
   useEffect(() => {
     if (!data?.upcoming_bookings) return;
 
+    if (!bookingStatuses || bookingStatuses.length === 0) {
+      setBookingStatuses(data.upcoming_bookings);
+      return;
+    }
+
     const prevBookingsMap = new Map(
       bookingStatuses?.map((b) => [b.id, b]) || [],
     );
