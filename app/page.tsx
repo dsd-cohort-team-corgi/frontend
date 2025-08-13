@@ -34,7 +34,7 @@ export interface BookingItem {
   status: "confirmed" | "pending" | "cancelled" | "completed";
   start_time: string;
   service_title: string;
-  id: string;
+  booking_id: string;
   provider_id: string;
 }
 
@@ -83,18 +83,12 @@ function AuthenticatedHero({ userSession }: { userSession: UserSession }) {
     }
 
     const prevBookingsMap = new Map(
-      bookingStatuses?.map((b) => [b.id, b]) || [],
+      bookingStatuses?.map((b) => [b.booking_id, b]) || [],
     );
 
     data.upcoming_bookings.forEach((booking) => {
-      const prevBooking = prevBookingsMap.get(booking.id);
-
-      if (!prevBooking) {
-        addToast({
-          title: `New booking at ${booking.provider_company_name}: ${booking.status}`,
-          icon: <Truck color="#fff" />,
-        });
-      } else if (prevBooking.status !== booking.status) {
+      const prevBooking = prevBookingsMap.get(booking.booking_id);
+      if (prevBooking?.status !== booking.status) {
         addToast({
           title: `${booking.provider_company_name} is now ${booking.status} to your location`,
           icon: <Truck color="#fff" />,
@@ -289,11 +283,11 @@ function AuthenticatedHero({ userSession }: { userSession: UserSession }) {
                     service_title,
                     provider_company_name,
                     start_time,
-                    id,
+                    booking_id,
                     provider_id,
                   }) => (
                     <LeaveReview
-                      key={id}
+                      key={booking_id}
                       service_title={service_title}
                       company_name={provider_company_name}
                       start_time={start_time}
@@ -343,10 +337,11 @@ function AuthenticatedHero({ userSession }: { userSession: UserSession }) {
                     provider_company_name,
                     status,
                     start_time,
+                    booking_id,
                     service_title,
                   }) => (
                     <UpcomingService
-                      key={provider_company_name}
+                      key={`${provider_company_name} ${booking_id}`}
                       provider_company_name={provider_company_name}
                       status={status}
                       start_time={start_time}
