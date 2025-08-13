@@ -1,5 +1,4 @@
 import { formatDistanceToNow } from "date-fns";
-// https://date-fns.org/v4.1.0/docs/formatDistanceToNow
 
 export default function convertDateToTimeFromNow(date: string) {
   const timeInHumanWords = formatDistanceToNow(date, {

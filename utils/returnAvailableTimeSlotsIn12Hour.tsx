@@ -18,8 +18,8 @@ export default function returnAvailableTimeSlotsIn12Hour({
 
   const availableStartTimes = getValidAppointmentStartTimes({
     allTimeSlots,
-    busySlots, // [   ("10:30", "11:00", "13:00", "14:00") ];
-    serviceLength, // 60 === needs 2 consecutive open slots
+    busySlots,
+    serviceLength,
   });
 
   const availableTimesIn12HourFormat =
