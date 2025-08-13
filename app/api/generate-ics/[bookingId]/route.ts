@@ -35,17 +35,17 @@ export async function GET(
 
   try {
     const bookingResponse = await fetch(
-      `https://${process.env.NEXT_PUBLIC_API_BASE_URL}/bookings/${bookingId}`,
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/bookings/${bookingId}`,
     );
     const bookingData: BookingData = await bookingResponse.json();
 
     const serviceResponse = await fetch(
-      `https://${process.env.NEXT_PUBLIC_API_BASE_URL}/services/${bookingData.service_id}`,
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/services/${bookingData.service_id}`,
     );
     const serviceData: ServiceData = await serviceResponse.json();
 
     const addressResponse = await fetch(
-      `https://${process.env.NEXT_PUBLIC_API_BASE_URL}/addresses/${bookingData.address_id}`,
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/addresses/${bookingData.address_id}`,
     );
 
     const address: AddressData = await addressResponse.json();
