@@ -1,7 +1,7 @@
-import generateTimeSlots from "@/utils/generateTimeSlots";
-import convertTimeFrom24To12Hours from "@/utils/convertTimeFrom24To12Hours";
-import calculateBusyTimeSlots from "@/utils/calculateBusyTimeSlots";
-import getValidAppointmentStartTimes from "@/utils/getValidAppointmentStartTimes";
+import generateTimeSlots from "@/utils/time/timeslots/generateTimeSlots";
+import convertTimeFrom24To12Hours from "@/utils/time/convertTimeFrom24To12Hours";
+import calculateBusyTimeSlots from "@/utils/time/timeslots/calculateBusyTimeSlots";
+import getValidAppointmentStartTimes from "@/utils/time/timeslots/getValidAppointmentStartTimes";
 
 type AvailableTimeSlotsType = {
   serviceLength: number;

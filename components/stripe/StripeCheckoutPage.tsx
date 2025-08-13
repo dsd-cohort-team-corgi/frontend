@@ -16,7 +16,7 @@ import { CircleAlert, Lock } from "lucide-react";
 import StyledAsButton from "@/components/StyledAsButton";
 import { useApiMutation } from "@/lib/api-client";
 import { useBooking } from "@/components/context-wrappers/BookingContext";
-import combineDateAndTimeToUTC from "@/utils/combineDateAndTimeToUTC";
+import combineDateAndTimeToUTC from "@/utils/time/combineDateAndTimeToUTC";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY!);
 

@@ -8,7 +8,7 @@ import StarRatingReview from "@/components/ProviderOverallRatingInfo";
 import IconServiceTime from "@/components/IconServiceTime";
 import ReviewCard from "@/components/ReviewCard";
 import StyledAsButton from "@/components/StyledAsButton";
-import convertDateToTimeFromNow from "@/utils/convertDateToTimeFromNow";
+import convertDateToTimeFromNow from "@/utils/time/convertDateToTimeFromNow";
 import Calendar from "@/components/Calendar/Calendar";
 import { useBooking } from "@/components/context-wrappers/BookingContext";
 import CheckoutButton from "@/components/buttons/CheckoutButton";

@@ -4,7 +4,7 @@ import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import AvailableTimeSlots from "./AvailableTimeSlots";
 import { useBooking } from "@/components/context-wrappers/BookingContext";
-import convertDateToWeekDayYear from "@/utils/convertDateToWeekDayYear";
+import convertDateToWeekDayYear from "@/utils/time/convertDateToWeekDayYear";
 
 type CalendarType = {
   providersAppointments: Appointment[];

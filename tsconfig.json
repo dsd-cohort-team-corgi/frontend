@@ -26,7 +26,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "utils/combineDateAndTimeToUTC.tsx"
+    "utils/time/combineDateAndTimeToUTC.tsx"
   ],
   "exclude": ["node_modules"]
 }

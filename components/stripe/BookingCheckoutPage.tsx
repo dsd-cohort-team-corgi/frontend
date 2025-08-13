@@ -7,7 +7,7 @@ import { useAuthContext } from "@/components/context-wrappers/AuthContext";
 import StarRatingReview from "../ProviderOverallRatingInfo";
 import IconLeftTwoTextRight from "../IconLeftTwoTextRight";
 import { useBooking } from "@/components/context-wrappers/BookingContext";
-import formatDateTimeString from "@/utils/formatDateTimeString";
+import formatDateTimeString from "@/utils/time/formatDateTimeString";
 import { getBookingFromCookies } from "@/utils/cookies/bookingCookies";
 import DiscountForm from "./DiscountForm";
 import { CouponObject } from "@/app/types/coupon";

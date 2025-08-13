@@ -5,8 +5,8 @@ import Calendar from "@/components/icons/Calendar";
 import Star from "../icons/Star";
 import CheckoutButton from "../buttons/CheckoutButton";
 import StyledAsButton from "../StyledAsButton";
-import formatDateTimeString from "@/utils/formatDateTimeString";
-import convertDateToTimeFromNow from "@/utils/convertDateToTimeFromNow";
+import formatDateTimeString from "@/utils/time/formatDateTimeString";
+import convertDateToTimeFromNow from "@/utils/time/convertDateToTimeFromNow";
 
 interface ServiceSelectionProps {
   services: ServiceRecommendation[];

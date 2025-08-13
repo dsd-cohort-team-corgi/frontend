@@ -2,7 +2,7 @@ import { useState } from "react";
 import { ArrowBigDown, ArrowBigUp } from "lucide-react";
 import StyledAsButton from "../StyledAsButton";
 import { useBooking } from "@/components/context-wrappers/BookingContext";
-import returnAvailableTimeSlotsIn12Hour from "@/utils/returnAvailableTimeSlotsIn12Hour";
+import returnAvailableTimeSlotsIn12Hour from "@/utils/time/timeslots/returnAvailableTimeSlotsIn12Hour";
 
 type AvailableTimeSlotsType = {
   serviceLength: number;

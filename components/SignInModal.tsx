@@ -9,8 +9,8 @@ import {
 } from "@heroui/react";
 import { useBooking } from "@/components/context-wrappers/BookingContext";
 import GoogleSignInButton from "./GoogleSignInButton";
-import convertToWeekDayYearTime from "@/utils/convertToWeekDayYearTIme";
-import convertDateToWeekDayYear from "@/utils/convertDateToWeekDayYear";
+import convertToWeekDayYearTime from "@/utils/time/convertToWeekDayYearTIme";
+import convertDateToWeekDayYear from "@/utils/time/convertDateToWeekDayYear";
 
 type LoginPageType = {
   isOpen: boolean;

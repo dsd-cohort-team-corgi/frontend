@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Calendar from "./icons/Calendar";
-import formatDateTimeString from "@/utils/formatDateTimeString";
+import formatDateTimeString from "@/utils/time/formatDateTimeString";
 import CircleCheck from "./icons/CircleCheck";
 import ChevronDown from "./icons/ChevronDown";
 
