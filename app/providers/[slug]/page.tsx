@@ -34,7 +34,7 @@ interface CompanyListInterface {
 }
 
 export default function Page({ params }: { params: { slug: string } }) {
-  const [searchValue, setSearchValue] = useState<string>("Search Everything");
+  const [searchValue, setSearchValue] = useState<string>("");
   // making a copy so we always have the original data to if user ever removes filters
   const [companyData, setCompanyData] = useState<CompanyListInterface[]>([]);
   const [filteredCompanyData, setFilteredCompanyData] =
@@ -129,7 +129,7 @@ export default function Page({ params }: { params: { slug: string } }) {
       {/* Chip container */}
       {/* Conditionally render if there is a serice object */}
       {serviceObject?.label && (
-        <div className="mb-4 flex gap-1 overflow-hidden">
+        <div className="mb-4 flex gap-1 overflow-x-scroll no-scrollbar">
           {chipServicesArray.map((service, idx) => (
             <Chip
               onClick={() => {
@@ -192,7 +192,7 @@ export default function Page({ params }: { params: { slug: string } }) {
                     )}
                   </span>
                 </CardBody>
-                <CardFooter className="flex gap-1">
+                <CardFooter className="flex gap-1 overflow-x-scroll no-scrollbar">
                   {services.map((service) => (
                     <Chip
                       key={`${company_name}cardChip-${service.service_title}-${service.id}`}

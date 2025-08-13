@@ -242,7 +242,7 @@ function AuthenticatedHero({ userSession }: { userSession: UserSession }) {
           {/* Subtle background pattern */}
           <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl opacity-60 -z-10 transition-all duration-300 group-hover:opacity-80 group-hover:scale-[1.02]" />
           <div className="py-4 rounded-2xl transition-all duration-300">
-            <h1 className="mb-3 text-2xl font-bold text-gray-900 md:text-3xl lg:text-4xl leading-tight">
+            <h1 className="mb-3 text-2xl font-bold text-gray-900 md:text-3xl lg:text-4xl leading-tight text-pretty">
               👋 Welcome back,{" "}
               <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 {userSession.displayName ||

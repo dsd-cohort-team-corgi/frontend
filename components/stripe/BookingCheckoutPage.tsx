@@ -99,32 +99,29 @@ export default function BookingCheckoutPage({
           />
         </div>
         <div className="flex items-center">
-          <div className="mx-4 h-[2px] grow bg-light-accent" />
+          <div className=" h-[2px] grow bg-light-accent" />
         </div>
 
-        <section className="mt-5 flex justify-between">
-          <div>
-            <span className="block font-semibold"> {booking.serviceTitle}</span>
+        <div className="my-2">
+          <p className="block font-semibold">{booking.serviceTitle}</p>
+          <p className="block text-sm text-secondary-font-color">
+            {`${booking.serviceDuration || ""} mins`}
+          </p>
+        </div>
 
-            <span className="block text-sm text-secondary-font-color">
-              {`${booking.serviceDuration || ""} mins`}
+        {couponObject && booking.price ? (
+          <div className="font-semibold">
+            <span className="font-semibold"> Total: </span>
+            <span className="line-through"> {`$${booking.price}`}</span>
+            <span className=" text-emerald-700">
+              {" "}
+              ${calculateNewPrice(booking.price || 0, discount)}
             </span>
           </div>
-
-          {couponObject && booking.price ? (
-            <div className="font-semibold">
-              <span className="font-semibold"> Total: </span>
-              <span className="line-through"> {`$${booking.price}`}</span>
-              <span className=" text-emerald-700">
-                {" "}
-                ${calculateNewPrice(booking.price || 0, discount)}
-              </span>
-            </div>
-          ) : (
-            <span className="font-semibold">{`Total: $${booking.price}`}</span>
-          )}
-        </section>
-        <div className="flex justify-end w-full">
+        ) : (
+          <span className="font-semibold">{`Total: $${booking.price}`}</span>
+        )}
+        <div className="flex justify-end w-full mt-2">
           <DiscountForm
             setCouponObject={setCouponObject}
             setCouponCode={setCouponCode}

@@ -211,30 +211,33 @@ export default function Page() {
 
             {/* Appointment Card */}
             <Card className="mb-6 bg-blue-50/30 border border-blue-100/50 shadow-none">
-              <CardBody className="p-5">
-                <div className="flex flex-row items-center gap-4">
-                  <div className="bg-blue-500/80 p-2 rounded-full">
-                    <Calendar color="white" size={18} />
-                  </div>
-                  <div className="flex flex-col">
-                    <h3 className="font-medium text-gray-700 text-sm">
-                      Appointment
-                    </h3>
-                    {serviceDateAndTime ? (
-                      <>
-                        <p className="text-lg font-semibold text-gray-900">
-                          {serviceDateAndTime.datePart}
-                        </p>
-                        <p className="text-sm text-gray-600">
-                          {serviceDateAndTime.timePart}
-                        </p>
-                      </>
-                    ) : (
-                      <p className="text-red-500">
-                        There was an error getting the booking date
+              <CardBody className="p-5 md:flex md:flex-row items-center gap-4">
+                <div
+                  className="flex-shrink-0 w-9 h-9 bg-blue-500/80 p-2 rounded-full
+                    flex justify-center items-center"
+                >
+                  <Calendar color="white" size={18} />
+                </div>
+
+                <div className="flex flex-col">
+                  <h3 className="font-medium text-gray-700 text-sm">
+                    Appointment
+                  </h3>
+
+                  {serviceDateAndTime ? (
+                    <>
+                      <p className="text-lg font-semibold text-gray-900">
+                        {serviceDateAndTime.datePart}
                       </p>
-                    )}
-                  </div>
+                      <p className="text-sm text-gray-600">
+                        {serviceDateAndTime.timePart}
+                      </p>
+                    </>
+                  ) : (
+                    <p className="text-red-500">
+                      There was an error getting the booking date
+                    </p>
+                  )}
                 </div>
               </CardBody>
             </Card>
@@ -242,8 +245,8 @@ export default function Page() {
             {/* Service and Address Card */}
             <Card className="mb-6 bg-purple-50/30 border border-purple-100/50 shadow-none">
               <CardBody className="p-5">
-                <div className="flex flex-row items-start gap-4">
-                  <div className="bg-purple-500/80 p-2 rounded-full mt-1">
+                <div className="flex flex-col md:flex-row md:items-start gap-4">
+                  <div className="bg-purple-500/80 p-2 h-9 w-9 md:h-auto md:w-auto m-auto flex justify-center items-center rounded-full mt-1">
                     <MapPin color="white" size={18} />
                   </div>
                   <div className="flex-1">
@@ -253,14 +256,14 @@ export default function Page() {
                     <p className="text-lg font-semibold text-gray-900 mb-2">
                       {service ? service.service_title : "Service not found"}
                     </p>
-                    <div className="bg-white/80 p-3 rounded border border-gray-200/50">
+                    {/* <div className="bg-white/80 p-3 rounded border border-gray-200/50">
                       <p className="text-sm text-gray-700">
                         {`${authContextObject.streetAddress1}`}
                         {authContextObject.streetAddress2 &&
                           `, ${authContextObject.streetAddress2}`}
                         {`, ${authContextObject.city}, ${authContextObject.state} ${authContextObject.zip}`}
                       </p>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               </CardBody>
@@ -269,8 +272,8 @@ export default function Page() {
             {/* Provider Card */}
             <Card className="mb-6 bg-emerald-50/30 border border-emerald-100/50 shadow-none">
               <CardBody className="p-5">
-                <div className="flex flex-row items-center justify-between gap-4">
-                  <div className="flex flex-row items-center gap-4">
+                <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                  <div className="flex flex-col md:flex-row items-center gap-4">
                     <div className="bg-emerald-500/80 p-2 rounded-full">
                       <Phone color="white" size={18} />
                     </div>
@@ -286,7 +289,7 @@ export default function Page() {
                       </p>
                     </div>
                   </div>
-                  <div className="text-right">
+                  <div className="text-center md:text-right">
                     <p className="text-xs text-gray-500">Total Price</p>
                     <p className="text-xl font-bold text-gray-900">
                       ${service?.pricing}
