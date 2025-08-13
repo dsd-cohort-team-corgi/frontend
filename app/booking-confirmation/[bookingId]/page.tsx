@@ -26,7 +26,7 @@ interface BookingQueryProps {
   special_instructions: string;
   service_notes: string;
   start_time: string;
-  booking_id: string;
+  id: string;
   customer_id: string;
   provider_id: string;
   service_id: string;
@@ -116,7 +116,7 @@ export default function Page() {
     ["bookings", "bookingId"],
     `/bookings/${bookingId}`,
   );
-
+  console.log(bookingData);
   const {
     data: providerData,
     error: providerError,
@@ -204,7 +204,7 @@ export default function Page() {
                   Your service has been successfully scheduled
                 </p>
                 <p className="text-xs text-gray-500 mt-1 font-mono">
-                  ID: {bookingData?.booking_id}
+                  ID: {bookingData?.id}
                 </p>
               </div>
             </header>
