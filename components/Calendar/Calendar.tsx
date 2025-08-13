@@ -33,27 +33,36 @@ export default function Calendar({
   twoWeeksLater.setDate(twoWeeksLater.getDate() + 14);
 
   return (
-    <div className="mx-auto max-w-md">
-      <div className="flex flex-col sm:flex-row">
-        <DayPicker
-          mode="single"
-          selected={booking.date}
-          onSelect={(day) => updateBooking({ date: day, time: undefined })}
-          startMonth={today}
-          endMonth={twoWeeksLater}
-          disabled={[
-            { before: today },
-            { after: twoWeeksLater },
-            !booking.serviceId && true,
-          ]}
-        />
-        {booking.date && (
-          <AvailableTimeSlots
-            serviceLength={serviceLength}
-            providersAppointments={providersAppointments}
+    <div className="mx-auto max-w-md px-2">
+      <div className="flex flex-col sm:flex-row gap-4">
+        {/* allow horizontal scroll on very small screens so DatePicker never overflows */}
+        <div className="flex-shrink-0 w-full sm:w-auto overflow-x-auto touch-pan-x">
+          <DayPicker
+            className="w-full max-w-full rdp-mobile"
+            mode="single"
+            selected={booking.date}
+            onSelect={(day) => updateBooking({ date: day, time: undefined })}
+            startMonth={today}
+            endMonth={twoWeeksLater}
+            disabled={[
+              { before: today },
+              { after: twoWeeksLater },
+              !booking.serviceId && true,
+            ]}
           />
+        </div>
+
+        {/* make the time slot column responsive: full width on mobile, fixed-ish on sm+ */}
+        {booking.date && (
+          <div className="w-full sm:w-64">
+            <AvailableTimeSlots
+              serviceLength={serviceLength}
+              providersAppointments={providersAppointments}
+            />
+          </div>
         )}
       </div>
+
       <div className="mt-8">
         <span className="">
           {booking.date instanceof Date

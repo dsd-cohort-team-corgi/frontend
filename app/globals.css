@@ -38,3 +38,23 @@ body {
     /* Firefox */
   }
 }
+
+/* DayPicker responsive overrides — add after Tailwind blocks */
+.rdp-mobile {
+  --rdp-day-size: 40px; /* desktop/default size */
+  max-width: 100%;
+}
+
+/* smaller day cells and type on narrow screens */
+@media (max-width: 639px) {
+  .rdp-mobile {
+    --rdp-day-size: 34px;
+    font-size: 14px;
+  }
+}
+
+/* ensure month grid can't force wider layout */
+.rdp-mobile .rdp-month {
+  width: auto;
+  max-width: 100%;
+}
