@@ -26,7 +26,7 @@ interface BookingQueryProps {
   special_instructions: string;
   service_notes: string;
   start_time: string;
-  id: string;
+  booking_id: string;
   customer_id: string;
   provider_id: string;
   service_id: string;
@@ -204,7 +204,7 @@ export default function Page() {
                   Your service has been successfully scheduled
                 </p>
                 <p className="text-xs text-gray-500 mt-1 font-mono">
-                  ID: {bookingData?.id}
+                  ID: {bookingData?.booking_id}
                 </p>
               </div>
             </header>
