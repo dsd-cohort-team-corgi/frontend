@@ -14,10 +14,288 @@
   }
 }
 
+/* Dark mode styles for party mode */
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ffffff;
+}
+
+.dark body {
+  color: var(--foreground);
+  background: var(--background);
+}
+
+.dark * {
+  color-scheme: dark;
+}
+
+/* Dark mode styles for common elements */
+.dark .bg-white {
+  background-color: #1a1a1a;
+}
+
+.dark .text-gray-700 {
+  color: #e5e5e5;
+}
+
+.dark .text-gray-600 {
+  color: #d4d4d4;
+}
+
+.dark .border-gray-200 {
+  border-color: #404040;
+}
+
+.dark .shadow-lg {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.8);
+}
+
+.dark .bg-gray-50 {
+  background-color: #262626;
+}
+
+.dark .bg-gray-100 {
+  background-color: #404040;
+}
+
+/* Additional dark mode styles for test page and other elements */
+.dark .bg-blue-50 {
+  background-color: #1e3a8a;
+}
+
+.dark .border-blue-200 {
+  border-color: #3b82f6;
+}
+
+.dark .text-gray-600 {
+  color: #d4d4d4;
+}
+
+.dark .bg-gray-50 {
+  background-color: #262626;
+}
+
+.dark .bg-gray-100 {
+  background-color: #404040;
+}
+
+.dark .hover\:bg-blue-600:hover {
+  background-color: #1d4ed8;
+}
+
+.dark .bg-blue-500 {
+  background-color: #3b82f6;
+}
+
+/* Main page text colors for dark mode */
+.dark .text-gray-900 {
+  color: #f9fafb;
+}
+
+.dark .text-gray-800 {
+  color: #f3f4f6;
+}
+
+.dark .text-gray-700 {
+  color: #e5e7eb;
+}
+
+.dark .text-gray-600 {
+  color: #d1d5db;
+}
+
+.dark .text-gray-500 {
+  color: #9ca3af;
+}
+
+.dark .text-gray-400 {
+  color: #9ca3af;
+}
+
+.dark .text-gray-300 {
+  color: #d1d5db;
+}
+
+.dark .text-gray-200 {
+  color: #e5e7eb;
+}
+
+.dark .text-gray-100 {
+  color: #f3f4f6;
+}
+
+/* Main page background gradients for dark mode */
+.dark .bg-gradient-to-br.from-blue-50.to-purple-50 {
+  background: linear-gradient(to bottom right, #1e3a8a, #581c87);
+}
+
+.dark .bg-gradient-to-br.from-white.to-gray-50 {
+  background: linear-gradient(to bottom right, #1a1a1a, #262626);
+}
+
+.dark .bg-gradient-to-br.from-green-50.to-emerald-50 {
+  background: linear-gradient(to bottom right, #064e3b, #065f46);
+}
+
+.dark .bg-gradient-to-br.from-gray-100.to-gray-200 {
+  background: linear-gradient(to bottom right, #404040, #525252);
+}
+
+.dark .bg-gradient-to-br.from-red-50.to-red-100 {
+  background: linear-gradient(to bottom right, #7f1d1d, #991b1b);
+}
+
+/* Card and component backgrounds for dark mode */
+.dark .bg-white {
+  background-color: #1a1a1a;
+}
+
+.dark .bg-transparent {
+  background-color: transparent;
+}
+
+/* Button and interactive elements for dark mode */
+.dark .text-blue-600 {
+  color: #60a5fa;
+}
+
+.dark .hover\:text-blue-700:hover {
+  color: #3b82f6;
+}
+
+.dark .text-green-600 {
+  color: #34d399;
+}
+
+.dark .text-red-800 {
+  color: #fca5a5;
+}
+
+.dark .text-red-600 {
+  color: #f87171;
+}
+
+.dark .text-red-500 {
+  color: #ef4444;
+}
+
+/* Border colors for dark mode */
+.dark .border-gray-100 {
+  border-color: #404040;
+}
+
+.dark .border-gray-200 {
+  border-color: #404040;
+}
+
+.dark .border-0 {
+  border-color: transparent;
+}
+
+/* Services section and additional elements for dark mode */
+.dark .text-primary-font-color {
+  color: #f9fafb;
+}
+
+.dark .text-secondary-font-color {
+  color: #d1d5db;
+}
+
+/* Loading skeleton colors for dark mode */
+.dark .bg-gray-300 {
+  background-color: #525252;
+}
+
+/* Hover states for dark mode */
+.dark .hover\:bg-gray-200:hover {
+  background-color: #525252;
+}
+
+.dark .hover\:bg-gray-100:hover {
+  background-color: #404040;
+}
+
+/* Focus and active states for dark mode */
+.dark .focus\:ring-blue-300:focus {
+  --tw-ring-color: #1d4ed8;
+}
+
+.dark .focus\:ring-opacity-50:focus {
+  --tw-ring-opacity: 0.5;
+}
+
+/* CardWithImage component dark mode styles */
+.dark .bg-primary-font-color {
+  background-color: #f9fafb;
+}
+
+.dark .text-primary-font-color {
+  color: #f9fafb;
+}
+
+.dark .text-secondary-font-color {
+  color: #d1d5db;
+}
+
+/* Additional utility classes for dark mode */
+.dark .text-nowrap {
+  white-space: nowrap;
+}
+
+.dark .text-pretty {
+  text-wrap: pretty;
+}
+
+/* Ensure proper contrast for accessibility */
+.dark .text-white {
+  color: #ffffff;
+}
+
+.dark .text-black {
+  color: #000000;
+}
+
+/* Final dark mode utilities and transitions */
+.dark .transition-all {
+  transition-property: all;
+}
+
+.dark .duration-300 {
+  transition-duration: 300ms;
+}
+
+.dark .ease-in-out {
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Ensure smooth dark mode transitions */
+.dark * {
+  transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Dark mode scrollbar styling */
+.dark ::-webkit-scrollbar {
+  width: 8px;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #404040;
+  border-radius: 4px;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #525252;
+}
+
 body {
   color: var(--foreground);
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
+  transition: all 0.3s ease;
 }
 
 @layer utilities {

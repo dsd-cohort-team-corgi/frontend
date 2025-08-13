@@ -10,6 +10,7 @@ import React, {
 import Image from "next/image";
 import BumiGif from "@/public/bumi.gif";
 import BumiModal from "./BumiModal";
+import PartyMode, { usePartyMode } from "./PartyMode";
 import useVoiceRecognition from "@/lib/hooks/useVoiceRecognition";
 import { useApiMutation } from "@/lib/api-client";
 
@@ -35,6 +36,8 @@ export default function Bumi() {
   const [isBumiModalOpen, setIsBumiModalOpen] = useState(false);
   const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
   const isLongPressRef = useRef(false);
+  const { isPartyMode, activatePartyMode } = usePartyMode();
+
   const bookingActionMutation = useApiMutation<
     BumiQuickTrickResponse,
     BumiQuickTrickRequest
@@ -62,31 +65,65 @@ export default function Bumi() {
     onApiResponse: () => {
       /* No-op */
     },
-    onBeforeApiCall: useCallback((text: string) => {
-      const lowerText = text.toLowerCase().trim();
-      if (
-        lowerText.includes("cancel") ||
-        lowerText.includes("reschedule") ||
-        lowerText.includes("rescheduling") ||
-        lowerText.includes("uncanceling")
-      ) {
-        bookingActionMutation.mutate({
-          message: lowerText,
-          conversation_history: [],
-        });
-      }
-      return false; // Allow API call for normal speech
-    }, []),
+    onBeforeApiCall: useCallback(
+      (text: string) => {
+        const lowerText = text.toLowerCase().trim();
+
+        // Check for party mode activation
+        if (lowerText.includes("party")) {
+          activatePartyMode();
+          return true;
+        }
+
+        if (
+          lowerText.includes("cancel") ||
+          lowerText.includes("reschedule") ||
+          lowerText.includes("rescheduling") ||
+          lowerText.includes("uncanceling")
+        ) {
+          bookingActionMutation.mutate({
+            message: lowerText,
+            conversation_history: [],
+          });
+          return true;
+        }
+        return true;
+      },
+      [activatePartyMode, bookingActionMutation],
+    ),
     apiEndPath: "bumi/booking/chat",
     setErrorMessage: () => {},
     setRequestCopy: () => {},
   });
 
+  // Handle party mode activation when voice recognition detects party keywords
+  useEffect(() => {
+    if (inProgressBubbles) {
+      const lowerText = inProgressBubbles.toLowerCase().trim();
+      if (lowerText.includes("party") || lowerText.includes("celebration")) {
+        activatePartyMode();
+        setInProgressBubbles("🎉 Party mode activated! 🎉");
+        setTimeout(() => setInProgressBubbles(""), 3000);
+      }
+    }
+  }, [inProgressBubbles, activatePartyMode, setInProgressBubbles]);
+
+  useEffect(() => {
+    const handleOpenBumiModal = () => {
+      setIsBumiModalOpen(true);
+    };
+
+    window.addEventListener("open-bumi-modal", handleOpenBumiModal);
+
+    return () => {
+      window.removeEventListener("open-bumi-modal", handleOpenBumiModal);
+    };
+  }, []);
+
   useEffect(() => {
     if (bookingActionMutation.isPending) {
       setInProgressBubbles("Thinking...");
     }
-    console.log(bookingActionMutation.isSuccess);
     if (bookingActionMutation.isSuccess) {
       setInProgressBubbles(bookingActionMutation?.data.message);
       setTimeout(() => setInProgressBubbles(""), 3000);
@@ -100,6 +137,7 @@ export default function Bumi() {
     bookingActionMutation.isPending,
     bookingActionMutation.isSuccess,
     bookingActionMutation.isError,
+    setInProgressBubbles,
   ]);
 
   const handleBumiClick = useCallback(() => {
@@ -135,22 +173,43 @@ export default function Bumi() {
   }, []);
 
   // Memoize the button styles to prevent recalculation on every render
-  const buttonStyles = useMemo(
-    () => ({
-      backgroundColor: isListening ? "#ef4444" : "#4490d3",
-    }),
-    [isListening],
-  );
+  const buttonStyles = useMemo(() => {
+    let backgroundColor = "#4490d3"; // default color
+
+    if (isListening) {
+      backgroundColor = "#ef4444";
+    } else if (isPartyMode) {
+      backgroundColor = "#8b5cf6";
+    }
+
+    return { backgroundColor };
+  }, [isListening, isPartyMode]);
 
   // Memoize the button classes to prevent string concatenation on every render
   const buttonClasses = useMemo(() => {
     const baseClasses =
       "cursor-pointer rounded-full p-2 shadow-lg transition-all duration-300 hover:scale-110 relative";
-    const listeningClasses = isListening
-      ? "ring-4 ring-red-400 ring-opacity-75"
-      : "hover:ring-2 hover:ring-blue-300 hover:ring-opacity-50";
+
+    let listeningClasses =
+      "hover:ring-2 hover:ring-blue-300 hover:ring-opacity-50"; // default
+
+    if (isListening) {
+      listeningClasses = "ring-4 ring-red-400 ring-opacity-75";
+    } else if (isPartyMode) {
+      listeningClasses =
+        "ring-4 ring-purple-400 ring-opacity-75 animate-bounce";
+    }
+
     return `${baseClasses} ${listeningClasses}`;
-  }, [isListening]);
+  }, [isListening, isPartyMode]);
+
+  // Helper function to render word content
+  const renderWordContent = (word: string, isLastWord: boolean) => {
+    if (isLastWord) {
+      return <span className="text-blue-600 font-medium">{word}</span>;
+    }
+    return word;
+  };
 
   // Memoize the transcription display to prevent unnecessary re-renders
   const transcriptionDisplay = useMemo(() => {
@@ -166,11 +225,7 @@ export default function Bumi() {
               return (
                 <React.Fragment key={word}>
                   <span className="text-sm text-gray-700">
-                    {isLastWord ? (
-                      <span className="text-blue-600 font-medium">{word}</span>
-                    ) : (
-                      word
-                    )}
+                    {renderWordContent(word, isLastWord)}
                   </span>
                   {!isLastWord && <span className="text-gray-700">&nbsp;</span>}
                 </React.Fragment>
@@ -184,8 +239,11 @@ export default function Bumi() {
       </div>
     );
   }, [inProgressBubbles]);
+
   return (
     <>
+      <PartyMode isActive={isPartyMode} />
+
       <div className="fixed bottom-10 right-10 z-50 flex items-center space-x-4">
         {/* Voice transcription display - left of Bumi */}
         {transcriptionDisplay}
@@ -209,15 +267,26 @@ export default function Bumi() {
             <>
               <div className="absolute inset-0 rounded-full border-2 border-red-400 animate-ping opacity-75" />
               <div className="absolute inset-0 rounded-full border-2 border-red-500" />
-              <div className="absolute top-1 right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse" />
+              <div className="absolute top-1 right-1 size-3 bg-red-500 rounded-full animate-pulse" />
             </>
           )}
+
+          {isPartyMode && (
+            <>
+              <div className="absolute inset-0 rounded-full border-2 border-purple-400 animate-ping opacity-75" />
+              <div className="absolute inset-0 rounded-full border-2 border-purple-500" />
+              <div className="absolute -top-2 -right-2 size-4 bg-purple-500 rounded-full animate-pulse">
+                🎉
+              </div>
+            </>
+          )}
+
           <Image
             src={BumiGif}
             alt="Bumi"
             width={50}
             height={50}
-            className="h-[35px] w-[35px] rounded-full object-cover transition-all duration-300"
+            className="size-[35px] rounded-full object-cover transition-all duration-300"
           />
         </button>
       </div>
