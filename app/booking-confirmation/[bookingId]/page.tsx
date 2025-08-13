@@ -9,7 +9,7 @@ import { useAuthContext } from "@/components/context-wrappers/AuthContext";
 import Check from "@/components/icons/Check";
 import { useApiQuery } from "@/lib/api-client";
 import LoadingSkeleton from "@/components/LoadingSkeleton";
-import formatDateTimeString from "@/utils/formatDateTimeString";
+import formatDateTimeString from "@/utils/time/formatDateTimeString";
 import Calendar from "@/components/icons/Calendar";
 import StyledAsButton from "@/components/StyledAsButton";
 import ArrowRight from "@/components/icons/ArrowRight";

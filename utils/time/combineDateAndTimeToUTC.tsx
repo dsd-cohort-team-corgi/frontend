@@ -2,10 +2,9 @@ export default function combineDateAndTimeToISOString(
   date: Date,
   timeStr: string,
 ): string {
-  // 1. hours and minutes from "2:30 PM"
   const [time, AmOrPm] = timeStr.split(" ");
   const [rawHours, rawMinutes] = time.split(":").map(Number);
-  // needed since typescript will complain if we use let instead of const, since rawMinutes won't be changing. But hours needs to be able to change
+
   let hours = Number(rawHours);
   const minutes = Number(rawMinutes);
 

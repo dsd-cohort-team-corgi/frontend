@@ -6,7 +6,7 @@ import MessageSquare from "./icons/MessageSquare";
 import StyledAsButton from "./StyledAsButton";
 import Star from "./icons/Star";
 import ReviewModal from "./ReviewModal";
-import formatDateTimeString from "@/utils/formatDateTimeString";
+import formatDateTimeString from "@/utils/time/formatDateTimeString";
 
 interface BookingItem {
   company_name: string;

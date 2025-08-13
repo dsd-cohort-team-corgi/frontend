@@ -2,7 +2,7 @@ import { useState } from "react";
 import { ArrowBigDown, ArrowBigUp } from "lucide-react";
 import StyledAsButton from "../StyledAsButton";
 import { useBooking } from "@/components/context-wrappers/BookingContext";
-import returnAvailableTimeSlotsIn12Hour from "@/utils/returnAvailableTimeSlotsIn12Hour";
+import returnAvailableTimeSlotsIn12Hour from "@/utils/time/timeslots/returnAvailableTimeSlotsIn12Hour";
 
 type AvailableTimeSlotsType = {
   serviceLength: number;
@@ -62,7 +62,6 @@ export default function AvailableTimeSlots({
               key={slot}
               label={slot}
               className="text-md w-full bg-transparent font-semibold text-black group-hover:text-white"
-              // w-full that way if you click anywhere on the li, the special click ripple animation will be shown, since the button "fills" the li
               onPress={() => {
                 handleSlotChangeWithContext(slot);
               }}

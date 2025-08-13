@@ -7,10 +7,6 @@ function capitalizeFirstLetter(str: string) {
 export default function convertToWeekDayYearTime(isoString: string) {
   const date = new Date(isoString);
 
-  // 'do' → ordinal day (1st, 2nd, 3rd, 4th…)
-  // 'EEEE' → full weekday
-  // 'yyyy' → 4-digit year
-  // 'h:mma' → 12-hour time with AM/PM
   const inLowerCase = format(date, "EEEE do, yyyy 'at' h:mma").toLowerCase();
 
   // lowercase is needed, otherwise you get

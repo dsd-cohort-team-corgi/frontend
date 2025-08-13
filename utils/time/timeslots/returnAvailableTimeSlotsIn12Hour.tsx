@@ -1,7 +1,7 @@
-import generateTimeSlots from "@/utils/generateTimeSlots";
-import convertTimeFrom24To12Hours from "@/utils/convertTimeFrom24To12Hours";
-import calculateBusyTimeSlots from "@/utils/calculateBusyTimeSlots";
-import getValidAppointmentStartTimes from "@/utils/getValidAppointmentStartTimes";
+import generateTimeSlots from "@/utils/time/timeslots/generateTimeSlots";
+import convertTimeFrom24To12Hours from "@/utils/time/convertTimeFrom24To12Hours";
+import calculateBusyTimeSlots from "@/utils/time/timeslots/calculateBusyTimeSlots";
+import getValidAppointmentStartTimes from "@/utils/time/timeslots/getValidAppointmentStartTimes";
 
 type AvailableTimeSlotsType = {
   serviceLength: number;
@@ -18,8 +18,8 @@ export default function returnAvailableTimeSlotsIn12Hour({
 
   const availableStartTimes = getValidAppointmentStartTimes({
     allTimeSlots,
-    busySlots, // [   ("10:30", "11:00", "13:00", "14:00") ];
-    serviceLength, // 60 === needs 2 consecutive open slots
+    busySlots,
+    serviceLength,
   });
 
   const availableTimesIn12HourFormat =

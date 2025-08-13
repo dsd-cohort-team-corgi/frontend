@@ -21,7 +21,6 @@ export function getBookingFromCookies(): Partial<BookingDetailsType> {
           booking.serviceDuration = Number(value);
           break;
         case "date": {
-          // Unexpected lexical declaration in case block, since blocks don't create their own scopes by default so we have to wrap the case in a block to create a block scope
           // Try to parse date string from cookie, fallback to undefined
           const parsedDate = new Date(value);
           booking.date = Number.isNaN(parsedDate.getTime())
@@ -31,7 +30,7 @@ export function getBookingFromCookies(): Partial<BookingDetailsType> {
         }
         case "providerId":
         case "serviceId":
-          booking[key] = value; // These are strings in your type
+          booking[key] = value;
           break;
         case "time":
         case "description":

@@ -210,7 +210,6 @@ function CompleteProfileModal({
                   type="tel"
                   errorMessage="Please enter a valid phone number"
                   label="Phone Number"
-                  //   allows only numbers 0-9 with no hyphens. We can expand validation later on
                   pattern="[0-9]{10}"
                 />
                 <Input
