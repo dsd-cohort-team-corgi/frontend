@@ -256,14 +256,16 @@ export default function Page() {
                     <p className="text-lg font-semibold text-gray-900 mb-2">
                       {service ? service.service_title : "Service not found"}
                     </p>
-                    {/* <div className="bg-white/80 p-3 rounded border border-gray-200/50">
-                      <p className="text-sm text-gray-700">
-                        {`${authContextObject.streetAddress1}`}
-                        {authContextObject.streetAddress2 &&
-                          `, ${authContextObject.streetAddress2}`}
-                        {`, ${authContextObject.city}, ${authContextObject.state} ${authContextObject.zip}`}
-                      </p>
-                    </div> */}
+                    {authContextObject.streetAddress1 && (
+                      <div className="bg-white/80 p-3 rounded border border-gray-200/50">
+                        <p className="text-sm text-gray-700">
+                          {`${authContextObject.streetAddress1}`}
+                          {authContextObject.streetAddress2 &&
+                            `, ${authContextObject.streetAddress2}`}
+                          {`, ${authContextObject.city}, ${authContextObject.state} ${authContextObject.zip}`}
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </div>
               </CardBody>
@@ -303,7 +305,7 @@ export default function Page() {
             <div className="space-y-3 mb-8">
               <Link href={`/api/generate-ics/${bookingId}`}>
                 <StyledAsButton
-                  className="w-full bg-green-600/90 text-white font-medium py-3 text-base hover:bg-green-600 transition-colors duration-200"
+                  className="w-full bg-green text-white font-medium py-3 text-base hover:bg-green-600 transition-colors duration-200"
                   label="Add To Calendar"
                   startContent={<Calendar size={18} />}
                 />
