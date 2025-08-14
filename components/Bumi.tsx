@@ -8,6 +8,7 @@ import React, {
   useMemo,
 } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import BumiGif from "@/public/bumi.gif";
 import BumiModal from "./BumiModal";
 import PartyMode, { usePartyMode } from "./PartyMode";
@@ -33,6 +34,7 @@ interface BumiQuickTrickResponse {
 }
 
 export default function Bumi() {
+  const router = useRouter();
   const [isBumiModalOpen, setIsBumiModalOpen] = useState(false);
   const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
   const isLongPressRef = useRef(false);
@@ -68,6 +70,12 @@ export default function Bumi() {
     onBeforeApiCall: useCallback(
       (text: string) => {
         const lowerText = text.toLowerCase().trim();
+
+        // Check for bumi flow demo
+        if (lowerText.includes("brain")) {
+          router.push("/bumi-flow-demo");
+          return true;
+        }
 
         // Check for party mode activation
         if (lowerText.includes("party")) {
