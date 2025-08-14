@@ -41,8 +41,10 @@ const ModalOverlay = styled.div<{ isOpen: boolean }>`
 
 const ModalContainer = styled.div`
   position: relative;
-  width: 800px;
   min-height: 125px;
+  width: 800px;
+  max-height: 80vh;
+  overflow-y: scroll;
   background: #23262f;
   box-shadow:
     0px 40px 64px -32px rgba(15, 15, 15, 0.1),
@@ -102,7 +104,10 @@ function BumiModal({ isOpen, onOpenChange }: BumiModalType) {
   return (
     <ModalOverlay isOpen={isOpen} onClick={onOpenChange}>
       {isOpen && (
-        <ModalContainer onClick={(e) => e.stopPropagation()}>
+        <ModalContainer
+          onClick={(e) => e.stopPropagation()}
+          className="no-scrollbar"
+        >
           <ModalHeader />
           <SpeechToText onClose={onOpenChange} />
         </ModalContainer>
