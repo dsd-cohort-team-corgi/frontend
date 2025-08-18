@@ -40,11 +40,56 @@ That's it!
 We use a `.env` file to manage secrets and environment-specific settings. You can use the .env.example file as a scaffold
 
 NEXT_PUBLIC_GOOGLE_CLIENT_ID = longStringOfNumbersAndLetters.apps.googleusercontent.com
+
+- go to https://console.cloud.google.com/
+
+- select clients
+
+![alt text](image.png)
+
+- Click copy Oauth Client, this is the client ID for this env variable
+
+![alt text](image-4.png)
+
 NEXT_PUBLIC_SUPABASE_URL = url
+
+- Click the cog icon on the bottom left to get to settings, then click Data API
+  ![alt text](image-8.png)
+
+- Click the copy icon, then paste the url in your env file
+
+![alt text](image-9.png)
+
 NEXT_PUBLIC_SUPABASE_ANON_KEY =longStringOfNumbersAndLetters
+
+- needed for the supabase.ts file
+
+- select project settings
+  ![alt text](image-6.png)
+
+- click to copy icon, this is what you need for this env variable
+
+![alt text](image-7.png)
+
 NEXT_PUBLIC_URL = http://localhost:3000
+
+- this will be the url you'll use for testing, so it will likely be localhost:3000. On the deployment itself (ex netlify) this will updated to the actual frontend name
+
 NEXT_PUBLIC_STRIPE_PUBLIC_KEY=pk_test_longStringOfNumbersAndLetter
+
+- login to stripe
+
+- click home
+
+![alt text](image-12.png)
+
+- to the right you'll see the api keys, click to copy the string
+
+![alt text](image-13.png)
+
 NEXT_PUBLIC_API_BASE_URL = url
+
+- this will depend on your backend, copy and paste the backend's deploy url here
 
 ## 🧰 Prerequisites & Tooling
 
@@ -78,10 +123,31 @@ This project assumes you're using **VS Code** as your editor.
 
 If you need the login function to work with the test deployment you'll have to add the preview deployment to google console
 
-## [🧯 Troubleshooting]
+go to https://console.cloud.google.com/
 
-If you get a bug that doesn't occur when you test on another machine then you likely will need to delete node_modules and re-run npm install
-If you get a bug where the code doesn't match what's rendered, try deleting .next and rerun npm run build
+select clients
+
+![alt text](image.png)
+
+click edit OAuth Client
+
+![alt text](image-1.png)
+
+Add the deploy preview link to authorized JavaScript Origins, then scroll down and click save. You don't need to add it to the redirect section below the Authorized JavaScript Origins.
+
+![alt text](image-5.png)
+
+## 🧯 Troubleshooting
+
+If you get a bug that doesn't occur when you test on another machine then you likely will need to
+
+- delete node_modules
+- re-run npm install
+
+If you get a bug where the code doesn't match what's rendered, try:
+
+- deleting .next
+- rerun npm run build
 
 | Symptom                                                         | Likely Culprit                               | Why Nuking Helps                   |
 | --------------------------------------------------------------- | -------------------------------------------- | ---------------------------------- |
