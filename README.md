@@ -52,23 +52,33 @@ This project assumes you're using **VS Code** as your editor.
 
 ### 💻 VS Code Extensions
 
-- (Required) Prettier: an opinionated code formatter.
-  https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode
+- (Optional but strongly recommended) Prettier
+  - an opinionated code formatter.
+  - https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode
+  - If you don't use it then manually run either:
+    `format": "prettier --write .` to automatically have prettier make the recommended adjustments
+    `format:check": "prettier --check .` have prettier tell you it's recommendations, and then manually make the adjustments
 
-- (Required) EsLint: Integrates ESLint into VS Code. Lints your code to identify possible problematic coding patterns that violate coding standards.
-  https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint
+- (Optional but strongly recommended) ESLint
+  - Integrates ESLint into VS Code. Lints your code to identify possible problematic coding patterns that violate coding standards.
+  - https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint
+  - If you don't use it then manually run:
+    `lint": "next lint` runs eslint.
+  - However, you would need the plugin to see eslint as-you-type in VSCode.
 
-- (Optional) Tailwind CSS IntelliSense: Enhances the Tailwind development experience by providing Visual Studio Code users with advanced features such as autocomplete, syntax highlighting, and linting.
-  https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss
+- (Optional) Tailwind CSS IntelliSense
+  - Enhances the Tailwind development experience by providing Visual Studio Code users with advanced features such as autocomplete, syntax highlighting, and linting.
+  - https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss
 
-- (Optional) Rainbow Tags: Inteligently colors all tag pairs in your file. Helps with debugging missing: {}().
-  https://marketplace.visualstudio.com/items?itemName=voldemortensen.rainbow-tags
+- (Optional) Rainbow Tags
+  - Inteligently colors all tag pairs in your file. Helps with debugging missing: {}().
+    https://marketplace.visualstudio.com/items?itemName=voldemortensen.rainbow-tags
 
 ## Deployments
 
 If you need the login function to work with the test deployment you'll have to add the preview deployment to google console
 
-## [🧯 Troubleshooting](#-troubleshooting)
+## [🧯 Troubleshooting]
 
 If you get a bug that doesn't occur when you test on another machine then you likely will need to delete node_modules and re-run npm install
 If you get a bug where the code doesn't match what's rendered, try deleting .next and rerun npm run build
