@@ -1,6 +1,6 @@
-# 🧼 Welcome to Wipe Ripe – FrontEnd (Next.Js)
+# 🧼 Welcome to Wipe Ripe – FrontEnd (Next.js)
 
-This is the Frontend for the Wipe Right project, built with **FastAPI**, **SQLModel**, and **Supabase**. It supports customer and provider accounts, service listings, bookings, and more.
+This is the Frontend for the Wipe Right project, built with **Next.js**, **Stripe** and **Supabase**.
 
 ![cartoon corgi gently panting](/public/bumi.gif)
 
