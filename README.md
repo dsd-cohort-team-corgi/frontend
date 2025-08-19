@@ -18,7 +18,7 @@ https://github.com/dsd-cohort-team-corgi/backend
 
 - **Thomas Nguyen** – Project Lead & Frontend Lead (UX/UI design, guided scope, coordination, Bumi AI planning & integration, frontend contributions)
 - **Rafael Rios** – Frontend Developer ( AI Integration: bumi quick tricks functionality, Interactive provider map with leaflet, home page hero section, customer and provider dashboard, provider categories page, booking confirmation page, Tanstack Query integration)
-- **Janet SpellmanMarsh** – Frontend Developer (Supabase Auth and Google OAuth integration, Auth Context integration, Stripe integration, linting & code style enforcement, Speech-to-text and AI text bubble logic, AI front end flow and setup to backend AI api routes, navigation bar, calendar and time slot functionality, provider page and booking flow, coupon checkout integration)
+- **Janet SpellmanMarsh** – Frontend Developer (Supabase Auth and Google OAuth integration, React Context integration, Stripe integration, linting & code style enforcement, Speech-to-text and AI text bubble logic, AI front end flow and setup to backend AI api routes, navigation bar, calendar and time slot functionality, provider page and booking flow, coupon checkout integration)
 
 
 ## 📚 Table of Contents
