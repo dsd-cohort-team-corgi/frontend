@@ -1,6 +1,6 @@
 # 🧼 Welcome to Wipe Ripe – FrontEnd (Next.js)
 
-This is the Frontend for the Wipe Right project, built with **Next.js**, **Stripe** and **Supabase**.
+This is the Frontend for the Wipe Right project, built with **Next.js**, **Stripe**, ** Open AI API ** and **Supabase**.
 
 Visit us at: https://wiperight.netlify.app/
 
