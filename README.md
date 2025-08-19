@@ -6,7 +6,7 @@ This is the Frontend for the Wipe Right project, built with **FastAPI**, **SQLMo
 
 Did you mean to checkout our backend repository?
 
-Check out our twin here:
+Check out our sibling here:
 
 https://github.com/dsd-cohort-team-corgi/backend
 
