@@ -176,7 +176,6 @@ If you get a bug where the code doesn't match what's rendered, try:
 | **Hydration mismatch warnings (server vs client DOM mismatch)** | Old build artifacts                          | Removes cached pages/components    |
 | **Hot reload not working**                                      | Corrupted `.next`                            | Fresh cache lets HMR work properly |
 | **Random `Cannot find module 'X'`**                             | Broken or missing dependency                 | Reinstalls fresh modules           |
-| **Next.js dev server crashes immediately**                      | Corrupted cache or bad dependency resolution | Rebuilds with clean slate          |
 | **TypeScript showing phantom errors**                           | Old `.d.ts` files in `node_modules`          | Cleans stale types                 |
-| **Different behavior locally vs Vercel**                        | Stale local `.next` build                    | Matches fresh build behavior       |
+| **Different behavior locally vs Netlify**                       | Stale local `.next` build                    | Matches fresh build behavior       |
 | **Static images or CSS not updating**                           | Cached assets in `.next`                     | Forces re-generation               |
