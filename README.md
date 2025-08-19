@@ -2,6 +2,8 @@
 
 This is the Frontend for the Wipe Right project, built with **Next.js**, **Stripe** and **Supabase**.
 
+Visit us at: https://wiperight.netlify.app/
+
 ![cartoon corgi gently panting](/public/bumi.gif)
 
 Did you mean to checkout our backend repository?
