@@ -12,11 +12,11 @@ https://github.com/dsd-cohort-team-corgi/backend
 
 ## 📚 Table of Contents
 
-- [⚡ Quickstart](#quickstart)
-- [🆕 First-Time Setup](#first-time-setup)
-  - [🔐 Configure Environment Variables](#configure-environment-variables)
+- [⚡ Quickstart](#-quickstart)
+- [🆕 First-Time Setup](#-first-time-setup)
+  - [🔐 Configure Environment Variables](#-configure-environment-variables)
 - [🧰 Prerequisites & Tooling](#-prerequisites--tooling)
-- [🧯 Troubleshooting](#troubleshooting)
+- [🧯 Troubleshooting](#-troubleshooting)
 
 ## ⚡ Quickstart
 
